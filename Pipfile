@@ -13,6 +13,7 @@ scipy = "*"
 tensorboard = "*"
 "boto3" = "*"
 daiquiri = "*"
+flask = "*"
 
 
 [dev-packages]
