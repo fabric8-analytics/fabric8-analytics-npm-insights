@@ -1,5 +1,5 @@
 NPM companion package recommendations
 -------------------------------------
 
-This repository contains the code that is used to power NPM package
+This repository contains the code that is used to power NPM package companion
 recommendations.
