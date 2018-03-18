@@ -1,32 +1,35 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-This file contains the class that defines the online scoring logic.
+# This file contains the class that defines the online scoring logic.
 
-Copyright © 2018 Avishkar Gupta
+# Copyright © 2018 Avishkar Gupta
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
 import numpy as np
 from scipy.io import loadmat
 import daiquiri
-from .abstract_recommender import AbstractRecommender
+from recommendation_engine.predictor.abstract_recommender import AbstractRecommender
 import json
 import sys
-
+from recommendation_engine.config.path_constants import *
+from recommendation_engine.data_store.s3_data_store import S3DataStore
+import recommendation_engine.config.cloud_constants as cloud_constants
+from recommendation_engine.utils.fileutils import load_rating
+from recommendation_engine.model.pmf_prediction import PMFScoring
 daiquiri.setup()
+_logger = daiquiri.getLogger(__name__)
 
 
 class PMFRecommendation(AbstractRecommender):
@@ -35,7 +38,7 @@ class PMFRecommendation(AbstractRecommender):
 
     This class contains the online recommendation logic that will be used to
     score packages to the user's preferences at runtime. We need to run a
-    forward pass of PMF and multiply the obtained user vector with the
+    single step of PMF and multiply the obtained user vector with the
     precomputed latent item vectors."""
 
     def __init__(self, M):
@@ -49,8 +52,15 @@ class PMFRecommendation(AbstractRecommender):
         self.user_matrix = None
         self.latent_item_rep_mat = None
         self.weight_matrix = None
-        # Initialize a logger for this class.
-        self._logger = daiquiri.getLogger(self.__class__.__name__)
+        self.s3_client = S3DataStore(src_bucket_name=cloud_constants.S3_BUCKET_NAME,
+                                     access_key=cloud_constants.AWS_S3_ACCESS_KEY_ID,
+                                     secret_key=cloud_constants.AWS_S3_SECRET_KEY_ID)
+
+        self._load_model_output_matrices(model_path=PMF_MODEL_PATH)
+        self._load_package_id_to_name_map()
+        self.item_ratings = load_rating(TRAINING_DATA_ITEMS)
+        self.user_stacks = load_rating(PRECOMPUTED_STACKS)
+        print("Created an instance of pmf-recommendation, loaded data from S3")
 
     def _load_model_output_matrices(self, model_path):
         """This method is used to load the m_U, m_V and m_theta matrices.
@@ -59,12 +69,10 @@ class PMFRecommendation(AbstractRecommender):
                      form the model.
         :returns: An instance of the scoring object.
         """
-        model_dict = loadmat(model_path)
-        if not model_dict:
-            self._logger.error("Unable to load the model for scoring")
-        self.user_matrix = model_dict["m_U"]
-        self.latent_item_rep_mat = model_dict["m_V"]
-        self.weight_matrix = model_dict["m_theta"]
+        self.model_dict = self.s3_client.load_matlab_multi_matrix(model_path)
+        self.user_matrix = self.model_dict["m_U"]
+        self.latent_item_rep_mat = self.model_dict["m_V"]
+        self.weight_matrix = self.model_dict["m_theta"]
 
     def _get_new_user_item_vector(self, user_rating_vector):
         """Create this users' m_U vector.
@@ -77,7 +85,7 @@ class PMFRecommendation(AbstractRecommender):
         :returns: The 1XD vector for this user, where D is the number of
                   latent factors.
         """
-        return
+        return self.VariationalAutoEncoder()
 
     def _map_package_id_to_name(self, package_id_list):
         """Map the package id from the model to its name.
@@ -87,62 +95,49 @@ class PMFRecommendation(AbstractRecommender):
         return [self.package_id_name_map[str(package_id)] for package_id in package_id_list]
 
     def _map_package_name_to_id(self, package_name_list):
+        """Map the package name to its id."""
         return [self.package_name_id_map[package_name] for package_name in package_name_list]
 
-    def _load_package_id_to_name_map(self, path_to_pkg_map):
-        """Load the package-id to name mapping.
-
-        :path_to_pkg_map: The URL/URI for the package map.
-
-        """
-        with open('/Users/avgupta/analytics-proof-of-concepts/index_to_package_map.json') as idx_pkg_map:
-            self.package_id_name_map = json.loads(idx_pkg_map.read())
-        with open('/Users/avgupta/analytics-proof-of-concepts/package_to_index_map.json') as pkg_idx_map:
-            self.package_name_id_map = json.loads(pkg_idx_map.read())
-
-    def load_rating(self, path=''):
-      path = "/Users/avgupta/Dropbox/CVAE/packagedata-train-5-users.dat"
-      arr = []
-      for line in open(path):
-        a = line.strip().split()
-        if a[0] == 0:
-          l = []
-        else:
-          l = set([int(x) for x in a[1:]])
-        arr.append(l)
-      self.user_stacks = arr
+    def _load_package_id_to_name_map(self):
+        """Load the package-id to name mapping."""
+        self.package_id_name_map = self.s3_client.read_json_file(filename=ID_TO_PACKAGE_MAP)
+        self.package_name_id_map = self.s3_client.read_json_file(filename=PACKAGE_TO_ID_MAP)
 
     def _find_closest_user_in_training_set(self, new_user_stack):
+        """Check if we already have the recommendations for the stack precomputed"""
         new_user_stack = set(new_user_stack)
-        minDiff = sys.maxsize
-        closest = 0
-        print('user stack is: {}'.format(new_user_stack))
+        # minDiff = sys.maxsize
+        closest = None
+        # print('user stack is: {}'.format(new_user_stack))
         for idx, stack in enumerate(self.user_stacks):
-            if (idx == 1239):
-                print(stack)
-            if stack == new_user_stack:
+           if stack == new_user_stack:
                 closest = idx
-                print("Breaking at {}".format(idx))
                 break
-            elif len(stack.difference(new_user_stack)) < minDiff:
-                minDiff = len(stack.difference(new_user_stack))
-                closest = idx
-                print("setting closest to {}".format(idx))
-        print("Closest is: {}".format(closest))
+            # elif len(stack.difference(new_user_stack)) < minDiff:
+                # minDiff = len(stack.difference(new_user_stack))
+                # closest = idx
+                # print("setting closest to {}".format(idx))
+        # print("Closest is: {}".format(closest))
         return closest
 
-    def predict(self, new_user_stack):
-        self.load_rating()
-        self._load_model_output_matrices('/Users/avgupta/Dropbox/CVAE/cvae.mat')
-        self._load_package_id_to_name_map('')
-        new_user_stack = self._map_package_name_to_id(new_user_stack)
-        user = self._find_closest_user_in_training_set(new_user_stack)
-        # print(self.user_matrix[int(user), :].shape)
-        recommendation = np.dot(self.user_matrix[int(user), :].reshape([1, 50]), self.latent_item_rep_mat.T)
-        packages = np.argsort(recommendation)[0][::-1][:self._M]
-        # print(packages)
-        return dict(zip(self._map_package_id_to_name(packages.tolist()), [self.sigmoid(rec) for rec in np.sort(recommendation)[0][::-1][:self._M]]))
-
-    def sigmoid(self, x, derivative=False):
+    def _sigmoid(self, x, derivative=False):
         return x*(1-x) if derivative else 1/(1+np.exp(-x))
 
+    def predict(self, new_user_stack):
+        """The main prediction function."""
+        new_user_stack = self._map_package_name_to_id(new_user_stack)
+        # Check whether we have already seen this stack.
+        user = self._find_closest_user_in_training_set(new_user_stack)
+        if user is not None:
+            _logger.info("Have precomputed stack")
+            recommendation = np.dot(self.user_matrix[int(user), :].reshape([1, 50]),
+                                    self.latent_item_rep_mat.T)
+        else:
+            _logger.info("Calculating latent representation, have not seen this combination before")
+            scoring = PMFScoring(self.model_dict, self.item_ratings)
+            user_latent_rep = scoring.predict_transform(new_user_stack)
+            recommendation = np.dot(user_latent_rep.reshape([1, 50]),
+                                    self.latent_item_rep_mat.T)
+        packages = np.argsort(recommendation)[0][::-1][:self._M]
+        return dict(zip(self._map_package_id_to_name(packages.tolist()),
+                    [self._sigmoid(rec) for rec in np.sort(recommendation)[0][::-1][:self._M]]))
