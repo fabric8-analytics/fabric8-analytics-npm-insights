@@ -55,14 +55,14 @@ objects:
           - containerPort: 6006
           livenessProbe:
             httpGet:
-              path: /
+              path: /api/v1/liveness
               port: 6006
             initialDelaySeconds: 15
             periodSeconds: 60
             timeoutSeconds: 30
           readinessProbe:
             httpGet:
-              path: /
+              path: /api/v1/readiness
               port: 6006
             initialDelaySeconds: 15
             periodSeconds: 60
