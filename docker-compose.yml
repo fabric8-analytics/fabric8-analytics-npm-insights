@@ -11,6 +11,8 @@ services:
     environment:
       AWS_S3_ACCESS_KEY_ID: "${AWS_S3_ACCESS_KEY_ID}"
       AWS_S3_SECRET_ACCESS_KEY: "${AWS_S3_SECRET_ACCESS_KEY}"
+      # Minio for AWS simulation in local deployment
+      AWS_S3_ENDPOINT_URL: "${AWS_S3_ENDPOINT_URL}"
       KRONOS_SCORING_REGION: "npm"
       # Accepted values - dev | stage | prod
       DEPLOYMENT_PREFIX: "dev"
