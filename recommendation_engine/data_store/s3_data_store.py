@@ -10,6 +10,7 @@ import numpy as np
 import zipfile
 from recommendation_engine.utils import generic_utils as utils
 from scipy.io import loadmat
+from recommendation_engine.config.cloud_constants import AWS_S3_ENDPOINT_URL
 
 daiquiri.setup(level=logging.ERROR)
 _logger = daiquiri.getLogger(__name__)
@@ -27,8 +28,12 @@ class S3DataStore():
         """
         self.session = boto3.session.Session(aws_access_key_id=access_key,
                                              aws_secret_access_key=secret_key)
-        self.s3_resource = self.session.resource('s3', config=botocore.client.Config(
-            signature_version='s3v4'), region_name='us-east-1')
+        if AWS_S3_ENDPOINT_URL == '':
+            self.s3_resource = self.session.resource('s3', config=botocore.client.Config(
+                signature_version='s3v4'), region_name='us-east-1')
+        else:
+            self.s3_resource = self.session.resource('s3', config=botocore.client.Config(
+                signature_version='s3v4'), region_name='us-east-1', endpoint_url=AWS_S3_ENDPOINT_URL)
         self.bucket = self.s3_resource.Bucket(src_bucket_name)
         self.bucket_name = src_bucket_name
 
