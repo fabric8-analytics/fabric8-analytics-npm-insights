@@ -58,6 +58,7 @@ class PMFRecommendation(AbstractRecommender):
 
         self._load_model_output_matrices(model_path=PMF_MODEL_PATH)
         self._load_package_id_to_name_map()
+        self._package_tag_map = self.s3_client.read_json_file(PACKAGE_TAG_MAP)
         self.item_ratings = load_rating(TRAINING_DATA_ITEMS)
         self.user_stacks = load_rating(PRECOMPUTED_STACKS)
         print("Created an instance of pmf-recommendation, loaded data from S3")
@@ -108,7 +109,6 @@ class PMFRecommendation(AbstractRecommender):
         new_user_stack = set(new_user_stack)
         # minDiff = sys.maxsize
         closest = None
-        # print('user stack is: {}'.format(new_user_stack))
         for idx, stack in enumerate(self.user_stacks):
            if stack == new_user_stack:
                 closest = idx
@@ -116,8 +116,6 @@ class PMFRecommendation(AbstractRecommender):
             # elif len(stack.difference(new_user_stack)) < minDiff:
                 # minDiff = len(stack.difference(new_user_stack))
                 # closest = idx
-                # print("setting closest to {}".format(idx))
-        # print("Closest is: {}".format(closest))
         return closest
 
     def _sigmoid(self, x, derivative=False):
@@ -125,7 +123,18 @@ class PMFRecommendation(AbstractRecommender):
 
     def predict(self, new_user_stack):
         """The main prediction function."""
-        new_user_stack = self._map_package_name_to_id(new_user_stack)
+        missing = []
+        avail = []
+        for package in new_user_stack:
+            pkg_id = self.package_name_id_map.get(package, -1)
+            if pkg_id == -1:
+                missing.append(package)
+            else:
+                avail.append(pkg_id)
+        # if more than half the packages are missing
+        if len(missing) >= len(avail):
+            return missing, []
+        new_user_stack = avail
         # Check whether we have already seen this stack.
         user = self._find_closest_user_in_training_set(new_user_stack)
         if user is not None:
@@ -140,8 +149,24 @@ class PMFRecommendation(AbstractRecommender):
                                     self.latent_item_rep_mat.T)
         packages = np.argsort(recommendation)[0][::-1].tolist()
         # Filter packages that are present in the input
-        packages =list (set(packages) - set(new_user_stack))[:self._M]
-        logits = np.take(recommendation[0], np.array(packages)).tolist()
-        mean = np.mean(recommendation)
-        return dict(zip(self._map_package_id_to_name(packages),
-                    [self._sigmoid(rec - mean) for rec in logits]))
+        packages_filtered = []
+        user_stack_lookup = set(new_user_stack)
+        recommendation_count = 0
+        for package in packages:
+            if package not in user_stack_lookup:
+                packages_filtered.append(package)
+                recommendation_count += 1
+            if recommendation_count >= self._M:
+                break
+        logits = np.take(recommendation[0], np.array(packages_filtered)).tolist()
+        mean = np.mean(logits)
+        # return dict(zip(self._map_package_id_to_name(packages),
+                    # [self._sigmoid(rec - mean) for rec in logits]))
+        recommendations = []
+        for idx, package in enumerate(packages_filtered):
+            recommendations.append({
+                    "package": self.package_id_name_map[str(package)],
+                    "companion_probability": self._sigmoid(logits[idx] - mean),
+                    "tags" : self._package_tag_map.get(self.package_id_name_map[str(package)], [])
+                })
+        return missing, recommendations
