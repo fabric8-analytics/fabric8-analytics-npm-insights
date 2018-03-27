@@ -27,12 +27,12 @@ paths:
       responses:
         '200':
           description: Service is ready
-  /recommend_companion:
+  /companion_recommendation:
     post:
       tags:
         - Recommendation API
-      operationId: f8a_recommender.api_v1.recommend_companion
-      summary: Return companion package recommendations for the NPM ecosystem
+      operationId: f8a_recommender.api_v1.companion_recommendation
+      summary: Return companion package recommendations for a stack of the NPM ecosystem
       parameters:
         - in: body
           name: body
