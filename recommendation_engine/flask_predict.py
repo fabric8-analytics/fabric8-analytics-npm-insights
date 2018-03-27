@@ -22,13 +22,8 @@ def readiness():
 @app.route('/api/v1/companion_recommendation', methods=['POST'])
 def recommendation():
     global rec
-    recommendations = rec.predict(request.json['stack'])
-    if recommendations:
-        return flask.jsonify(recommendations), 200
-    else:
-        return flask.jsonify({"status": "error",
-                              "response": "Could not recommend packages"}), 500
-
+    missing, recommendations = rec.predict(request.json['stack'])
+    return flask.jsonify({"missing_packages": missing, "recommendations": recommendations}), 200
 
 if __name__ == "__main__":
     app.run(debug=True, port=3000)
