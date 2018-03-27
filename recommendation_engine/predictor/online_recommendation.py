@@ -138,6 +138,8 @@ class PMFRecommendation(AbstractRecommender):
             user_latent_rep = scoring.predict_transform(new_user_stack)
             recommendation = np.dot(user_latent_rep.reshape([1, 50]),
                                     self.latent_item_rep_mat.T)
-        packages = np.argsort(recommendation)[0][::-1][:self._M]
-        return dict(zip(self._map_package_id_to_name(packages.tolist()),
+        packages = np.argsort(recommendation)[0][::-1].tolist()
+        # Filter packages that are present in the input
+        packages =list (set(packages) - set(new_user_stack))[:self._M]
+        return dict(zip(self._map_package_id_to_name(packages),
                     [self._sigmoid(rec) for rec in np.sort(recommendation)[0][::-1][:self._M]]))
