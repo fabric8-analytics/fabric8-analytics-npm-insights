@@ -141,5 +141,7 @@ class PMFRecommendation(AbstractRecommender):
         packages = np.argsort(recommendation)[0][::-1].tolist()
         # Filter packages that are present in the input
         packages =list (set(packages) - set(new_user_stack))[:self._M]
+        logits = np.take(recommendation[0], np.array(packages)).tolist()
+        mean = np.mean(recommendation)
         return dict(zip(self._map_package_id_to_name(packages),
-                    [self._sigmoid(rec) for rec in np.sort(recommendation)[0][::-1][:self._M]]))
+                    [self._sigmoid(rec - mean) for rec in logits]))
