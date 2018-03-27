@@ -1,0 +1,84 @@
+swagger: '2.0'
+info:
+  title: API for NPM companion recommendations
+  description: Spec for the RESTful interface to the NPM insights model.
+  version: '0.1'
+basePath: /api/v1/
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /liveness:
+    get:
+      tags:
+        - Service settings
+      operationId: f8a_admin.api_v1.liveness
+      summary: Get service liveness
+      responses:
+        '200':
+          description: Service is alive
+  /readiness:
+    get:
+      tags:
+        - Service settings
+      operationId: f8a_admin.api_v1.readiness
+      summary: Get service readiness
+      responses:
+        '200':
+          description: Service is ready
+  /recommend_companion:
+    post:
+      tags:
+        - Recommendation API
+      operationId: f8a_recommender.api_v1.recommend_companion
+      summary: Return companion package recommendations for the NPM ecosystem
+      parameters:
+        - in: body
+          name: body
+          description: Request body expects just the one parameter \"stack\", which is a list containing the user's packages (with version information stripped).
+          required: true
+          schema:
+            $ref: '#/definitions/UserStack'
+      responses:
+        '200':
+          schema:
+            $ref: "#/definitions/Response"
+          description: Companion recommendations along with their associated probabilities
+        '500':
+          description: Internal Server Error
+
+definitions:
+  UserStack:
+    title: Request format for companion_recommendation endpoint
+    description: Request format for companion_recommendation endpoint
+    properties:
+      stack:
+        type: array
+        items:
+          type: string
+
+  Response:
+    title: Response containing the recommendations
+    description: Response containing the recommendations
+    properties:
+      missing_packages:
+        type: array
+        items:
+          type: string
+      recommendations:
+        $ref: '#/definitions/recommendation'
+
+  recommendation:
+      type: array
+      items:
+        type: object
+        properties:
+          package:
+            type: string
+          companion_probability:
+            type: number
+          tags:
+            type: array
+            items:
+              type: string
