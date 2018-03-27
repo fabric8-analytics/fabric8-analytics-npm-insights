@@ -19,5 +19,6 @@ services:
       SERVICE_PORT: "6006"
       SERVICE_TIMEOUT: "900"
       AWS_BUCKET_NAME: "${AWS_BUCKET_NAME}"
+      PYTHONUNBUFFERED: 0
     ports:
       - "6006:6006"
