@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# This file contains the class that defines the online scoring logic.
-
+"""This file contains the class that defines the online scoring logic."""
 # Copyright © 2018 Avishkar Gupta
 
 # This program is free software: you can redistribute it and/or modify
@@ -33,13 +32,13 @@ _logger = daiquiri.getLogger(__name__)
 
 
 class PMFRecommendation(AbstractRecommender):
-
     """Online recommendation logic.
 
     This class contains the online recommendation logic that will be used to
     score packages to the user's preferences at runtime. We need to run a
     single step of PMF and multiply the obtained user vector with the
-    precomputed latent item vectors."""
+    precomputed latent item vectors.
+    """
 
     def __init__(self, M):
         """Constructor a new instance.
@@ -64,7 +63,7 @@ class PMFRecommendation(AbstractRecommender):
         print("Created an instance of pmf-recommendation, loaded data from S3")
 
     def _load_model_output_matrices(self, model_path):
-        """This method is used to load the m_U, m_V and m_theta matrices.
+        """The method is used to load the m_U, m_V and m_theta matrices.
 
         :model_path: The path to the matlab file containing the matrices that
                      form the model.
@@ -105,7 +104,7 @@ class PMFRecommendation(AbstractRecommender):
         self.package_name_id_map = self.s3_client.read_json_file(filename=PACKAGE_TO_ID_MAP)
 
     def _find_closest_user_in_training_set(self, new_user_stack):
-        """Check if we already have the recommendations for the stack precomputed"""
+        """Check if we already have the recommendations for the stack precomputed."""
         new_user_stack = set(new_user_stack)
         # minDiff = sys.maxsize
         closest = None
