@@ -1,33 +1,37 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# This module contains the code that deals with the PMF piece for scoring.
-# Copyright © 2018 Avishkar Gupta
+"""
+This module contains the code that deals with the PMF piece for scoring.
 
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+Copyright © 2018 Red Hat Inc.
 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from config.params import Params
-from recommendation_engine.config.path_constants import *
-import recommendation_engine.config.cloud_constants as cloud_constants
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import numpy as np
 import scipy
 
+from recommendation_engine.config.params import Params
+
+
 class PMFScoring(object):
-    """This class defines the PMF scoring logic, decoupled from the
-    training logic to run inside openshift without using tensorflow."""
+    """This class defines the PMF scoring logic.
+
+    This is decoupled from the training logic to run inside openshift without using tensorflow.
+    """
 
     def __init__(self, model_dict, items):
-        # Initialize using default paramters.
+        """Create an instance of PMF scoring."""
         self.params = Params()
         self.m_V = model_dict["m_V"]
         self.m_U = model_dict["m_U"]
