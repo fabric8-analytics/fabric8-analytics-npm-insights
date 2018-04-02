@@ -1,28 +1,29 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# ------------------------------------------------------------------------------------------
-# This script spawns a spark emr cluster on AWS and submits a job to run the given src code.
-# ------------------------------------------------------------------------------------------
-# Copyright © 2018 Avishkar Gupta
+"""
+This script spawns a spark emr cluster on AWS and submits a job to run the given src code.
 
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+Copyright © 2018 Red Hat Inc.
 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 import logging
 import boto3
 from time import gmtime, strftime
 import daiquiri
 
-from recommendation_engine import config
+import recommendation_engine.config.cloud_constants as config
 
 daiquiri.setup(level=logging.DEBUG)
 _logger = daiquiri.getLogger(__name__)
@@ -132,14 +133,6 @@ def submit_job(input_bootstrap_file, input_src_code_file):
                      'Args': ['unzip', '/home/hadoop/' + s3_key, '-d', '/home/hadoop']
                  }
             },
-            # {
-                # 'Name': 'Install Tensorflow',
-                # 'ActionOnFailure': 'TERMINATE_CLUSTER',
-                # 'HadoopJarStep': {
-                    # 'Jar': 'command-runner.jar',
-                    # 'Args': ['/bin/bash', '/home/hadoop/tensorflow_install.sh']
-                # }
-            # },
             {
                 'Name': 'Run training job',
                 'ActionOnFailure': 'TERMINATE_CLUSTER',
@@ -173,4 +166,5 @@ def submit_job(input_bootstrap_file, input_src_code_file):
 
 
 if __name__ == "__main__":
-    print(submit_job('emr_bootstrap.sh', 'dev-chester-tf-training-job.zip'))
+    print(submit_job('emr_bootstrap.sh',
+                     '{}-chester-tf-training-job.zip'.format(config.DEPLOYMENT_PREFIX)))
