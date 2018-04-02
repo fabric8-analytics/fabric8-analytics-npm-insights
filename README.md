@@ -140,3 +140,7 @@ Content-type: application/json
     ]
 }
 ```
+
+## LICENSE
+
+Licensed under the GNU GPL v3.0, copyright Red Hat Inc., 2018. Licenses for vendor code are included in the respective files/folders.
