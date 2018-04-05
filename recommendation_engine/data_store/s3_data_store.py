@@ -1,15 +1,14 @@
 import json
-import pickle
-import os
-import daiquiri
-import boto3
 import logging
+import os
+import pickle
+
+import boto3
 import botocore
-# import pandas as pd
-import numpy as np
-import zipfile
-from recommendation_engine.utils import generic_utils as utils
+import daiquiri
+
 from scipy.io import loadmat
+
 from recommendation_engine.config.cloud_constants import AWS_S3_ENDPOINT_URL
 
 daiquiri.setup(level=logging.ERROR)
@@ -30,10 +29,11 @@ class S3DataStore():
                                              aws_secret_access_key=secret_key)
         if AWS_S3_ENDPOINT_URL == '':
             self.s3_resource = self.session.resource('s3', config=botocore.client.Config(
-                signature_version='s3v4'), region_name='us-east-1')
+                signature_version='s3v4'))
         else:
             self.s3_resource = self.session.resource('s3', config=botocore.client.Config(
-                signature_version='s3v4'), region_name='us-east-1', endpoint_url=AWS_S3_ENDPOINT_URL)
+                signature_version='s3v4'), region_name='us-east-1',
+                endpoint_url=AWS_S3_ENDPOINT_URL)
         self.bucket = self.s3_resource.Bucket(src_bucket_name)
         self.bucket_name = src_bucket_name
 
@@ -151,15 +151,19 @@ class S3DataStore():
             return []
         return [folder['Prefix'] for folder in folders]
 
-    def upload_folder_to_s3(self, folder_path, zipfilename, prefix=''):
-        """Zip a folder and upload it to s3.
+    def upload_folder_to_s3(self, folder_path, prefix=''):
+        """Upload(Sync) a folder to S3.
 
         :folder_path: The local path of the folder to upload to s3
+        :prefix: The prefix to attach to the folder path in the S3 bucket
         """
-        s3_client = self.session.client('s3')
-        ziph = zipfile.ZipFile(zipfilename, 'w', zipfile.ZIP_DEFLATED)
-        utils.zipdir(folder_path, ziph)
-        self.bucket.upload_file(zipfilename, os.path.join(prefix, zipfilename))
+        for root, _, filenames in os.walk(folder_path):
+            for filename in filenames:
+                if root != '.':
+                    s3_dest = os.path.join(prefix, root, filename)
+                else:
+                    s3_dest = os.path.join(prefix, filename)
+                self.bucket.upload_file(os.path.join(root, filename), s3_dest)
 
     def load_matlab_multi_matrix(self, s3_path):
         """This function loads a '.mat' & returns a dict representation.
