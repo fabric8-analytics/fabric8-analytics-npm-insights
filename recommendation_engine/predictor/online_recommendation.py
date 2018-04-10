@@ -28,6 +28,7 @@ from recommendation_engine.data_store.s3_data_store import S3DataStore
 import recommendation_engine.config.cloud_constants as cloud_constants
 from recommendation_engine.utils.fileutils import load_rating
 from recommendation_engine.model.pmf_prediction import PMFScoring
+
 daiquiri.setup()
 _logger = daiquiri.getLogger(__name__)
 
@@ -110,16 +111,16 @@ class PMFRecommendation(AbstractRecommender):
         # minDiff = sys.maxsize
         closest = None
         for idx, stack in enumerate(self.user_stacks):
-           if stack == new_user_stack:
+            if stack == new_user_stack:
                 closest = idx
                 break
             # elif len(stack.difference(new_user_stack)) < minDiff:
-                # minDiff = len(stack.difference(new_user_stack))
-                # closest = idx
+            # minDiff = len(stack.difference(new_user_stack))
+            # closest = idx
         return closest
 
     def _sigmoid(self, x, derivative=False):
-        return x*(1-x) if derivative else 1/(1+np.exp(-x))
+        return x * (1 - x) if derivative else 1 / (1 + np.exp(-x))
 
     def predict(self, new_user_stack):
         """The main prediction function."""
@@ -161,12 +162,13 @@ class PMFRecommendation(AbstractRecommender):
         logits = np.take(recommendation[0], np.array(packages_filtered)).tolist()
         mean = np.mean(logits)
         # return dict(zip(self._map_package_id_to_name(packages),
-                    # [self._sigmoid(rec - mean) for rec in logits]))
+        # [self._sigmoid(rec - mean) for rec in logits]))
         recommendations = []
         for idx, package in enumerate(packages_filtered):
             recommendations.append({
-                    "package": self.package_id_name_map[str(package)],
-                    "companion_probability": self._sigmoid(logits[idx] - mean),
-                    "tags" : self._package_tag_map.get(self.package_id_name_map[str(package)], [])
-                })
+                "package": self.package_id_name_map[str(package)],
+                "companion_probability": self._sigmoid(logits[idx] - mean),
+                "tags": self._package_tag_map.get(
+                        self.package_id_name_map[str(package)], [])
+            })
         return missing, recommendations

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import flask
 from flask import Flask, request, json
-from predictor.online_recommendation import PMFRecommendation
+from recommendation_engine.predictor.online_recommendation import PMFRecommendation
 
 app = Flask(__name__)
 
@@ -24,6 +24,7 @@ def recommendation():
     global rec
     missing, recommendations = rec.predict(request.json['stack'])
     return flask.jsonify({"missing_packages": missing, "recommendations": recommendations}), 200
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=3000)

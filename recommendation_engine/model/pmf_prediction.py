@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import numpy as np
 import scipy
 
-from recommendation_engine.config.params import Params
+from recommendation_engine.config.params_scoring import ScoringParams
 
 
 class PMFScoring(object):
@@ -32,11 +32,10 @@ class PMFScoring(object):
 
     def __init__(self, model_dict, items):
         """Create an instance of PMF scoring."""
-        self.params = Params()
+        self.params = ScoringParams()
         self.m_V = model_dict["m_V"]
         self.m_U = model_dict["m_U"]
         self.items = items
-
 
     def predict_transform(self, user_vector):
         """
@@ -61,7 +60,7 @@ class PMFScoring(object):
         n = len(item_ids)
         if n > 0:
             A = np.copy(XX)
-            A += np.dot(self.m_V[item_ids, :].T, self.m_V[item_ids,:])*a_minus_b
+            A += np.dot(self.m_V[item_ids, :].T, self.m_V[item_ids, :]) * a_minus_b
             x = self.params.a * np.sum(self.m_V[item_ids, :], axis=0)
             return scipy.linalg.solve(self.params.a, x).reshape(1, self.params.n_z)
         else:
