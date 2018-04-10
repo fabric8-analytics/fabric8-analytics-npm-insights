@@ -18,7 +18,7 @@ class LocalFileSystem(AbstractDataStore):
     def get_name(self):
         return "Local filesytem dir: " + self.src_dir
 
-    def list_files(self, prefix=None):
+    def list_files(self, prefix=None, max_count=None):
         """List all the files in the source directory"""
         list_filenames = []
         for root, dirs, files in os.walk(self.src_dir):
