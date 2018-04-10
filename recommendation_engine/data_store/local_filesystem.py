@@ -1,25 +1,50 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Interactions with local filesystem, useful for unit testing.
+
+Copyright © 2018 Red Hat Inc.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+import ast
 import fnmatch
+import json
 import os
 import pickle
-# import pandas as pd
-import json
-import ast
+
 import numpy as np
 
 from recommendation_engine.data_store.abstract_data_store import AbstractDataStore
 
 
 class LocalFileSystem(AbstractDataStore):
+    """Wrapper on local filesystem, API similar to s3DataStore."""
+
     def __init__(self, src_dir):
+        """Create a new local filesystem instance.
+
+        :src_dir: The root directory for local filesystem object
+        """
         self.src_dir = src_dir
-        # ensure path ends with a forward slash
-        self.src_dir = self.src_dir if self.src_dir.endswith("/") else self.src_dir + "/"
 
     def get_name(self):
+        """Return name of local filesystem root dir."""
         return "Local filesytem dir: " + self.src_dir
 
     def list_files(self, prefix=None, max_count=None):
-        """List all the files in the source directory"""
+        """List all the files in the source directory."""
         list_filenames = []
         for root, dirs, files in os.walk(self.src_dir):
             for basename in files:
@@ -35,15 +60,15 @@ class LocalFileSystem(AbstractDataStore):
         return list_filenames
 
     def remove_json_file(self, filename):
-        """Remove JSON file from the data_input source file path"""
+        """Remove JSON file from the data_input source file path."""
         return os.remove(os.path.join(self.src_dir, filename))
 
     def read_json_file(self, filename):
-        """Read JSON file from the data_input source"""
+        """Read JSON file from the data_input source."""
         return LocalFileSystem.byteify(json.load(open(os.path.join(self.src_dir, filename))))
 
     def read_all_json_files(self):
-        """Read all the files from the data_input source"""
+        """Read all the files from the data_input source."""
         list_filenames = self.list_files(prefix=None)
         list_contents = []
         for file_name in list_filenames:
@@ -52,42 +77,15 @@ class LocalFileSystem(AbstractDataStore):
         return list_contents
 
     def write_json_file(self, filename, contents):
-        """Write JSON file into data_input source"""
+        """Write JSON file into data_input source."""
         with open(os.path.join(self.src_dir, filename), 'w') as outfile:
             json.dump(contents, outfile)
         return None
 
     def upload_file(self, src, target):
-        """Upload file into data store"""
-        # self.bucket.upload_file(src, target)
+        """Upload file into data store."""
         return None
 
     def download_file(self, src, target):
-        """Download file from data store"""
-        # self.bucket.download_file(src, target)
+        """Download file from data store."""
         return None
-
-#     def read_json_file_into_pandas_df(self, filename):
-        # return pd.read_json(os.path.join(self.src_dir, filename), dtype=np.int8)
-
-    # def write_pandas_df_into_json_file(self, data, filename):
-        # data.to_json(os.path.join(self.src_dir, filename))
-
-    @classmethod
-    def byteify(cls, input):
-        if isinstance(input, dict):
-            return {LocalFileSystem.byteify(key): LocalFileSystem.byteify(value)
-                    for key, value in input.items()}
-        elif isinstance(input, list):
-            return [LocalFileSystem.byteify(element) for element in input]
-        else:
-            return input
-
-    @classmethod
-    def convert_list_of_tuples_to_string(cls, tuple_list):
-        string_value = str(tuple_list)
-        return string_value
-
-    @classmethod
-    def convert_string_to_list_of_tuples(cls, tuple_list_string):
-        return list(ast.literal_eval(tuple_list_string))
