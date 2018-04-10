@@ -149,7 +149,7 @@ def submit_job(input_bootstrap_file, input_src_code_file):
     )
 
     output = {}
-    if response.get('ResponseMetadata').get('HTTPStatusCode') == 200:
+    if response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
 
         output['training_job_id'] = response.get('JobFlowId')
         output['status'] = 'work_in_progress'
