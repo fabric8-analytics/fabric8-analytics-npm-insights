@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """This file contains the class that defines the online scoring logic.
 
-Copyright © 2018 Avishkar Gupta
+Copyright © 2018 Red Hat Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,17 +17,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-import numpy as np
-from scipy.io import loadmat
 import daiquiri
-from recommendation_engine.predictor.abstract_recommender import AbstractRecommender
-import json
-import sys
+import numpy as np
+
+import recommendation_engine.config.cloud_constants as cloud_constants
 from recommendation_engine.config.path_constants import *
 from recommendation_engine.data_store.s3_data_store import S3DataStore
-import recommendation_engine.config.cloud_constants as cloud_constants
-from recommendation_engine.utils.fileutils import load_rating
 from recommendation_engine.model.pmf_prediction import PMFScoring
+from recommendation_engine.predictor.abstract_recommender import AbstractRecommender
+from recommendation_engine.utils.fileutils import load_rating
 
 daiquiri.setup()
 _logger = daiquiri.getLogger(__name__)
