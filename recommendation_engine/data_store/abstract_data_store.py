@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import abc
 
 
-class AbstractDataStore(object, metaclass=abc.ABCMeta):
+class AbstractDataStore(metaclass=abc.ABCMeta):
     """Abstract class to dictate the behaviour of a data store."""
 
     @abc.abstractmethod
