@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This program is the abstract class for the online recommender logic.
+
 Copyright © 2018 Avishkar Gupta
 
 This program is free software: you can redistribute it and/or modify
@@ -22,17 +23,16 @@ from abc import abstractmethod, ABCMeta
 
 
 class AbstractRecommender(object):
-
     """This defines the interface for the online recommender."""
 
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def get_companion_recommendation(self, user_stack):
+    def predict(self, user_stack):
         """Generate companion recommendation for this user's stack."""
         pass
 
     @abstractmethod
     def filter(self, prediction):
-        """Business logic to filter recommendations coming from model"""
+        """Filter recommendations coming from model."""
         pass

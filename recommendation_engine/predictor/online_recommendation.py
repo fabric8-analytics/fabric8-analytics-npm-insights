@@ -43,7 +43,7 @@ class PMFRecommendation(AbstractRecommender):
     """
 
     def __init__(self, M):
-        """Constructor a new instance.
+        """Construct a new instance.
 
         :M: This parameter controls the number of recommendations that will
             be served by the PMF model.
@@ -65,7 +65,7 @@ class PMFRecommendation(AbstractRecommender):
         print("Created an instance of pmf-recommendation, loaded data from S3")
 
     def _load_model_output_matrices(self, model_path):
-        """The method is used to load the m_U, m_V and m_theta matrices.
+        """Load the m_U, m_V and m_theta matrices.
 
         :model_path: The path to the matlab file containing the matrices that
                      form the model.
@@ -123,7 +123,7 @@ class PMFRecommendation(AbstractRecommender):
         return x * (1 - x) if derivative else 1 / (1 + np.exp(-x))
 
     def predict(self, new_user_stack):
-        """The main prediction function."""
+        """Predict companion packages."""
         missing = []
         avail = []
         for package in new_user_stack:

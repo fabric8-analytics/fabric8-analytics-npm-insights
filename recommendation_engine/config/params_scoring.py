@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """This file defines a parameter class that contains the model hyperparameters.
+
 Copyright © 2018 Red Hat Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -19,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 class ScoringParams():
-    """This class contains the model hyperparamters.
-    """
+    """This class contains the model hyperparamters."""
+
     a = 1
     b = 0.01
     lambda_u = 0.1
