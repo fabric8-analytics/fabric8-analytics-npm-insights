@@ -3,7 +3,7 @@
 """
 This program is the abstract class for the online recommender logic.
 
-Copyright © 2018 Avishkar Gupta
+Copyright © 2018 Red Hat Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
