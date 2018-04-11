@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from unittest import TestCase
 from recommendation_engine.data_store.local_filesystem import LocalFileSystem
 from recommendation_engine.predictor.online_recommendation import PMFRecommendation
-import logging
+
 
 class TestPMFRecommendation(TestCase):
     """Test the core recommendations task."""
