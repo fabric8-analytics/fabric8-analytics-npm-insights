@@ -19,17 +19,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from recommendation_engine.data_store import data_store_wrapper
 """
-from recommendation_engine.data_store import data_store_wrapper
 
 
-def load_rating(path=''):
+def load_rating(path, data_store):
     """Load the rating matrix as return it as a list-of-lists.
 
     :path: The local pathname for the rating matrix.
     :returns: The rating matrix in a list-of-lists format where the
               list at index i represents the itemeset of the ith user.
     """
-    rating_file_contents = data_store_wrapper.read_generic_file(path).strip()
+    rating_file_contents = data_store.read_generic_file(path).strip()
     rating_matrix = []
     for line in rating_file_contents.split('\n'):
         this_user_ratings = line.strip().split()

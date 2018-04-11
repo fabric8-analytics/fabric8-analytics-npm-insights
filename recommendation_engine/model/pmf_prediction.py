@@ -24,7 +24,7 @@ import scipy
 from recommendation_engine.config.params_scoring import ScoringParams
 
 
-class PMFScoring(object):
+class PMFScoring:
     """This class defines the PMF scoring logic.
 
     This is decoupled from the training logic to run inside openshift without using tensorflow.
@@ -37,7 +37,7 @@ class PMFScoring(object):
         self.m_U = model_dict["m_U"]
         self.items = items
 
-    def predict_transform(self, user_vector):
+    def predict_transform(self, user_item_vector):
         """Create this users' m_U vector.
 
         Create the factor space mapping for this user, this
@@ -48,20 +48,9 @@ class PMFScoring(object):
         :returns: A numpy array containing the user vector calculated
                   based on the latent item vectors.
         """
-        a_minus_b = self.params.a - self.params.b
-
         # VV^T for v_j that has at least one user liked
-        ids = np.array([len(x) for x in self.items]) > 0
-        v = self.m_V[ids]
-        VVT = np.dot(v.T, v)
-        XX = VVT * self.params.b + np.eye(self.params.m_num_factors) * self.params.lambda_u
-
-        item_ids = user_vector
-        n = len(item_ids)
-        if n > 0:
-            A = np.copy(XX)
-            A += np.dot(self.m_V[item_ids, :].T, self.m_V[item_ids, :]) * a_minus_b
-            x = self.params.a * np.sum(self.m_V[item_ids, :], axis=0)
+        if len(user_item_vector) > 0:
+            x = self.params.a * np.sum(self.m_V[user_item_vector, :], axis=0)
             return scipy.linalg.solve(self.params.a, x).reshape(1, self.params.n_z)
         else:
             return np.array([])

@@ -21,10 +21,16 @@ import flask
 from flask import Flask, request
 from recommendation_engine.predictor.online_recommendation import PMFRecommendation
 from recommendation_engine.data_store.s3_data_store import S3DataStore
+import recommendation_engine.config.cloud_constants as cloud_constants
 
 app = Flask(__name__)
 
-rec = PMFRecommendation(10, S3DataStore)
+s3 = S3DataStore(src_bucket_name=cloud_constants.S3_BUCKET_NAME,
+                 access_key=cloud_constants.AWS_S3_ACCESS_KEY_ID,
+                 secret_key=cloud_constants.AWS_S3_SECRET_KEY_ID)
+# This needs to be global as ~200MB of data is loaded from S3 every time an object of this class
+# is instantiated.
+recommender = PMFRecommendation(10, s3)
 
 
 @app.route('/api/v1/liveness', methods=['GET'])
@@ -42,8 +48,8 @@ def readiness():
 @app.route('/api/v1/companion_recommendation', methods=['POST'])
 def recommendation():
     """Endpoint to serve recommendations."""
-    global rec
-    missing, recommendations = rec.predict(request.json['stack'])
+    global recommender
+    missing, recommendations = recommender.predict(request.json['stack'])
     return flask.jsonify({"missing_packages": missing, "recommendations": recommendations}), 200
 
 

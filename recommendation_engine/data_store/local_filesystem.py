@@ -18,13 +18,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-import ast
 import fnmatch
 import json
 import os
-import pickle
-
-import numpy as np
 
 from recommendation_engine.data_store.abstract_data_store import AbstractDataStore
 
@@ -32,7 +28,7 @@ from recommendation_engine.data_store.abstract_data_store import AbstractDataSto
 class LocalFileSystem(AbstractDataStore):
     """Wrapper on local filesystem, API similar to s3DataStore."""
 
-    def __init__(self, src_dir):
+    def __init__(self, src_dir, **_):
         """Create a new local filesystem instance.
 
         :src_dir: The root directory for local filesystem object
@@ -44,18 +40,14 @@ class LocalFileSystem(AbstractDataStore):
         return "Local filesytem dir: " + self.src_dir
 
     def list_files(self, prefix=None, max_count=None):
-        """List all the files in the source directory."""
+        """List all the json files in the source directory."""
         list_filenames = []
         for root, dirs, files in os.walk(self.src_dir):
             for basename in files:
                 if fnmatch.fnmatch(basename, "*.json"):
                     filename = os.path.join(root, basename)
-                    if prefix is None:
-                        filename = filename[len(self.src_dir):]
-                        list_filenames.append(filename)
-                    elif filename.startswith(os.path.join(self.src_dir, prefix)):
-                        filename = filename[len(self.src_dir):]
-                        list_filenames.append(filename)
+                    filename = filename[len(self.src_dir):]
+                    list_filenames.append(filename)
         list_filenames.sort()
         return list_filenames
 
