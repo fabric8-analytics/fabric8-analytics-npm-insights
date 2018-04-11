@@ -1,4 +1,4 @@
-directories="recommendation_engine"
+directories="recommendation_engine tests"
 fail=0
 
 function prepare_venv() {
