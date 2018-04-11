@@ -22,9 +22,8 @@ import logging
 import daiquiri
 import numpy as np
 
-import recommendation_engine.config.cloud_constants as cloud_constants
-from recommendation_engine.config.path_constants import *
-from recommendation_engine.data_store.s3_data_store import S3DataStore
+from recommendation_engine.config.path_constants import PMF_MODEL_PATH, PACKAGE_TAG_MAP, \
+    TRAINING_DATA_ITEMS, PRECOMPUTED_STACKS, ID_TO_PACKAGE_MAP, PACKAGE_TO_ID_MAP
 from recommendation_engine.model.pmf_prediction import PMFScoring
 from recommendation_engine.predictor.abstract_recommender import AbstractRecommender
 from recommendation_engine.utils.fileutils import load_rating
@@ -53,15 +52,13 @@ class PMFRecommendation(AbstractRecommender):
         self.user_matrix = None
         self.latent_item_rep_mat = None
         self.weight_matrix = None
-        self.s3_client = data_store(src_bucket_name=cloud_constants.S3_BUCKET_NAME,
-                                    access_key=cloud_constants.AWS_S3_ACCESS_KEY_ID,
-                                    secret_key=cloud_constants.AWS_S3_SECRET_KEY_ID)
+        self.s3_client = data_store
 
         self._load_model_output_matrices(model_path=PMF_MODEL_PATH)
         self._load_package_id_to_name_map()
         self._package_tag_map = self.s3_client.read_json_file(PACKAGE_TAG_MAP)
-        self.item_ratings = load_rating(TRAINING_DATA_ITEMS)
-        self.user_stacks = load_rating(PRECOMPUTED_STACKS)
+        self.item_ratings = load_rating(TRAINING_DATA_ITEMS, data_store)
+        self.user_stacks = load_rating(PRECOMPUTED_STACKS, data_store)
         _logger.info("Created an instance of pmf-recommendation, loaded data from S3")
 
     def _load_model_output_matrices(self, model_path):
@@ -148,8 +145,6 @@ class PMFRecommendation(AbstractRecommender):
                 break
         logits = np.take(recommendation[0], np.array(packages_filtered)).tolist()
         mean = np.mean(logits)
-        # return dict(zip(self._map_package_id_to_name(packages),
-        # [self._sigmoid(rec - mean) for rec in logits]))
         recommendations = []
         for idx, package in enumerate(packages_filtered):
             recommendations.append({
