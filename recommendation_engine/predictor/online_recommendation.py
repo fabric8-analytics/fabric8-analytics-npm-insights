@@ -103,8 +103,8 @@ class PMFRecommendation(AbstractRecommender):
             # closest = idx
         return closest
 
-    def _sigmoid(self, x, derivative=False):
-        return x * (1 - x) if derivative else 1 / (1 + np.exp(-x))
+    def _sigmoid(self, x):
+        return 1 / (1 + np.exp(-x))
 
     def predict(self, new_user_stack):
         """Predict companion packages."""
@@ -148,9 +148,9 @@ class PMFRecommendation(AbstractRecommender):
         recommendations = []
         for idx, package in enumerate(packages_filtered):
             recommendations.append({
-                "package": self.package_id_name_map[str(package)],
-                "companion_probability": self._sigmoid(logits[idx] - mean),
-                "tags": self._package_tag_map.get(
+                "package_name": self.package_id_name_map[str(package)],
+                "cooccurrence_probability": self._sigmoid(logits[idx] - mean) * 100,
+                "topic_list": self._package_tag_map.get(
                         self.package_id_name_map[str(package)], [])
             })
         return missing, recommendations
