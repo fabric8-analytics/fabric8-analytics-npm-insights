@@ -23,11 +23,5 @@ class ScoringParams():
     """This class contains the model hyperparamters."""
 
     a = 1
-    b = 0.01
-    lambda_u = 0.1
-    lambda_v = 10
-    lambda_r = 1
-    max_iter = 10
-    M = 10
-    m_num_factors = 50
-    n_z = 50
+    recommendation_threshold = 10
+    num_latent_factors = 50

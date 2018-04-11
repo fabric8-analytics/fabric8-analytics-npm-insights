@@ -37,7 +37,7 @@ class PMFScoring:
         self.m_U = model_dict["m_U"]
         self.items = items
 
-    def predict_transform(self, user_item_vector):
+    def predict_transform(self, user_item_vector, num_latent):
         """Create this users' m_U vector.
 
         Create the factor space mapping for this user, this
@@ -45,12 +45,13 @@ class PMFScoring:
         to get the recommendations for this user.
 
         :user_vector: A list containing the items in the users' stack.
+        :num_latent: The number of latent factors to use.
         :returns: A numpy array containing the user vector calculated
                   based on the latent item vectors.
         """
         # VV^T for v_j that has at least one user liked
         if len(user_item_vector) > 0:
             x = self.params.a * np.sum(self.m_V[user_item_vector, :], axis=0)
-            return scipy.linalg.solve(self.params.a, x).reshape(1, self.params.n_z)
+            return scipy.linalg.solve(self.params.a, x).reshape(1, num_latent)
         else:
             return np.array([])
