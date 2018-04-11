@@ -32,22 +32,26 @@ paths:
       tags:
         - Recommendation API
       operationId: f8a_recommender.api_v1.companion_recommendation
-      summary: Return companion package recommendations for a stack of the NPM ecosystem
+      summary: >-
+        Return companion package recommendations for a stack of the NPM
+        ecosystem
       parameters:
         - in: body
           name: body
-          description: Request body expects just the one parameter \"stack\", which is a list containing the user's packages (with version information stripped).
+          description: >-
+            Request body expects just the one parameter \"stack\", which is a
+            list containing the user's packages (with version information
+            stripped).
           required: true
           schema:
             $ref: '#/definitions/UserStack'
       responses:
         '200':
           schema:
-            $ref: "#/definitions/Response"
+            $ref: '#/definitions/Response'
           description: Companion recommendations along with their associated probabilities
         '500':
           description: Internal Server Error
-
 definitions:
   UserStack:
     title: Request format for companion_recommendation endpoint
@@ -57,28 +61,28 @@ definitions:
         type: array
         items:
           type: string
-
   Response:
     title: Response containing the recommendations
     description: Response containing the recommendations
     properties:
+      ecosystem:
+        type: string
       missing_packages:
         type: array
         items:
           type: string
-      recommendations:
+      companion_packages:
         $ref: '#/definitions/recommendation'
-
   recommendation:
-      type: array
-      items:
-        type: object
-        properties:
-          package:
+    type: array
+    items:
+      type: object
+      properties:
+        package_name:
+          type: string
+        cooccurrence_probability:
+          type: number
+        topic_list:
+          type: array
+          items:
             type: string
-          companion_probability:
-            type: number
-          tags:
-            type: array
-            items:
-              type: string

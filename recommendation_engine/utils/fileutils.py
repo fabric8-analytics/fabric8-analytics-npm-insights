@@ -22,7 +22,7 @@ from recommendation_engine.data_store import data_store_wrapper
 
 
 def load_rating(path, data_store):
-    """Load the rating matrix as return it as a list-of-lists.
+    """Load the rating matrix and return it as a list-of-lists.
 
     :path: The local pathname for the rating matrix.
     :returns: The rating matrix in a list-of-lists format where the
