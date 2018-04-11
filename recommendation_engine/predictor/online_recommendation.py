@@ -17,6 +17,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+import logging
+
 import daiquiri
 import numpy as np
 
@@ -27,7 +29,7 @@ from recommendation_engine.model.pmf_prediction import PMFScoring
 from recommendation_engine.predictor.abstract_recommender import AbstractRecommender
 from recommendation_engine.utils.fileutils import load_rating
 
-daiquiri.setup()
+daiquiri.setup(level=logging.WARNING)
 _logger = daiquiri.getLogger(__name__)
 
 
@@ -40,7 +42,7 @@ class PMFRecommendation(AbstractRecommender):
     precomputed latent item vectors.
     """
 
-    def __init__(self, M):
+    def __init__(self, M, data_store):
         """Construct a new instance.
 
         :M: This parameter controls the number of recommendations that will
@@ -51,16 +53,16 @@ class PMFRecommendation(AbstractRecommender):
         self.user_matrix = None
         self.latent_item_rep_mat = None
         self.weight_matrix = None
-        self.s3_client = S3DataStore(src_bucket_name=cloud_constants.S3_BUCKET_NAME,
-                                     access_key=cloud_constants.AWS_S3_ACCESS_KEY_ID,
-                                     secret_key=cloud_constants.AWS_S3_SECRET_KEY_ID)
+        self.s3_client = data_store(src_bucket_name=cloud_constants.S3_BUCKET_NAME,
+                                    access_key=cloud_constants.AWS_S3_ACCESS_KEY_ID,
+                                    secret_key=cloud_constants.AWS_S3_SECRET_KEY_ID)
 
         self._load_model_output_matrices(model_path=PMF_MODEL_PATH)
         self._load_package_id_to_name_map()
         self._package_tag_map = self.s3_client.read_json_file(PACKAGE_TAG_MAP)
         self.item_ratings = load_rating(TRAINING_DATA_ITEMS)
         self.user_stacks = load_rating(PRECOMPUTED_STACKS)
-        print("Created an instance of pmf-recommendation, loaded data from S3")
+        _logger.info("Created an instance of pmf-recommendation, loaded data from S3")
 
     def _load_model_output_matrices(self, model_path):
         """Load the m_U, m_V and m_theta matrices.
@@ -73,19 +75,6 @@ class PMFRecommendation(AbstractRecommender):
         self.user_matrix = self.model_dict["m_U"]
         self.latent_item_rep_mat = self.model_dict["m_V"]
         self.weight_matrix = self.model_dict["m_theta"]
-
-    def _get_new_user_item_vector(self, user_rating_vector):
-        """Create this users' m_U vector.
-
-        Create the factor space mapping for this user, this
-        can then be multiplied by the latent item space mapping
-        to get the recommendations for this user.
-
-        :user_rating_vector: The users' manifest mapped to package vocabulary
-        :returns: The 1XD vector for this user, where D is the number of
-                  latent factors.
-        """
-        return self.VariationalAutoEncoder()
 
     def _map_package_id_to_name(self, package_id_list):
         """Map the package id from the model to its name.
