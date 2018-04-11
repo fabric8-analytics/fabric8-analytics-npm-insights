@@ -17,6 +17,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+import os
+
 import flask
 from flask import Flask, request
 from recommendation_engine.predictor.online_recommendation import PMFRecommendation
@@ -50,7 +52,11 @@ def recommendation():
     """Endpoint to serve recommendations."""
     global recommender
     missing, recommendations = recommender.predict(request.json['stack'])
-    return flask.jsonify({"missing_packages": missing, "recommendations": recommendations}), 200
+    return flask.jsonify({
+        "missing_packages": missing,
+        "companion_packages": recommendations,
+        "ecosystem": os.environ.get("CHESTER_SCORING_REGION")
+    }), 200
 
 
 if __name__ == "__main__":
