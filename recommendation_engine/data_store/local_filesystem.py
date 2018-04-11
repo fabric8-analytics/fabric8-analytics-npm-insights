@@ -20,15 +20,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import fnmatch
 import json
+import logging
 import os
+import daiquiri
+from scipy.io import loadmat
 
 from recommendation_engine.data_store.abstract_data_store import AbstractDataStore
+
+daiquiri.setup(level=logging.WARNING)
+_logger = daiquiri.getLogger(__name__)
 
 
 class LocalFileSystem(AbstractDataStore):
     """Wrapper on local filesystem, API similar to s3DataStore."""
 
-    def __init__(self, src_dir, **_):
+    def __init__(self, src_dir):
         """Create a new local filesystem instance.
 
         :src_dir: The root directory for local filesystem object
@@ -55,9 +61,15 @@ class LocalFileSystem(AbstractDataStore):
         """Remove JSON file from the data_input source file path."""
         return os.remove(os.path.join(self.src_dir, filename))
 
+    def read_generic_file(self, filename):
+        """Read a file and return its contents."""
+        with open(os.path.join(self.src_dir, filename)) as fileObj:
+            return fileObj.read()
+
     def read_json_file(self, filename):
         """Read JSON file from the data_input source."""
-        return json.load(open(os.path.join(self.src_dir, filename)))
+        with open(os.path.join(self.src_dir, filename)) as json_fileobj:
+            return json.load(json_fileobj)
 
     def read_all_json_files(self):
         """Read all the files from the data_input source."""
@@ -81,3 +93,15 @@ class LocalFileSystem(AbstractDataStore):
     def download_file(self, src, target):
         """Download file from data store."""
         return None
+
+    def load_matlab_multi_matrix(self, local_filename):
+        """Load a '.mat'file & return a dict representation.
+
+        :local_filename: The path of the object.
+        :returns: A dict containing numpy matrices against the keys of the
+                  multi-matrix.
+        """
+        model_dict = loadmat(os.path.join(self.src_dir, local_filename))
+        if not model_dict:
+            _logger.error("Unable to load the model for scoring")
+        return model_dict

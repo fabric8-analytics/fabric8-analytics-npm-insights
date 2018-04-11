@@ -22,6 +22,7 @@ import logging
 import daiquiri
 import numpy as np
 
+from recommendation_engine.config.params_scoring import ScoringParams
 from recommendation_engine.config.path_constants import PMF_MODEL_PATH, PACKAGE_TAG_MAP, \
     TRAINING_DATA_ITEMS, PRECOMPUTED_STACKS, ID_TO_PACKAGE_MAP, PACKAGE_TO_ID_MAP
 from recommendation_engine.model.pmf_prediction import PMFScoring
@@ -41,7 +42,7 @@ class PMFRecommendation(AbstractRecommender):
     precomputed latent item vectors.
     """
 
-    def __init__(self, M, data_store):
+    def __init__(self, M, data_store, num_latent=ScoringParams.num_latent_factors):
         """Construct a new instance.
 
         :M: This parameter controls the number of recommendations that will
@@ -49,6 +50,7 @@ class PMFRecommendation(AbstractRecommender):
         """
         AbstractRecommender.__init__(self)
         self._M = M
+        self.num_latent = num_latent
         self.user_matrix = None
         self.latent_item_rep_mat = None
         self.weight_matrix = None
@@ -129,8 +131,8 @@ class PMFRecommendation(AbstractRecommender):
         else:
             _logger.info("Calculating latent representation, have not seen this combination before")
             scoring = PMFScoring(self.model_dict, self.item_ratings)
-            user_latent_rep = scoring.predict_transform(new_user_stack)
-            recommendation = np.dot(user_latent_rep.reshape([1, 50]),
+            user_latent_rep = scoring.predict_transform(new_user_stack, self.num_latent)
+            recommendation = np.dot(user_latent_rep.reshape([1, self.num_latent]),
                                     self.latent_item_rep_mat.T)
         packages = np.argsort(recommendation)[0][::-1].tolist()
         # Filter packages that are present in the input

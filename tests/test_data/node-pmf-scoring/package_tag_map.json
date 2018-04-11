@@ -1,0 +1,15 @@
+{
+    "liquid-node": [
+        "liquid",
+        "template",
+        "jinja"
+    ],
+    "mqemitter-redis": [
+        "redis",
+        "mqemitter",
+        "emitter",
+        "pubsub",
+        "publish",
+        "subscribe"
+    ]
+}
