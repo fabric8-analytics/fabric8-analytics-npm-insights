@@ -1,0 +1,9 @@
+{
+    "pon-logger": 1,
+    "phantom-pool": 6,
+    "react-addons-text-content": 0,
+    "import-jsx": 2,
+    "liquid-node": 3,
+    "mqemitter-redis": 4,
+    "colors-promise": 5
+}

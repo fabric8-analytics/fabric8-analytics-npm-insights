@@ -33,7 +33,7 @@ s3 = S3DataStore(src_bucket_name=cloud_constants.S3_BUCKET_NAME,
                  secret_key=cloud_constants.AWS_S3_SECRET_KEY_ID)
 # This needs to be global as ~200MB of data is loaded from S3 every time an object of this class
 # is instantiated.
-recommender = PMFRecommendation(ScoringParams.M, s3)
+recommender = PMFRecommendation(ScoringParams.recommendation_threshold, s3)
 
 
 @app.route('/api/v1/liveness', methods=['GET'])
