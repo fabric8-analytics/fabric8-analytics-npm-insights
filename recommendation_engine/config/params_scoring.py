@@ -28,10 +28,6 @@ class ScoringParams():
     lambda_v = 10
     lambda_r = 1
     max_iter = 10
-    M = 300
+    M = 10
     m_num_factors = 50
     n_z = 50
-    # for updating W and b
-    learning_rate = 0.001
-    batch_size = 128
-    n_epochs = 10
