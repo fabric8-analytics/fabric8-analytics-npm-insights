@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from recommendation_engine.data_store import data_store_wrapper
 """
+from recommendation_engine.data_store import data_store_wrapper
 
 
 def load_rating(path=''):
@@ -33,7 +34,7 @@ def load_rating(path=''):
     for line in rating_file_contents.split('\n'):
         this_user_ratings = line.strip().split()
         if this_user_ratings[0] == 0:
-            this_user_item_list = []
+            this_user_item_list = set()
         else:
             this_user_item_list = set([int(x) for x in this_user_ratings[1:]])
         rating_matrix.append(this_user_item_list)

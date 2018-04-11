@@ -38,13 +38,13 @@ class PMFScoring(object):
         self.items = items
 
     def predict_transform(self, user_vector):
-        """
-        Transform the user vector to a NXD vector.
+        """Create this users' m_U vector.
+
+        Create the factor space mapping for this user, this
+        can then be multiplied by the latent item space mapping
+        to get the recommendations for this user.
 
         :user_vector: A list containing the items in the users' stack.
-        :items: The item to user matrix.
-        :params: An instance of the parameters object.
-
         :returns: A numpy array containing the user vector calculated
                   based on the latent item vectors.
         """

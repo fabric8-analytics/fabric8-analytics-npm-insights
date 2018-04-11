@@ -18,12 +18,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import flask
-from flask import Flask, request, json
+from flask import Flask, request
 from recommendation_engine.predictor.online_recommendation import PMFRecommendation
+from recommendation_engine.data_store.s3_data_store import S3DataStore
 
 app = Flask(__name__)
 
-rec = PMFRecommendation(10)
+rec = PMFRecommendation(10, S3DataStore)
 
 
 @app.route('/api/v1/liveness', methods=['GET'])

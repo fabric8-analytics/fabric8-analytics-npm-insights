@@ -78,27 +78,17 @@ class S3DataStore():
         list_filenames = []
         if prefix is None:
             objects = self.bucket.objects.all()
-            if max_count is None:
-                list_filenames = [x.key for x in objects]
-            else:
-                counter = 0
-                for obj in objects:
-                    list_filenames.append(obj.key)
-                    counter += 1
-                    if counter == max_count:
-                        break
         else:
             objects = self.bucket.objects.filter(Prefix=prefix)
-            if max_count is None:
-                list_filenames = [x.key for x in objects]
-            else:
-                counter = 0
-                for obj in objects:
-                    list_filenames.append(obj.key)
-                    counter += 1
-                    if counter == max_count:
-                        break
-
+        if max_count is None:
+            list_filenames = [x.key for x in objects]
+        else:
+            counter = 0
+            for obj in objects:
+                list_filenames.append(obj.key)
+                counter += 1
+                if counter == max_count:
+                    break
         return list_filenames
 
     def read_all_json_files(self):
@@ -171,7 +161,7 @@ class S3DataStore():
         """Load a '.mat'file & return a dict representation.
 
         :s3_path: The path of the object in the S3 bucket.
-        :returns: A dict containing numpy matrices against the kets of the
+        :returns: A dict containing numpy matrices against the keys of the
                   multi-matrix.
         """
         local_filename = os.path.join('/tmp', s3_path.split('/')[-1])
