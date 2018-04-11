@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from abc import abstractmethod, ABCMeta
 
 
-class AbstractRecommender(object):
+class AbstractRecommender:
     """This defines the interface for the online recommender."""
 
     __metaclass__ = ABCMeta
@@ -33,6 +33,6 @@ class AbstractRecommender(object):
         pass
 
     @abstractmethod
-    def filter(self, prediction):
+    def filter_recommendations(self, prediction):
         """Filter recommendations coming from model."""
         pass

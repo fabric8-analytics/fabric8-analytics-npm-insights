@@ -65,7 +65,7 @@ class LocalFileSystem(AbstractDataStore):
 
     def read_json_file(self, filename):
         """Read JSON file from the data_input source."""
-        return LocalFileSystem.byteify(json.load(open(os.path.join(self.src_dir, filename))))
+        return json.load(open(os.path.join(self.src_dir, filename)))
 
     def read_all_json_files(self):
         """Read all the files from the data_input source."""
