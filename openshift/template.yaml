@@ -11,16 +11,16 @@ objects:
   kind: DeploymentConfig
   metadata:
     labels:
-      service: f8a-chester-${CHESTER_SCORING_REGION}
-    name: f8a-chester-${CHESTER_SCORING_REGION}
+      service: f8a-chester
+    name: f8a-chester
   spec:
     replicas: 1
     selector:
-      service: f8a-chester-${CHESTER_SCORING_REGION}
+      service: f8a-chester
     template:
       metadata:
         labels:
-          service: f8a-chester-${CHESTER_SCORING_REGION}
+          service: f8a-chester
       spec:
         containers:
         - command:
@@ -78,14 +78,14 @@ objects:
   kind: Service
   metadata:
     labels:
-      service: f8a-chester-${CHESTER_SCORING_REGION}
-    name: f8a-chester-${CHESTER_SCORING_REGION}
+      service: f8a-chester
+    name: f8a-chester
   spec:
     ports:
     - port: 6006
       targetPort: 0
     selector:
-      service: f8a-chester-${CHESTER_SCORING_REGION}
+      service: f8a-chester
 
 parameters:
 - description: CPU request
