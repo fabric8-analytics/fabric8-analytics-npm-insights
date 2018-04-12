@@ -116,13 +116,13 @@ parameters:
   displayName: Docker registry
   required: true
   name: DOCKER_REGISTRY
-  value: "registry.hub.docker.com"
+  value: "registry.devshift.net"
 
 - description: Docker image to use
   displayName: Docker image
   required: true
   name: DOCKER_IMAGE
-  value: "avgupta/chester"
+  value: "fabric8-analytics/f8a-chester"
 
 - description: Image tag
   displayName: Image tag
