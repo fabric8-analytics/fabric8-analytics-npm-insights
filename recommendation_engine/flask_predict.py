@@ -52,7 +52,9 @@ def readiness():
 def recommendation():
     """Endpoint to serve recommendations."""
     global recommender
-    missing, recommendations = recommender.predict(request.json['stack'])
+    missing, recommendations = recommender.predict(
+            request.json['package_list'],
+            companion_threshold=request.json['comp_package_count_threshold'])
     return flask.jsonify({
         "missing_packages": missing,
         "companion_packages": recommendations,
