@@ -49,11 +49,14 @@ class TestPMFRecommendation(TestCase):
     def test_predict(self):
         """Test the prediction flow."""
         # Test for a new stack.
-        missing, recommendation = self.pmf_rec.predict(['pon-logger'])
+        missing, recommendation, ptm = self.pmf_rec.predict(['pon-logger'])
         self.assertFalse(missing)
         # Should have two recommendations here.
         self.assertEqual(len(recommendation), 2)
 
         # Tests for missing package.
-        missing, _ = self.pmf_rec.predict(['pon-logger', 'missing'])
+        missing, _, _ = self.pmf_rec.predict(['pon-logger', 'missing'])
         self.assertTrue(missing)
+
+        missing, _, package_tag_map = self.pmf_rec.predict(['missing'])
+        self.assertDictEqual(package_tag_map, {})

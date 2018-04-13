@@ -120,9 +120,13 @@ class PMFRecommendation(AbstractRecommender):
                 missing.append(package)
             else:
                 avail.append(pkg_id)
+        package_topic_dict = {
+            self.package_id_name_map[str(package_id)]: self._package_tag_map.get(
+                self.package_id_name_map[str(package_id)], []) for package_id in avail
+        }
         # if more than half the packages are missing
         if len(missing) >= len(avail):
-            return missing, []
+            return missing, [], package_topic_dict
         new_user_stack = avail
         # Check whether we have already seen this stack.
         user = self._find_closest_user_in_training_set(new_user_stack)
@@ -157,4 +161,4 @@ class PMFRecommendation(AbstractRecommender):
                 "topic_list": self._package_tag_map.get(
                         self.package_id_name_map[str(package)], [])
             })
-        return missing, recommendations
+        return missing, recommendations, package_topic_dict
