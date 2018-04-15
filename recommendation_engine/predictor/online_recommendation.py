@@ -108,25 +108,31 @@ class PMFRecommendation(AbstractRecommender):
     def _sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
 
-    def predict(self, new_user_stack):
+    def predict(self, new_user_stack, companion_threshold=None):
         """Predict companion packages."""
         missing = []
         avail = []
+        if not companion_threshold:
+            companion_threshold = self._M
         for package in new_user_stack:
             pkg_id = self.package_name_id_map.get(package, -1)
             if pkg_id == -1:
                 missing.append(package)
             else:
                 avail.append(pkg_id)
+        package_topic_dict = {
+            self.package_id_name_map[str(package_id)]: self._package_tag_map.get(
+                self.package_id_name_map[str(package_id)], []) for package_id in avail
+        }
         # if more than half the packages are missing
         if len(missing) >= len(avail):
-            return missing, []
+            return missing, [], package_topic_dict
         new_user_stack = avail
         # Check whether we have already seen this stack.
         user = self._find_closest_user_in_training_set(new_user_stack)
         if user is not None:
             _logger.info("Have precomputed stack")
-            recommendation = np.dot(self.user_matrix[int(user), :].reshape([1, 50]),
+            recommendation = np.dot(self.user_matrix[int(user), :].reshape([1, self.num_latent]),
                                     self.latent_item_rep_mat.T)
         else:
             _logger.info("Calculating latent representation, have not seen this combination before")
@@ -143,7 +149,7 @@ class PMFRecommendation(AbstractRecommender):
             if package not in user_stack_lookup:
                 packages_filtered.append(package)
                 recommendation_count += 1
-            if recommendation_count >= self._M:
+            if recommendation_count >= companion_threshold:
                 break
         logits = np.take(recommendation[0], np.array(packages_filtered)).tolist()
         mean = np.mean(logits)
@@ -155,4 +161,4 @@ class PMFRecommendation(AbstractRecommender):
                 "topic_list": self._package_tag_map.get(
                         self.package_id_name_map[str(package)], [])
             })
-        return missing, recommendations
+        return missing, recommendations, package_topic_dict
