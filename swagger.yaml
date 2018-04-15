@@ -57,10 +57,12 @@ definitions:
     title: Request format for companion_recommendation endpoint
     description: Request format for companion_recommendation endpoint
     properties:
-      stack:
+      package_list:
         type: array
         items:
           type: string
+      comp_package_count_threshold:
+          type: number
   Response:
     title: Response containing the recommendations
     description: Response containing the recommendations
@@ -73,6 +75,13 @@ definitions:
           type: string
       companion_packages:
         $ref: '#/definitions/recommendation'
+      package_to_topic_dict:
+          type: object
+          properties:
+              package_name:
+                  type: array
+                  items:
+                      type: string
   recommendation:
     type: array
     items:
