@@ -52,15 +52,18 @@ def readiness():
 def recommendation():
     """Endpoint to serve recommendations."""
     global recommender
-    missing, recommendations, ip_package_to_topic_dict = recommender.predict(
-            request.json['package_list'],
-            companion_threshold=request.json['comp_package_count_threshold'])
-    return flask.jsonify({
-        "missing_packages": missing,
-        "companion_packages": recommendations,
-        "ecosystem": os.environ.get("CHESTER_SCORING_REGION"),
-        "package_to_topic_dict": ip_package_to_topic_dict
-    }), 200
+    response_json = []
+    for recommendation_request in request.json:
+        missing, recommendations, ip_package_to_topic_dict = recommender.predict(
+                recommendation_request['package_list'],
+                companion_threshold=recommendation_request['comp_package_count_threshold'])
+        response_json.append({
+            "missing_packages": missing,
+            "companion_packages": recommendations,
+            "ecosystem": os.environ.get("CHESTER_SCORING_REGION"),
+            "package_to_topic_dict": ip_package_to_topic_dict
+        })
+    return flask.jsonify(response_json), 200
 
 
 if __name__ == "__main__":
