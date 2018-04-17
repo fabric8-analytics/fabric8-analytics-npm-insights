@@ -39,9 +39,10 @@ paths:
         - in: body
           name: body
           description: >-
-            Request body expects just the one parameter \"stack\", which is a
+            Request body expects the one parameter \"package_list\", which is a
             list containing the user's packages (with version information
-            stripped).
+            stripped). Also as an optional parameter takes in the companion package threshold
+            which is the number of companions to be returned.
           required: true
           schema:
             $ref: '#/definitions/UserStack'
@@ -56,13 +57,16 @@ definitions:
   UserStack:
     title: Request format for companion_recommendation endpoint
     description: Request format for companion_recommendation endpoint
-    properties:
-      package_list:
-        type: array
-        items:
-          type: string
-      comp_package_count_threshold:
-          type: number
+    type: array
+    items:
+        type: object
+        properties:
+          package_list:
+            type: array
+            items:
+              type: string
+          comp_package_count_threshold:
+              type: number
   Response:
     title: Response containing the recommendations
     description: Response containing the recommendations
