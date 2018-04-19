@@ -6,7 +6,9 @@ recommendations. The POC work around this lives in [this repo](https://github.co
 The approached used is based off of CVAE, see citation below.
 
 ```
-Li, Xiaopeng, and James She. "Collaborative variational autoencoder for recommender systems." In Proceedings of the 23rd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, pp. 305-314. ACM, 2017.
+Li, Xiaopeng, and James She. "Collaborative variational autoencoder for recommender systems."  
+In Proceedings of the 23rd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining,  
+pp. 305-314. ACM, 2017.
 ```
 
 ### Sample Request
