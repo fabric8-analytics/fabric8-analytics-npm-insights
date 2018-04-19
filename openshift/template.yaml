@@ -104,13 +104,13 @@ parameters:
   displayName: Memory request
   required: true
   name: MEMORY_REQUEST
-  value: "750Mi"
+  value: "850Mi"
 
 - description: Memory limit
   displayName: Memory limit
   required: true
   name: MEMORY_LIMIT
-  value: "750Mi"
+  value: "850Mi"
 
 - description: Docker registry where the image is
   displayName: Docker registry
