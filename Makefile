@@ -1,5 +1,5 @@
 REGISTRY?=registry.devshift.net
-REPOSITORY?=fabric8-analytics/f8a-chester
+REPOSITORY?=fabric8-analytics/f8a-npm-insights
 DEFAULT_TAG=latest
 
 .PHONY: all docker-build fast-docker-build get-image-name get-image-repository
