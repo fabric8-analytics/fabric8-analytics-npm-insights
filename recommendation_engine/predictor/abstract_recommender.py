@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-This program is the abstract class for the online recommender logic.
+Abstract class for the online recommender logic.
 
 Copyright © 2018 Red Hat Inc.
 
@@ -23,7 +23,7 @@ from abc import abstractmethod, ABCMeta
 
 
 class AbstractRecommender:
-    """This defines the interface for the online recommender."""
+    """Defines the interface for the online recommender."""
 
     __metaclass__ = ABCMeta
 

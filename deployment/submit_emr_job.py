@@ -32,7 +32,7 @@ COMPONENT_PREFIX = "chester"
 
 
 def submit_job(input_bootstrap_file, input_src_code_file):
-    """Submit new job with specified parameters."""
+    """Spin up an Amazon EMR job for training."""
     str_cur_time = strftime("%Y_%m_%d_%H_%M_%S", gmtime())
 
     # S3 bucket/key, where the input spark job ( src code ) will be uploaded
@@ -127,12 +127,12 @@ def submit_job(input_bootstrap_file, input_src_code_file):
                 }
             },
             {
-                 'Name': 'setup - unzip files',
-                 'ActionOnFailure': 'TERMINATE_CLUSTER',
-                 'HadoopJarStep': {
-                     'Jar': 'command-runner.jar',
-                     'Args': ['unzip', '/home/hadoop/' + s3_key, '-d', '/home/hadoop']
-                 }
+                'Name': 'setup - unzip files',
+                'ActionOnFailure': 'TERMINATE_CLUSTER',
+                'HadoopJarStep': {
+                    'Jar': 'command-runner.jar',
+                    'Args': ['unzip', '/home/hadoop/' + s3_key, '-d', '/home/hadoop']
+                }
             },
             {
                 'Name': 'Run training job',
