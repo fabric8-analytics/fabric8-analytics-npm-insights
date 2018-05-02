@@ -45,6 +45,7 @@ def cvae_net_model_fn(features, labels, hidden_units,
                 predictions=predictions)
 
     tf.losses.sigmoid_cross_entropy(labels, logits)
+    tf.losses.add_loss(tf.losses.get_regularization_loss())
     total_loss = tf.losses.get_total_loss(add_regularization_losses=is_training)
 
     train_op = None

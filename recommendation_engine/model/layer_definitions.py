@@ -28,44 +28,50 @@ def add_hidden_layer_summary(val_to_write):
     tf.summary.histogram('activation', val_to_write)
 
 
-def inference_network(inputs, hidden_units, dropout, is_training, scope=None):
+def inference_network(inputs, hidden_units, is_training, scope=None):
     """Layer definition for the encoder layer of CVAE."""
-    # TODO
     net = inputs
+    with tf.variable_scope('inference_network'):
+        for hidden_dim in hidden_units:
+            net = tf.contrib.layers.fully_connected(
+                net,
+                num_outputs=hidden_dim,
+                scope='fc-{}-output-neurons'.format(hidden_dim))
     return net
 
 
-def generation_network(inputs, hidden_units, dropout, is_training, scope=None):
+def generation_network(inputs, hidden_units, is_training, scope=None):
     """Define the decoder network of CVAE."""
-    # TODO
-    net = inputs
-    return net
+    net = inputs  # inputs here is the latent representation.
+    for i, hidden_dim in enumerate(hidden_units, 1):
+        with tf.variable_scope('layer_{}'.format(i), values=(net,)):
+            net = tf.contrib.layers.fully_connected(
+                net,
+                num_outputs=hidden_dim,
+                initializer=tf.contrib.layers.xavier_initializer)
+            add_hidden_layer_summary(net)
+        generated = tf.nn.softmax_cross_entropy_with_logits(net)
+    generated = tf.identity(generated, name='reconstructed')
+    return generated
 
 
-def _autoencoder_arg_scope(activation_fn, dropout, weight_decay, is_training):
-    if weight_decay is None or weight_decay <= 0:
-        weights_regularizer = None
-    else:
-        weights_regularizer = tf.contrib.layers.l2_regularizer(weight_decay)
+def _autoencoder_arg_scope(activation_fn, is_training):
+    """Create an argument scope for the network based on its parameters."""
+    weights_regularizer = tf.contrib.layers.l2_regularizer()
 
     with slim.arg_scope([tf.contrib.layers.fully_connected],
                         weights_initializer=tf.initializers.variance_scaling(),
                         weights_regularizer=weights_regularizer,
-                        activation_fn=activation_fn):
-        with slim.arg_scope([slim.dropout],
-                            keep_prob=dropout,
-                            is_training=is_training) as arg_sc:
-            return arg_sc
+                        activation_fn=activation_fn) as arg_sc:
+        return arg_sc
 
 
-def cvae_autoencoder_net(inputs, hidden_units, activation=tf.nn.sigmoid, dropout=None,
-                         weight_decay=None,
+def cvae_autoencoder_net(inputs, hidden_units, activation=tf.nn.sigmoid, weight_decay=None,
                          mode=tf.estimator.ModeKeys.TRAIN, scope=None):
     """Create the CVAE network layers.
 
     :inputs: tf.Tensor holding the input data.
     :hidden_units: list[int] - containing number of nodes in each hidden layer.
-    :dropout : float - Dropout value if using.
     :weight_decay: float - Amount of regularization to use on the weights(excludes biases).
     mode : tf.estimator.ModeKeys - The mode of the model.
     scope : str - Name to use in Tensor board.
@@ -76,10 +82,10 @@ def cvae_autoencoder_net(inputs, hidden_units, activation=tf.nn.sigmoid, dropout
 
     with tf.variable_scope(scope, 'AutoEnc', [inputs]):
         with slim.arg_scope(
-                _autoencoder_arg_scope(activation, dropout, weight_decay, mode)):
-            net = inference_network(inputs, hidden_units, dropout, is_training)
-            n_features = inputs.shape[1].value
+                _autoencoder_arg_scope(activation, weight_decay, mode)):
+            net = inference_network(inputs, hidden_units, is_training)
+            n_features = inputs.shape[1].values
             decoder_units = hidden_units[:-1][::-1] + [n_features]
-            net = generation_network(net, decoder_units, dropout, is_training)
+            net = generation_network(net, decoder_units, is_training)
 
     return net

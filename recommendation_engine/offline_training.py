@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Contains the code used to train the PMF part of CVAE.
+Module to handle pre-train and training of the model.
 
 Copyright © 2018 Red Hat Inc.
 
@@ -19,23 +19,25 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import tensorflow as tf
-import numpy as np
+
+from recommendation_engine.model.collaborative_variational_autoencoder import \
+    CollaborativeVariationalAutoEncoder
+from recommendation_engine.model.pmf_training import PMFTraining
 
 
-class PMFTraining:
-    """Training definitions the Probabilistic Matrix factorization model."""
+class TrainingJob:
+    """Define an instance of a training job for the model."""
 
-    def __init__(self):
-        """Create a new PMF training instance."""
+    @classmethod
+    def train(cls):
+        """Fire a training job."""
+        CollaborativeVariationalAutoEncoder.train(cls.train_input_fn)
+        pmf_training = PMFTraining()
+        pmf_training()
         # TODO
-        pass
 
-    def __call__(self, *args, **kwargs):
-        """Train the model."""
-        # TODO
-        pass
-
-    def save_model_to_s3(self):
-        """Save the model in matlab format to load later for scoring."""
+    @staticmethod
+    def train_input_fn():
+        """Pass the input to the estimator for training."""
         # TODO
         pass
