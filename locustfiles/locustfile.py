@@ -29,13 +29,14 @@ class StackAnalysisUserBehaviour(TaskSet):
     """This class defines the user behaviours."""
 
     def on_start(self):
-        """on_start is called when a Locust start before any task is scheduled."""
+        """Define the pre-commit hooks."""
         pass
 
     @task
     def trigger_stack_analysis_five_package_stack(self):
         """Simulate a stack analysis request."""
-        stack = ["cli-color", "when", "moment", "lodash", "optimist", "amqp", "async"]
+        stack = ["cli-color", "when", "moment",
+                 "lodash", "optimist", "amqp", "async"]
         response = self.client.post("/", data=json.dumps({"stack": stack}),
                                     headers={'Content-type': 'application/json'})
         stats["host-distribution"][response.json()['HOSTNAME']] += 1
