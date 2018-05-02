@@ -1,0 +1,15 @@
+# base image source https://github.com/rhdt/EL-Dockerfiles/blob/master/base/python3/Dockerfile
+
+FROM prod.registry.devshift.net/osio-prod/base/python3:latest
+
+LABEL maintainer="Avishkar Gupta <avgupta@redhat.com>"
+
+COPY ./recommendation_engine /recommendation_engine
+COPY ./requirements.txt /requirements.txt
+COPY ./entrypoint.sh /bin/entrypoint.sh
+
+RUN chmod 0777 /bin/entrypoint.sh
+
+RUN pip3 install -r requirements.txt
+
+ENTRYPOINT ["/bin/entrypoint.sh"]
