@@ -12,6 +12,6 @@ RUN yum install -y epel-release &&\
 
 RUN chmod 0777 /bin/entrypoint.sh
 
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 ENTRYPOINT ["/bin/entrypoint.sh"]

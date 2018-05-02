@@ -1,4 +1,4 @@
-FROM registry.devshift.net/fabric8-analytics/f8a-chester:latest
+FROM registry.devshift.net/fabric8-analytics/f8a-npm-insights:latest
 
 LABEL MAINTAINER="Avishkar Gupta <avgupta@redhat.com>"
 
@@ -10,9 +10,8 @@ ADD ./tests/scripts/entrypoint-test.sh /entrypoint-test.sh
 RUN chmod 0777 /entrypoint-test.sh
 
 ENV PYTHONPATH=/
-ENV PATH="/opt/rh/rh-python36/root/usr/bin/:${PATH}"
 
-RUN python -m pip install pytest
+RUN pip3 install pytest
 
 # --------------------------------------------------------------------------------------------------
 # RUN THE UNIT TESTS
