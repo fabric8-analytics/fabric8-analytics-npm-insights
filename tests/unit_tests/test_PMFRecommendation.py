@@ -33,13 +33,15 @@ class TestPMFRecommendation(TestCase):
 
     def test__find_closest_user_in_training_set(self):
         """Test if we are getting correct "closest user" from the training set."""
+        # Full match
         closest = self.pmf_rec._find_closest_user_in_training_set([17190, 14774, 15406, 16594,
                                                                    29063])
-        # Check that closest is not empty
+        self.assertIsNotNone(closest)
+        # Partial
+        closest = self.pmf_rec._find_closest_user_in_training_set([17190, 14774, 15406])
         self.assertIsNotNone(closest)
         # Negative
         closest = self.pmf_rec._find_closest_user_in_training_set([3, 4])
-        # should be empty
         self.assertIsNone(closest)
 
     def test__sigmoid(self):

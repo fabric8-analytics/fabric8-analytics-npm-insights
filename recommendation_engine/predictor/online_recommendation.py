@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import logging
-
+import sys
 import daiquiri
 import numpy as np
 
@@ -94,15 +94,16 @@ class PMFRecommendation(AbstractRecommender):
     def _find_closest_user_in_training_set(self, new_user_stack):
         """Check if we already have the recommendations for the stack precomputed."""
         new_user_stack = set(new_user_stack)
-        # minDiff = sys.maxsize
+        minDiff = sys.maxsize
         closest = None
         for idx, stack in enumerate(self.user_stacks):
+            diff = len(stack.difference(new_user_stack))
             if stack == new_user_stack:
                 closest = idx
                 break
-            # elif len(stack.difference(new_user_stack)) < minDiff:
-            # minDiff = len(stack.difference(new_user_stack))
-            # closest = idx
+            elif new_user_stack.issubset(stack) and diff < minDiff:
+                minDiff = diff
+                closest = idx
         return closest
 
     def _sigmoid(self, x):
