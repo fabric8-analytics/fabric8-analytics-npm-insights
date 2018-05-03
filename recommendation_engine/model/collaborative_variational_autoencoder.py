@@ -41,8 +41,8 @@ def cvae_net_model_fn(features, labels, hidden_units,
     if mode == tf.estimator.ModeKeys.PREDICT:
         # Estimator spec for prediction (runtime).
         return tf.estimator.EstimatorSpec(
-                mode=mode,
-                predictions=predictions)
+            mode=mode,
+            predictions=predictions)
 
     tf.losses.sigmoid_cross_entropy(labels, logits)
     tf.losses.add_loss(tf.losses.get_regularization_loss())
@@ -52,13 +52,13 @@ def cvae_net_model_fn(features, labels, hidden_units,
 
     if mode == tf.estimator.ModeKeys.TRAIN:
         train_op = tf.contrib.layers.optimize_loss(
-                loss=total_loss,
-                optimizer="Adam",
-                learning_rate=learning_rate,
-                learning_rate_decay_fn=lambda lr, gs: tf.train.exponential_decay(lr, gs, 1000, 0.96,
-                                                                                 staircase=True),
-                global_step=tf.train.get_global_step(),
-                summaries=["learning_rate", "global_gradient_norm"])
+            loss=total_loss,
+            optimizer="Adam",
+            learning_rate=learning_rate,
+            learning_rate_decay_fn=lambda lr, gs: tf.train.exponential_decay(lr, gs, 1000, 0.96,
+                                                                             staircase=True),
+            global_step=tf.train.get_global_step(),
+            summaries=["learning_rate", "global_gradient_norm"])
 
         # Add histograms for trainable variables
         for var in tf.trainable_variables():
@@ -66,10 +66,10 @@ def cvae_net_model_fn(features, labels, hidden_units,
 
     # Provide an estimator spec for `ModeKeys.TRAIN` mode.
     return tf.estimator.EstimatorSpec(
-            mode=mode,
-            predictions=predictions,
-            loss=total_loss,
-            train_op=train_op)
+        mode=mode,
+        predictions=predictions,
+        loss=total_loss,
+        train_op=train_op)
 
 
 class CollaborativeVariationalAutoEncoder(tf.estimator.Estimator):
@@ -80,16 +80,16 @@ class CollaborativeVariationalAutoEncoder(tf.estimator.Estimator):
         """Create a new CVAE estimator."""
         def _model_fn(features, labels, mode):
             return cvae_net_model_fn(
-                    features=features,
-                    labels=labels,
-                    hidden_units=hidden_units,
-                    activation=activation_fn,
-                    dropout=dropout,
-                    weight_decay=weight_decay,
-                    learning_rate=learning_rate,
-                    mode=mode)
+                features=features,
+                labels=labels,
+                hidden_units=hidden_units,
+                activation=activation_fn,
+                dropout=dropout,
+                weight_decay=weight_decay,
+                learning_rate=learning_rate,
+                mode=mode)
 
         super().__init__(
-                model_fn=_model_fn,
-                model_dir=model_dir,
-                config=config)
+            model_fn=_model_fn,
+            model_dir=model_dir,
+            config=config)
