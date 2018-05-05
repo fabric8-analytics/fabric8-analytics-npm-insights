@@ -20,10 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import tensorflow as tf
 from recommendation_engine.model.layer_definitions import cvae_autoencoder_net
+from recommendation_engine.config.params_training import training_params
 
 
 def cvae_net_model_fn(features, labels, hidden_units,
-                      activation, dropout, weight_decay, learning_rate, mode):
+                      activation, learning_rate, mode):
     """Model function for the CVAE estimator."""
     is_training = mode == tf.estimator.ModeKeys.TRAIN
 
@@ -31,9 +32,8 @@ def cvae_net_model_fn(features, labels, hidden_units,
     logits = cvae_autoencoder_net(inputs=features,
                                   hidden_units=hidden_units,
                                   activation=activation,
-                                  dropout=dropout,
-                                  weight_decay=weight_decay,
-                                  mode=mode)
+                                  mode=mode,
+                                  scope='VarAutoEnc')
 
     probs = tf.nn.sigmoid(logits)
     predictions = {"prediction": probs}
@@ -76,7 +76,7 @@ class CollaborativeVariationalAutoEncoder(tf.estimator.Estimator):
     """Estimator API wrapper for CVAE autoencoder model."""
 
     def __init__(self, hidden_units, activation_fn=tf.nn.sigmoid,
-                 dropout=None, weight_decay=1e-5, learning_rate=0.001, model_dir=None, config=None):
+                 learning_rate=training_params.learning_rate, model_dir=None, config=None):
         """Create a new CVAE estimator."""
         def _model_fn(features, labels, mode):
             return cvae_net_model_fn(
@@ -84,8 +84,6 @@ class CollaborativeVariationalAutoEncoder(tf.estimator.Estimator):
                 labels=labels,
                 hidden_units=hidden_units,
                 activation=activation_fn,
-                dropout=dropout,
-                weight_decay=weight_decay,
                 learning_rate=learning_rate,
                 mode=mode)
 
