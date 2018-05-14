@@ -37,10 +37,10 @@ def inference_network(inputs, hidden_units, n_outputs):
             net = tf.contrib.layers.fully_connected(
                     net,
                     num_outputs=hidden_dim,
-                    scope='fc-{}-output-neurons'.format(hidden_dim))
-            add_layer_summary(net)
-        z_mean = tf.contrib.layers.fully_connected(net, num_outputs=n_outputs)
-        z_log_sigma = tf.contrib.layers.fully_connected(net, num_outputs=n_outputs)
+                    scope='encode_{}_nodes'.format(hidden_dim))
+        add_layer_summary(net)
+        z_mean = tf.contrib.layers.fully_connected(net, num_outputs=n_outputs, activation=None)
+        z_log_sigma = tf.contrib.layers.fully_connected(net, num_outputs=n_outputs, activation=None)
     # margin of error
     epsilon = tf.random_normal((training_params.batch_size, training_params.num_latent),
                                0, 1, seed=0, dtype=tf.float32)
@@ -48,10 +48,22 @@ def inference_network(inputs, hidden_units, n_outputs):
     return latent_representation
 
 
-def generation_network(inputs, hidden_units, n_x):
+def generation_network(inputs, decoder_units, n_x):
     """Define the decoder network of CVAE."""
     net = inputs  # inputs here is the latent representation.
-    # TODO
+    assert (len(decoder_units) > 1)
+    with tf.variable_scope("generation_network", reuse=True):
+        net = tf.contrib.layers.fully_connected(net, num_outputs=decoder_units[0],
+                                                scope="decode_{}_nodes".format(decoder_units[0]))
+        net = tf.contrib.layers.fully_connected(net, num_outputs=decoder_units[1],
+                                                scope="decode_{}_nodes".format(decoder_units[1]))
+        net = tf.contrib.layers.fully_connected(net, num_outputs=n_x, activation=None)
+    # TODO: Fix this logic.
+    for decoder_unit in decoder_units:
+        tf.assign(
+            tf.get_variable('generation_network/decode_{}_nodes/weights').format(decoder_units[0]),
+            tf.transpose(tf.get_variable('inference_network/encode_{}_nodes/weights').format(
+                    decoder_units[1])))
     return net
 
 
@@ -68,14 +80,14 @@ def _autoencoder_arg_scope(activation_fn):
 
 
 def cvae_autoencoder_net(inputs, hidden_units, activation=tf.nn.sigmoid,
+                         output_dim=training_params.num_latent,
                          mode=tf.estimator.ModeKeys.TRAIN, scope=None):
     """Create the CVAE network layers.
 
     :inputs: tf.Tensor holding the input data.
     :hidden_units: list[int] - containing number of nodes in each hidden layer.
-    :weight_decay: float - Amount of regularization to use on the weights(excludes biases).
-    mode : tf.estimator.ModeKeys - The mode of the model.
-    scope : str - Name to use in Tensor board.
+    :mode: tf.estimator.ModeKeys - The mode of the model.
+    :scope: str - Name to use in Tensor board.
 
     :returns: tf.Tensor - Output of the generation network's reconstruction layer.
     """
@@ -87,8 +99,8 @@ def cvae_autoencoder_net(inputs, hidden_units, activation=tf.nn.sigmoid,
 
     with tf.variable_scope(scope, 'AutoEnc', [inputs]):
         with slim.arg_scope(_autoencoder_arg_scope(activation)):
-            net = inference_network(inputs, hidden_units)
-            n_features = inputs.shape[1].values
-            decoder_units = hidden_units[:-1][::-1] + [n_features]
-            net = generation_network(net, decoder_units)
+            latent_representation = inference_network(inputs, hidden_units,
+                                                      n_outputs=training_params.num_latent)
+            n_features = inputs.shape[1].value
+            net = generation_network(latent_representation, hidden_units[::-1], n_features)
     return net

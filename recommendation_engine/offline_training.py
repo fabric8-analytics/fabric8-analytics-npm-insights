@@ -16,28 +16,29 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
 import tensorflow as tf
 
 from recommendation_engine.model.collaborative_variational_autoencoder import \
     CollaborativeVariationalAutoEncoder
+
 from recommendation_engine.model.pmf_training import PMFTraining
+from recommendation_engine.data_pipeline.package_representation_data import \
+    PackageTagRepresentationDataset
 
 
 class TrainingJob:
-    """Define an instance of a training job for the model."""
+    """Define the training job for the CVAE model."""
 
-    @classmethod
-    def train(cls):
+    def __init__(self):
+        """Creates a new training job."""
+        self.estimator = CollaborativeVariationalAutoEncoder(hidden_units=[200, 100])
+
+    def train(self, train_input_fn):
         """Fire a training job."""
-        CollaborativeVariationalAutoEncoder.train(cls.train_input_fn)
-        pmf_training = PMFTraining()
-        pmf_training()
         # TODO
-
-    @staticmethod
-    def train_input_fn():
-        """Pass the input to the estimator for training."""
-        # TODO
-        pass
+        self.estimator.train(input_fn=PackageTagRepresentationDataset.get_train_input_fn(
+            batch_size=50000,
+            num_epochs=50
+        ))

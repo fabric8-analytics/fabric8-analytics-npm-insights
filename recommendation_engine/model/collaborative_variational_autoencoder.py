@@ -23,14 +23,14 @@ from recommendation_engine.model.layer_definitions import cvae_autoencoder_net
 from recommendation_engine.config.params_training import training_params
 
 
-def cvae_net_model_fn(features, labels, hidden_units,
-                      activation, learning_rate, mode):
+def cvae_net_model_fn(features, labels, hidden_units, output_dim, activation, learning_rate, mode):
     """Model function for the CVAE estimator."""
     is_training = mode == tf.estimator.ModeKeys.TRAIN
 
     # Define model's architecture
     logits = cvae_autoencoder_net(inputs=features,
                                   hidden_units=hidden_units,
+                                  output_dim=output_dim,
                                   activation=activation,
                                   mode=mode,
                                   scope='VarAutoEnc')
@@ -75,7 +75,7 @@ def cvae_net_model_fn(features, labels, hidden_units,
 class CollaborativeVariationalAutoEncoder(tf.estimator.Estimator):
     """Estimator API wrapper for CVAE autoencoder model."""
 
-    def __init__(self, hidden_units, activation_fn=tf.nn.sigmoid,
+    def __init__(self, hidden_units, output_dim, activation_fn=tf.nn.sigmoid,
                  learning_rate=training_params.learning_rate, model_dir=None, config=None):
         """Create a new CVAE estimator."""
         def _model_fn(features, labels, mode):
@@ -83,6 +83,7 @@ class CollaborativeVariationalAutoEncoder(tf.estimator.Estimator):
                 features=features,
                 labels=labels,
                 hidden_units=hidden_units,
+                output_dim=output_dim,
                 activation=activation_fn,
                 learning_rate=learning_rate,
                 mode=mode)
