@@ -23,6 +23,7 @@ from collections import Counter
 
 stats = {"host-distribution": Counter()}
 
+
 class StackAnalysisUserBehaviour(TaskSet):
 
     """This class defines the user behaviours."""
@@ -39,6 +40,7 @@ class StackAnalysisUserBehaviour(TaskSet):
                                     headers={'Content-type': 'application/json'})
         stats["host-distribution"][response.json()['HOSTNAME']] += 1
         print(stats['host-distribution'])
+
 
 class StackAnalysisUserLocust(HttpLocust):
     """This class defines the params for the load testing piece."""
