@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 This file contains the code to load test the NPM recommendation service.
+
 Copyright © 2018 Red Hat Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -25,16 +26,15 @@ stats = {"host-distribution": Counter()}
 
 
 class StackAnalysisUserBehaviour(TaskSet):
-
     """This class defines the user behaviours."""
 
     def on_start(self):
-        """ on_start is called when a Locust start before any task is scheduled """
+        """on_start is called when a Locust start before any task is scheduled."""
         pass
 
     @task
     def trigger_stack_analysis_five_package_stack(self):
-        """This class simulates a stack analysis request."""
+        """Simulate a stack analysis request."""
         stack = ["cli-color", "when", "moment", "lodash", "optimist", "amqp", "async"]
         response = self.client.post("/", data=json.dumps({"stack": stack}),
                                     headers={'Content-type': 'application/json'})
@@ -44,6 +44,7 @@ class StackAnalysisUserBehaviour(TaskSet):
 
 class StackAnalysisUserLocust(HttpLocust):
     """This class defines the params for the load testing piece."""
+
     task_set = StackAnalysisUserBehaviour
     min_wait = 10
     max_wait = 10
