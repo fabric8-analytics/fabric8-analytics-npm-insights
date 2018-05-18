@@ -11,7 +11,7 @@ RUN chmod 0777 /entrypoint-test.sh
 
 ENV PYTHONPATH=/
 
-RUN pip3 install pytest
+RUN pip3 install pytest pytest-cov radon
 
 # --------------------------------------------------------------------------------------------------
 # RUN THE UNIT TESTS
