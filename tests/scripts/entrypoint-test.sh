@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+locale charmap
+
+export RADONFILESENCODING=UTF-8
+
 echo "*****************************************"
 echo "*** Cyclomatic complexity measurement ***"
 echo "*****************************************"
