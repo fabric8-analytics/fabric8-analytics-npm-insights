@@ -3,12 +3,12 @@
 echo "*****************************************"
 echo "*** Cyclomatic complexity measurement ***"
 echo "*****************************************"
-radon cc -s -a -i venv .
+radon cc -s -a -i usr .
 
 echo "*****************************************"
 echo "*** Maintainability Index measurement ***"
 echo "*****************************************"
-radon mi -s -i venv .
+radon mi -s -i usr .
 
 echo "*****************************************"
 echo "*** Unit tests ***"
