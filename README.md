@@ -1,3 +1,5 @@
+[![Build Status](https://ci.centos.org/buildStatus/icon?job=devtools-fabric8-analytics-npm-insights-f8a-build-master)](https://ci.centos.org/job/devtools-fabric8-analytics-npm-insights-f8a-build-master/)
+
 NPM companion package recommendations
 -------------------------------------
 
