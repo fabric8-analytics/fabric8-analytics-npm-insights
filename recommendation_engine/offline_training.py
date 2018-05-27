@@ -53,8 +53,8 @@ class TrainingJob:
         """Fire a training job."""
         # TODO
         train_input_function = PackageTagRepresentationDataset.get_train_input_fn(
-            batch_size=500,
-            num_epochs=50,
+            batch_size=training_params.batch_size,
+            num_epochs=training_params.num_epochs,
             mode=tf.estimator.ModeKeys.TRAIN,
             scope='PackageRepData',
             data_store=self.s3
