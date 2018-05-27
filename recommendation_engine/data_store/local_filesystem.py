@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import fnmatch
+import io
 import json
 import logging
 import os
@@ -63,8 +64,12 @@ class LocalFileSystem(AbstractDataStore):
 
     def read_generic_file(self, filename):
         """Read a file and return its contents."""
-        with open(os.path.join(self.src_dir, filename)) as fileObj:
-            return fileObj.read()
+        with open(os.path.join(self.src_dir, filename), 'rb') as fileObj:
+            try:
+                return fileObj.read().decode('utf-8')
+            except UnicodeDecodeError:
+                # return binary data
+                return fileObj.read()
 
     def read_json_file(self, filename):
         """Read JSON file from the data_input source."""
@@ -105,3 +110,7 @@ class LocalFileSystem(AbstractDataStore):
         if not model_dict:
             _logger.error("Unable to load the model for scoring")
         return model_dict
+
+    def read_into_file(self, filename):
+        """Read from S3 and return stream as a file object."""
+        return open(os.path.join(self.src_dir, filename))

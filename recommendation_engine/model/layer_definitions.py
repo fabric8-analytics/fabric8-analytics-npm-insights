@@ -31,7 +31,7 @@ def add_layer_summary(val_to_write):
 
 def inference_network(inputs, hidden_units, n_outputs):
     """Layer definition for the encoder layer of CVAE."""
-    net = inputs
+    net = tf.sparse_tensor_to_dense(inputs)
     with tf.variable_scope('inference_network'):
         for hidden_dim in hidden_units:
             net = tf.contrib.layers.fully_connected(

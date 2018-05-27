@@ -18,6 +18,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+import io
 import json
 import logging
 import os
@@ -70,7 +71,12 @@ class S3DataStore():
     def read_generic_file(self, filename):
         """Read a file from the S3 bucket."""
         obj = self.s3_resource.Object(self.bucket_name, filename).get()['Body'].read()
-        utf_data = obj.decode("utf-8")
+        try:
+            utf_data = obj.decode("utf-8")
+        except UnicodeDecodeError:
+            # return binary data
+            return obj
+        # return the decoded output
         return utf_data
 
     def list_files(self, prefix=None, max_count=None):
@@ -158,7 +164,7 @@ class S3DataStore():
                 self.bucket.upload_file(os.path.join(root, filename), s3_dest)
 
     def load_matlab_multi_matrix(self, s3_path):
-        """Load a '.mat'file & return a dict representation.
+        """Load a '.mat' file & return a dict representation.
 
         :s3_path: The path of the object in the S3 bucket.
         :returns: A dict containing numpy matrices against the keys of the
@@ -170,3 +176,8 @@ class S3DataStore():
         if not model_dict:
             _logger.error("Unable to load the model for scoring")
         return model_dict
+
+    def read_into_file(self, filename):
+        """Read from S3 and return stream as a file object."""
+        filedata = self.read_generic_file(filename)
+        return io.BytesIO(filedata)

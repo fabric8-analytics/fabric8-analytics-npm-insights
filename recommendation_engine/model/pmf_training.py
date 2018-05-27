@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import tensorflow as tf
 import numpy as np
-
+from recommendation_engine.config.params_training import training_params as training_params
 
 class PMFTraining:
     """Training definitions the Probabilistic Matrix factorization model."""
@@ -32,8 +32,8 @@ class PMFTraining:
 
     def __call__(self, *args, **kwargs):
         """Train the model."""
-        # TODO
-        pass
+        min_iter = 1
+        a_minus_b = training_params.a - training_params.b
 
     def save_model_to_s3(self):
         """Save the model in matlab format to load later for scoring."""

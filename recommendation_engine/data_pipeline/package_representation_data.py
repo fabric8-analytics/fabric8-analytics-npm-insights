@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Dataset object definition for the content representation data of CVAE
+
 Copyright © 2018 Red Hat Inc.
 
 This program is free software: you can redistribute it and/or modify
@@ -17,96 +18,42 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from abc import abstractmethod, ABCMeta
-from scipy import sparse
-
 import tensorflow as tf
 import numpy as np
 
-
-class IteratorInitializerHook(tf.train.SessionRunHook):
-    """Hook to initialise data iterator after Session is created."""
-
-    def __init__(self):
-        self.iterator_initializer_func = None
-
-    def after_create_session(self, session, coord):
-        """Initialise the iterator after the session has been created."""
-        assert callable(self.iterator_initializer_func)
-        self.iterator_initializer_func(session)
+from recommendation_engine.utils.fileutils import load_sparse
+import recommendation_engine.config.path_constants as path_constants
 
 
-class BaseInputFunction(object, metaclass=ABCMeta):
-    @abstractmethod
+class PackageReconstructionInputFunction:
+    """Define the train_input_function as a callable class."""
+
     def __init__(self, data, batch_size, num_epochs, mode, scope):
         self.data = data
         self.batch_size = batch_size
         self.mode = mode
         self.scope = scope
         self.num_epochs = num_epochs
-        self.init_hook = IteratorInitializerHook()
 
-    @abstractmethod
-    def _create_placeholders(self):
-        """Returns placeholders for input data
-
-        Returns
-        -------
-        data : tf.placeholder
-            Placeholder for training data
-
-        labels : tf.placeholder
-            Placeholder for labels
-        """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def _get_feed_dict(self, placeholders):
-        """Return feed_dict to initialize placeholders.
-
-        Parameters
-        ----------
-        placeholders : list of tf.placeholder
-            Placeholders to initialize
-
-        Returns
-        -------
-        feed_dict : dict
-            Dictionary with values used to initialize
-            passed tf.placeholders.
-        """
-        raise NotImplementedError()
-
-    def _build_dataset(self, placeholders):
-        return tf.data.Dataset.from_tensor_slices(placeholders)
+    def _build_dataset(self, tensor_tuple):
+        """Build the dataset using tensors."""
+        return tf.data.Dataset.from_tensor_slices(tensor_tuple)
 
     def __call__(self):
         """This is the implementation for the train_input_function."""
         with tf.name_scope(self.scope):
-            # Define placeholders
-            placeholders = self._create_placeholders()
-
             # Build dataset iterator
-            dataset = self._build_dataset(placeholders)
+            dataset = self._build_dataset((self.data, self.data))
             if self.mode == tf.estimator.ModeKeys.TRAIN:
                 dataset = dataset.shuffle(buffer_size=10000)
                 dataset = dataset.repeat(self.num_epochs)
             dataset = dataset.batch(self.batch_size).prefetch(2)
 
-            iterator = dataset.make_initializable_iterator()
-            next_example, next_label = iterator.get_next()
-
-            def _init(sess):
-                sess.run(iterator.initializer,
-                         feed_dict=self._get_feed_dict(placeholders))
-
-            self.init_hook.iterator_initializer_func = _init
-
-        return next_example, next_label
+        return dataset
 
 
-class CorruptedInputDecorator(BaseInputFunction):
-    """Corrupts input with noise
+class CorruptedInputDecorator(PackageReconstructionInputFunction):
+    """Corrupts input with noise, required for the pretraining DAE.
 
     Parameters
     ----------
@@ -126,98 +73,43 @@ class CorruptedInputDecorator(BaseInputFunction):
         self.input_function = input_function
         self.noise_factor = noise_factor
 
-    def _create_placeholders(self):
-        return self.input_function._create_placeholders()
+    def _build_dataset(self, tensor_tuple):
+        dataset = super()._build_dataset(tensor_tuple)
 
-    def _get_feed_dict(self, placeholders):
-        return self.input_function._get_feed_dict(placeholders)
-
-    def _build_dataset(self, placeholders):
-        dataset = self.input_function._build_dataset(placeholders)
-
-        def add_noise(input_img, groundtruth_img):
-            noise = self.noise_factor * tf.random_normal(input_img.shape.as_list())
-            input_corrupted = tf.clip_by_value(tf.add(input_img, noise), 0., 1.)
-            return input_corrupted, groundtruth_img
+        def add_noise(input_rep, output_rep):
+            noise = self.noise_factor * tf.random_normal(input_rep.shape.as_list())
+            input_corrupted = tf.clip_by_value(tf.add(input_rep, noise), 0., 1.)
+            return input_corrupted, output_rep
 
         # run mapping function in parallel
-        return dataset.map(add_noise, num_parallel_calls=4)
-
-
-class MNISTReconstructionInputFunction(BaseInputFunction):
-    """MNIST input function to train an autoencoder.
-
-    Parameters
-    ----------
-    data : tensorflow.examples.tutorials.mnist.input_data
-        MNIST dataset.
-
-    mode : int
-        Train, eval or prediction mode.
-
-    scope : str
-        Name of input function in Tensor board.
-    """
-
-    def __init__(self, data, batch_size, num_epochs, mode, scope):
-        super().__init__(data=data, batch_size=batch_size,
-                         num_epochs=num_epochs, mode=mode, scope=scope)
-        self._images_placeholder = None
-        self._labels_placeholder = None
-
-    def _create_placeholders(self):
-        images_placeholder = tf.placeholder(self.data.dtype, self.data.shape,
-                                            name='input_image')
-        labels_placeholder = tf.placeholder(self.data.dtype, self.data.shape,
-                                            name='reconstruct_image')
-        return images_placeholder, labels_placeholder
-
-    def _get_feed_dict(self, placeholders):
-        assert len(placeholders) == 2
-        return dict(zip(placeholders, [self.data, self.data]))
+        dataset = dataset.map(add_noise, num_parallel_calls=4)
+        return dataset
 
 
 class PackageTagRepresentationDataset:
-    """MNIST data set for learning an unsupervised autoencoder.
+    """Package representation data set for learning an unsupervised autoencoder."""
 
-    Parameters
-    ----------
-    data_dir : str
-        Path to directory to write data to.
-
-    noise_factor : float
-        The amount of noise to apply. If non-zero, a denoising
-        autoencoder will be trained.
-    """
     @staticmethod
-    def _input_fn_corrupt(cls, data, batch_size, num_epochs, mode, scope, noise_factor=0):
-        f = MNISTReconstructionInputFunction(data, batch_size, num_epochs,
-                                             mode, scope)
+    def _input_fn_corrupt(data, batch_size, num_epochs, mode, scope, noise_factor=0.0):
+        f = PackageReconstructionInputFunction(data, batch_size, num_epochs,
+                                               mode, scope)
         if noise_factor > 0:
-            return CorruptedInputDecorator(f, noise_factor=noise_factor)
-        return f
+            return CorruptedInputDecorator(f, noise_factor=noise_factor)()
+        return f()
 
     @classmethod
-    def get_train_input_fn(cls, batch_size, num_epochs):
+    def get_train_input_fn(cls, batch_size, num_epochs, mode, scope, data_store, noise_factor=0.0):
         """Return the train_input_function required by the estimator."""
-        return cls._input_fn_corrupt(
-           cls._convert_sc
-           batch_size, num_epochs,
-           tf.estimator.ModeKeys.TRAIN,
-           'training_data')
+        data = cls._convert_sparse_matrix_to_sparse_tensor(load_sparse(
+            path_constants.DATA_SPARSE_REP, data_store))
+        return cls._input_fn_corrupt(data, batch_size, num_epochs, mode, scope, noise_factor)
 
     @staticmethod
-    def _convert_scipy_sparse_to_dense(matrix_filename):
-        """Convert a row of a scipy sparse matrix to its dense array representation."""
-        package_tag_representation_sparse = sparse.load_npz(matrix_filename)
-        _convert_sparse_matrix_to_sparse_tensor(package_tag_representation_sparse)
-
-    @staticmethod
-    def _convert_sparse_matrix_to_sparse_tensor(X):
+    def _convert_sparse_matrix_to_sparse_tensor(sparse_mat_scipy):
         """
         :returns: A sparse tensor representation of a sparse csr_matrix.
         :rtype: tf.SparseTensor
         """
-        coo = X.tocoo()
+        coo = sparse_mat_scipy.tocoo()
         indices = np.mat([coo.row, coo.col]).transpose()
         return tf.SparseTensor(indices, coo.data, coo.shape)

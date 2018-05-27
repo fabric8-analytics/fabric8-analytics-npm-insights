@@ -58,14 +58,15 @@ def save_temporary_local_file(buf, local_filename):
         local_fileobj.write(buf)
 
 
-def load_scipy_sparse_matrix_from_file(matrix_filename):
+def load_sparse(matrix_filename, data_store):
     """Load a scipy sparse matrix from file.
 
     :matrix_filename: The local filename from which to load the matrix.
     :returns: scipy.sparse.csr_matrix if no errors, else None.
     """
     try:
-        return sparse.load_npz(matrix_filename)
+        data_file_obj = data_store.read_into_file(matrix_filename)
+        return sparse.load_npz(data_file_obj)
     except Exception as e:
         _logger.error("Cannot load matrix, error: {}".format(e))
         return None

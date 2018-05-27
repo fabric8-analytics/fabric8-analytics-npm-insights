@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import tensorflow as tf
 
 training_params = tf.contrib.training.HParams(
-    latent_factors=50,
+    num_latent=50,
     weight_decay=1e-05,
     learning_rate=0.001,
     batch_size=128
