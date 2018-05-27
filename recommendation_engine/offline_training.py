@@ -20,6 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
 import tensorflow as tf
 
+from recommendation_engine.config import path_constants
 from recommendation_engine.model.collaborative_variational_autoencoder import \
     CollaborativeVariationalAutoEncoder
 
@@ -32,19 +33,15 @@ import recommendation_engine.config.cloud_constants as cloud_constants
 from recommendation_engine.config.params_training import training_params
 
 
-def eval_input_function():
-    """Return a data tuple for evaluation."""
-    # TODO
-    pass
-
-
 class TrainingJob:
     """Define the training job for the CVAE model."""
 
     def __init__(self):
         """Create a new training job."""
-        self.estimator = CollaborativeVariationalAutoEncoder(hidden_units=[200, 100],
-                                                             output_dim=50)
+        self.estimator = CollaborativeVariationalAutoEncoder(
+            hidden_units=[200, 100],
+            output_dim=50,
+            model_dir=path_constants.CVAE_MODEL_PATH)
         self.s3 = S3DataStore(src_bucket_name=cloud_constants.S3_BUCKET_NAME,
                               access_key=cloud_constants.AWS_S3_ACCESS_KEY_ID,
                               secret_key=cloud_constants.AWS_S3_SECRET_KEY_ID)
@@ -60,20 +57,10 @@ class TrainingJob:
             data_store=self.s3
         )
 
-        train_spec = tf.estimator.TrainSpec(
+        self.estimator.train(
             input_fn=train_input_function,
             hooks=[train_input_function.init_hook],
-            max_steps=training_params.max_iter
-        )
-
-        eval_spec = tf.estimator.EvalSpec(
-            input_fn=eval_input_function
-        )
-
-        tf.estimator.train_and_evaluate(
-            train_spec=train_spec,
-            estimator=self.estimator,
-            eval_spec=eval_spec
+            steps=training_params.max_iter
         )
 
 

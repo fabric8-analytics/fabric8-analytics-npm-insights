@@ -46,7 +46,7 @@ def cvae_net_model_fn(features, labels, hidden_units, output_dim, activation, le
 
     tf.losses.sigmoid_cross_entropy(labels, logits)
     tf.losses.add_loss(tf.losses.get_regularization_loss())
-    total_loss = tf.losses.get_total_loss(add_regularization_losses=is_training)
+    total_loss = tf.losses.get_total_loss(add_regularization_losses=True)
 
     train_op = None
 
@@ -78,6 +78,7 @@ class CollaborativeVariationalAutoEncoder(tf.estimator.Estimator):
     def __init__(self, hidden_units, output_dim, activation_fn=tf.nn.sigmoid,
                  learning_rate=training_params.learning_rate, model_dir=None, config=None):
         """Create a new CVAE estimator."""
+
         def _model_fn(features, labels, mode):
             return cvae_net_model_fn(
                 features=features,

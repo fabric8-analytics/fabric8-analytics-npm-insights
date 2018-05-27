@@ -97,7 +97,7 @@ def cvae_autoencoder_net(inputs, hidden_units, activation=tf.nn.sigmoid,
     with tf.variable_scope(scope, 'AutoEnc', [inputs]):
         with slim.arg_scope(_autoencoder_arg_scope(activation)):
             latent_representation = inference_network(inputs, hidden_units,
-                                                      n_outputs=training_params.num_latent)
+                                                      n_outputs=output_dim)
             n_features = inputs.shape[1].value
             net = generation_network(latent_representation, hidden_units[::-1], n_features)
     return net
