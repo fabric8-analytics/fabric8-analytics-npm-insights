@@ -29,13 +29,20 @@ from recommendation_engine.data_pipeline.package_representation_data import \
 
 from recommendation_engine.data_store.s3_data_store import S3DataStore
 import recommendation_engine.config.cloud_constants as cloud_constants
+from recommendation_engine.config.params_training import training_params
+
+
+def eval_input_function():
+    """Return a data tuple for evaluation."""
+    # TODO
+    pass
 
 
 class TrainingJob:
     """Define the training job for the CVAE model."""
 
     def __init__(self):
-        """Creates a new training job."""
+        """Create a new training job."""
         self.estimator = CollaborativeVariationalAutoEncoder(hidden_units=[200, 100],
                                                              output_dim=50)
         self.s3 = S3DataStore(src_bucket_name=cloud_constants.S3_BUCKET_NAME,
@@ -45,16 +52,32 @@ class TrainingJob:
     def train(self):
         """Fire a training job."""
         # TODO
-        self.estimator.train(input_fn=lambda: PackageTagRepresentationDataset.get_train_input_fn(
-            batch_size=50000,
+        train_input_function = PackageTagRepresentationDataset.get_train_input_fn(
+            batch_size=500,
             num_epochs=50,
             mode=tf.estimator.ModeKeys.TRAIN,
             scope='PackageRepData',
             data_store=self.s3
-        ))
+        )
+
+        train_spec = tf.estimator.TrainSpec(
+            input_fn=train_input_function,
+            hooks=[train_input_function.init_hook],
+            max_steps=training_params.max_iter
+        )
+
+        eval_spec = tf.estimator.EvalSpec(
+            input_fn=eval_input_function
+        )
+
+        tf.estimator.train_and_evaluate(
+            train_spec=train_spec,
+            estimator=self.estimator,
+            eval_spec=eval_spec
+        )
 
 
 if __name__ == '__main__':
-
+    # Create a new CVAE training job, and run it.
     cvae_train = TrainingJob()
     cvae_train.train()

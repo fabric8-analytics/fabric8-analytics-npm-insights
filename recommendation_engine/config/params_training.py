@@ -24,5 +24,12 @@ training_params = tf.contrib.training.HParams(
     num_latent=50,
     weight_decay=1e-05,
     learning_rate=0.001,
-    batch_size=128
+    batch_size=128,
+    a=1,
+    b=0.01,
+    lambda_u=0.1,
+    lambda_v=10,
+    lambda_r=1,
+    num_epochs=10,
+    max_iter=10
 )

@@ -22,6 +22,7 @@ import tensorflow as tf
 import numpy as np
 from recommendation_engine.config.params_training import training_params as training_params
 
+
 class PMFTraining:
     """Training definitions the Probabilistic Matrix factorization model."""
 

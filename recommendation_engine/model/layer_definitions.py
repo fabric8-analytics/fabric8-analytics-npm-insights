@@ -31,19 +31,20 @@ def add_layer_summary(val_to_write):
 
 def inference_network(inputs, hidden_units, n_outputs):
     """Layer definition for the encoder layer of CVAE."""
-    net = tf.sparse_tensor_to_dense(inputs)
+    net = inputs
     with tf.variable_scope('inference_network'):
         for hidden_dim in hidden_units:
             net = tf.contrib.layers.fully_connected(
-                    net,
-                    num_outputs=hidden_dim,
-                    scope='encode_{}_nodes'.format(hidden_dim))
+                net,
+                num_outputs=hidden_dim,
+                scope='encode_{}_nodes'.format(hidden_dim))
         add_layer_summary(net)
-        z_mean = tf.contrib.layers.fully_connected(net, num_outputs=n_outputs, activation=None)
-        z_log_sigma = tf.contrib.layers.fully_connected(net, num_outputs=n_outputs, activation=None)
+        z_mean = tf.contrib.layers.fully_connected(net, num_outputs=n_outputs, activation_fn=None)
+        z_log_sigma = tf.contrib.layers.fully_connected(net, num_outputs=n_outputs,
+                                                        activation_fn=None)
     # margin of error
     epsilon = tf.random_normal((training_params.batch_size, training_params.num_latent),
-                               0, 1, seed=0, dtype=tf.float32)
+                               0, 1, seed=0, dtype=tf.float64)
     latent_representation = z_mean + tf.sqrt(tf.maximum(tf.exp(z_log_sigma), 1e-10)) * epsilon
     return latent_representation
 
@@ -52,18 +53,14 @@ def generation_network(inputs, decoder_units, n_x):
     """Define the decoder network of CVAE."""
     net = inputs  # inputs here is the latent representation.
     assert (len(decoder_units) > 1)
-    with tf.variable_scope("generation_network", reuse=True):
+    with tf.variable_scope("generation_network", reuse=tf.AUTO_REUSE):
         net = tf.contrib.layers.fully_connected(net, num_outputs=decoder_units[0],
                                                 scope="decode_{}_nodes".format(decoder_units[0]))
         net = tf.contrib.layers.fully_connected(net, num_outputs=decoder_units[1],
                                                 scope="decode_{}_nodes".format(decoder_units[1]))
-        net = tf.contrib.layers.fully_connected(net, num_outputs=n_x, activation=None)
+        net = tf.contrib.layers.fully_connected(net, num_outputs=n_x, activation_fn=None)
     # TODO: Fix this logic.
-    for decoder_unit in decoder_units:
-        tf.assign(
-            tf.get_variable('generation_network/decode_{}_nodes/weights').format(decoder_units[0]),
-            tf.transpose(tf.get_variable('inference_network/encode_{}_nodes/weights').format(
-                    decoder_units[1])))
+    print(tf.trainable_variables())
     return net
 
 
