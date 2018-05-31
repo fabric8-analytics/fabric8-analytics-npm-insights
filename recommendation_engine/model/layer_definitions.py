@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
+import tensorflow.contrib.layers as layers
 from recommendation_engine.config.params_training import training_params
 
 
@@ -31,20 +32,25 @@ def add_layer_summary(val_to_write):
 
 def inference_network(inputs, hidden_units, n_outputs):
     """Layer definition for the encoder layer of CVAE."""
+    print("Hidden units: {}".format(hidden_units))
     net = inputs
-    with tf.variable_scope('inference_network'):
-        for hidden_dim in hidden_units:
-            net = tf.contrib.layers.fully_connected(
+    with tf.variable_scope('inference_network', reuse=tf.AUTO_REUSE):
+        for layer_idx, hidden_dim in enumerate(hidden_units):
+            net = layers.fully_connected(
                 net,
                 num_outputs=hidden_dim,
-                scope='encode_{}_nodes'.format(hidden_dim))
-        add_layer_summary(net)
-        z_mean = tf.contrib.layers.fully_connected(net, num_outputs=n_outputs, activation_fn=None)
-        z_log_sigma = tf.contrib.layers.fully_connected(net, num_outputs=n_outputs,
-                                                        activation_fn=None)
+                weights_regularizer=layers.l2_regularizer(training_params.weight_decay),
+                scope='inf_layer_{}'.format(layer_idx))
+            add_layer_summary(net)
+        z_mean = layers.fully_connected(net, num_outputs=n_outputs, activation_fn=None,
+                                        scope='inf_layer_{}_mean'.format(len(hidden_units)))
+        z_log_sigma = layers.fully_connected(
+            net, num_outputs=n_outputs, activation_fn=None,
+            scope='inf_layer_{}_log_sigma'.format(len(hidden_units)))
+
     # margin of error
-    epsilon = tf.random_normal((training_params.batch_size, training_params.num_latent),
-                               0, 1, seed=0, dtype=tf.float64)
+    epsilon = tf.random_normal(
+        (training_params.batch_size, training_params.num_latent), 0, 1, seed=0)
     latent_representation = z_mean + tf.sqrt(tf.maximum(tf.exp(z_log_sigma), 1e-10)) * epsilon
     return latent_representation
 
@@ -52,25 +58,38 @@ def inference_network(inputs, hidden_units, n_outputs):
 def generation_network(inputs, decoder_units, n_x):
     """Define the decoder network of CVAE."""
     net = inputs  # inputs here is the latent representation.
-    assert (len(decoder_units) > 1)
     with tf.variable_scope("generation_network", reuse=tf.AUTO_REUSE):
-        net = tf.contrib.layers.fully_connected(net, num_outputs=decoder_units[0],
-                                                scope="decode_{}_nodes".format(decoder_units[0]))
-        net = tf.contrib.layers.fully_connected(net, num_outputs=decoder_units[1],
-                                                scope="decode_{}_nodes".format(decoder_units[1]))
-        net = tf.contrib.layers.fully_connected(net, num_outputs=n_x, activation_fn=None)
-    # TODO: Fix this logic.
+        assert (len(decoder_units) >= 2)
+        # First layer does not have a regularizer
+        net = slim.fully_connected(
+            net,
+            decoder_units[0],
+            scope="gen_layer_0",
+        )
+        for idx, decoder_unit in enumerate([decoder_units[1], n_x], 1):
+            net = slim.fully_connected(
+                net,
+                decoder_unit,
+                scope="gen_layer_{}".format(idx),
+                weights_regularizer=layers.l2_regularizer(training_params.weight_decay)
+            )
+    # TODO: Generalize this bit to figure out how to auto add more layers
+    # Assign the transpose of weights to the respective layers
     print(tf.trainable_variables())
-    return net
+    tf.assign(tf.get_variable("generation_network/gen_layer_1/weights"),
+              tf.transpose(tf.get_variable("inference_network/inf_layer_1/weights")))
+    tf.assign(tf.get_variable("generation_network/gen_layer_1/biases"),
+              tf.get_variable("inference_network/inf_layer_0/biases"))
+    tf.assign(tf.get_variable("generation_network/gen_layer_2/weights"),
+              tf.transpose(tf.get_variable("inference_network/inf_layer_0/weights")))
+    return net  # x_recon
 
 
 def _autoencoder_arg_scope(activation_fn):
     """Create an argument scope for the network based on its parameters."""
-    weights_regularizer = tf.contrib.layers.l2_regularizer(training_params.weight_decay)
 
-    with slim.arg_scope([tf.contrib.layers.fully_connected],
-                        weights_initializer=tf.contrib.layers.xavier_initializer(),
-                        weights_regularizer=weights_regularizer,
+    with slim.arg_scope([layers.fully_connected],
+                        weights_initializer=layers.xavier_initializer(),
                         biases_initializer=tf.initializers.constant(0.0),
                         activation_fn=activation_fn) as arg_sc:
         return arg_sc
@@ -93,8 +112,8 @@ def cvae_autoencoder_net(inputs, hidden_units, activation=tf.nn.sigmoid,
     if not is_training:
         # TODO: Go to evaluation/scoring based on this parameters' value
         pass
-
-    with tf.variable_scope(scope, 'AutoEnc', [inputs]):
+    inputs = tf.Print(inputs, [inputs], first_n=1)
+    with tf.variable_scope(scope, 'AutoEnc', [inputs], reuse=tf.AUTO_REUSE):
         with slim.arg_scope(_autoencoder_arg_scope(activation)):
             latent_representation = inference_network(inputs, hidden_units,
                                                       n_outputs=output_dim)
