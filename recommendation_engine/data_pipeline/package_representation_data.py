@@ -84,6 +84,8 @@ class PackageReconstructionInputFunction:
                                             name='input_image')
         labels_placeholder = tf.placeholder(self.data.dtype, self.data.shape,
                                             name='reconstruct_image')
+        images_placeholder = tf.Print(images_placeholder, [images_placeholder, labels_placeholder],
+                                      first_n=2)
         return images_placeholder, labels_placeholder
 
     def _get_feed_dict(self, placeholders):
@@ -144,6 +146,7 @@ class PackageTagRepresentationDataset:
         # TODO: Switch to sparse_tensor once there is more information around the dataset API.
         data = cls._convert_sparse_matrix_to_array(load_sparse(
             path_constants.DATA_SPARSE_REP, data_store))
+        data = data.astype(np.float32)
         return cls._input_fn_corrupt(data, batch_size, num_epochs, mode, scope, noise_factor)
 
     @staticmethod
