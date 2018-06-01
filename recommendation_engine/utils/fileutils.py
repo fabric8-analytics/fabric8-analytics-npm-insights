@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from recommendation_engine.data_store import data_store_wrapper
 """
+import os
 
 
 def load_rating(path, data_store):
@@ -32,7 +33,7 @@ def load_rating(path, data_store):
     rating_matrix = []
     for line in rating_file_contents.split('\n'):
         this_user_ratings = line.strip().split()
-        if this_user_ratings[0] == 0:
+        if int(this_user_ratings[0]) == 0:
             this_user_item_list = set()
         else:
             this_user_item_list = set([int(x) for x in this_user_ratings[1:]])
@@ -47,5 +48,5 @@ def save_temporary_local_file(buf, local_filename):
     :local_filename: The file name of the local file to write to
     :returns: True if success.
     """
-    with open(local_filename, 'wb') as local_fileobj:
+    with open(os.path.join('/tmp', local_filename), 'wb') as local_fileobj:
         local_fileobj.write(buf)
