@@ -78,7 +78,6 @@ class CollaborativeVariationalAutoEncoder(tf.estimator.Estimator):
     def __init__(self, hidden_units, output_dim, activation_fn=tf.nn.sigmoid,
                  learning_rate=training_params.learning_rate, model_dir=None, config=None):
         """Create a new CVAE estimator."""
-
         def _model_fn(features, labels, mode):
             return cvae_net_model_fn(
                 features=features,

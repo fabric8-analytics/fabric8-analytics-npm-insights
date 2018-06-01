@@ -87,7 +87,6 @@ def generation_network(inputs, decoder_units, n_x):
 
 def _autoencoder_arg_scope(activation_fn):
     """Create an argument scope for the network based on its parameters."""
-
     with slim.arg_scope([layers.fully_connected],
                         weights_initializer=layers.xavier_initializer(),
                         biases_initializer=tf.initializers.constant(0.0),
