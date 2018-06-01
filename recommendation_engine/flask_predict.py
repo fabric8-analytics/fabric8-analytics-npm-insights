@@ -24,13 +24,18 @@ from flask import Flask, request
 from recommendation_engine.predictor.online_recommendation import PMFRecommendation
 from recommendation_engine.data_store.s3_data_store import S3DataStore
 import recommendation_engine.config.cloud_constants as cloud_constants
+from recommendation_engine.config.cloud_constants import USE_CLOUD_SERVICES
 from recommendation_engine.config.params_scoring import ScoringParams
 
 app = Flask(__name__)
 
-s3 = S3DataStore(src_bucket_name=cloud_constants.S3_BUCKET_NAME,
-                 access_key=cloud_constants.AWS_S3_ACCESS_KEY_ID,
-                 secret_key=cloud_constants.AWS_S3_SECRET_KEY_ID)
+if USE_CLOUD_SERVICES:
+    s3 = S3DataStore(src_bucket_name=cloud_constants.S3_BUCKET_NAME,
+                     access_key=cloud_constants.AWS_S3_ACCESS_KEY_ID,
+                     secret_key=cloud_constants.AWS_S3_SECRET_KEY_ID)
+else:
+    from recommendation_engine.data_store.local_filesystem import LocalFileSystem
+    s3 = LocalFileSystem('tests/test_data/')
 # This needs to be global as ~200MB of data is loaded from S3 every time an object of this class
 # is instantiated.
 recommender = PMFRecommendation(ScoringParams.recommendation_threshold, s3)
