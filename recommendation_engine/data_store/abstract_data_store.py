@@ -58,3 +58,8 @@ class AbstractDataStore(metaclass=abc.ABCMeta):
     def download_file(self, src, target):
         """Download file from data store."""
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def read_into_file(self, filename):
+        """Read from data store and return stream as a file object."""
+        raise NotImplementedError()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Abstract class for the online recommender logic.
+
 
 Copyright © 2018 Red Hat Inc.
 
@@ -17,22 +17,4 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 """
-from abc import abstractmethod, ABCMeta
-
-
-class AbstractRecommender:
-    """Defines the interface for the online recommender."""
-
-    __metaclass__ = ABCMeta
-
-    @abstractmethod
-    def predict(self, user_stack):
-        """Generate companion recommendation for this user's stack."""
-        pass
-
-    @abstractmethod
-    def filter_recommendations(self, prediction):
-        """Filter recommendations coming from model."""
-        pass
