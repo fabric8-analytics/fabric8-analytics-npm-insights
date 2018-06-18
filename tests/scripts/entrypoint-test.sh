@@ -18,4 +18,4 @@ echo "*****************************************"
 echo "*** Unit tests ***"
 echo "*****************************************"
 
-pytest --cov=/recommendation_engine/ --cov=/locustfiles --cov-report term-missing -vv /tests/unit_tests/
+pytest --cov=/recommendation_engine/ --cov-report term-missing -vv /tests/unit_tests/
