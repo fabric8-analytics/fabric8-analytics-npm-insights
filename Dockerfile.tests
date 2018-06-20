@@ -1,4 +1,4 @@
-FROM registry.devshift.net/fabric8-analytics/f8a-npm-insights:latest
+FROM push.registry.devshift.net/fabric8-analytics/f8a-npm-insights:latest
 
 LABEL MAINTAINER="Avishkar Gupta <avgupta@redhat.com>"
 
