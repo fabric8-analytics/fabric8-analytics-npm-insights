@@ -29,6 +29,7 @@ class TestPMFRecommendation(TestCase):
     def setUp(self):
         """Instantiate the resources required for the tests."""
         self.fs = LocalFileSystem(src_dir='tests/test_data')
+        self.assertTrue(self.fs.get_name().endswith('tests/test_data'))
         self.pmf_rec = PMFRecommendation(2, data_store=self.fs, num_latent=5)
 
     def test__find_closest_user_in_training_set(self):
