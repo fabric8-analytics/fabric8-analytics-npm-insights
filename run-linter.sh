@@ -1,4 +1,4 @@
-directories="recommendation_engine locustfiles deployment tests"
+directories="recommendation_engine deployment tests"
 fail=0
 
 function prepare_venv() {

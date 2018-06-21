@@ -65,5 +65,6 @@ class TestPMFRecommendation(TestCase):
         self.assertDictEqual(package_tag_map, {})
 
         # Test for precomputed stack.
-        _, recommendation, _ = self.pmf_rec.predict(['async', 'colors', 'request', 'underscore', 'pkginfo'])
+        _, recommendation, _ = self.pmf_rec.predict(['async', 'colors', 'request',
+                                                     'underscore', 'pkginfo'])
         self.assertTrue(recommendation)

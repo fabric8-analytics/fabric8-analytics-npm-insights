@@ -31,7 +31,8 @@ class FlaskPredictTestCase(unittest.TestCase):
                 "comp_package_count_threshold": 0
             }
         ]
-        self.recommendation = self.client.post('/api/v1/companion_recommendation', data=json.dumps(data),
+        self.recommendation = self.client.post('/api/v1/companion_recommendation',
+                                               data=json.dumps(data),
                                                headers={'content-type': 'application/json'})
 
 

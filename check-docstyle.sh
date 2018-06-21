@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-directories="recommendation_engine locustfiles deployment tests"
+directories="recommendation_engine deployment tests"
 pass=0
 fail=0
 
