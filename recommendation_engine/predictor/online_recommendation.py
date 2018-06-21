@@ -75,17 +75,6 @@ class PMFRecommendation(AbstractRecommender):
         self.latent_item_rep_mat = self.model_dict["m_V"]
         self.weight_matrix = self.model_dict["m_theta"]
 
-    def _map_package_id_to_name(self, package_id_list):
-        """Map the package id from the model to its name.
-
-        :package_id_list: A python iterable containing all the package ids
-        """
-        return [self.package_id_name_map[str(package_id)] for package_id in package_id_list]
-
-    def _map_package_name_to_id(self, package_name_list):
-        """Map the package name to its id."""
-        return [self.package_name_id_map[package_name] for package_name in package_name_list]
-
     def _load_package_id_to_name_map(self):
         """Load the package-id to name mapping."""
         self.package_id_name_map = self.s3_client.read_json_file(filename=ID_TO_PACKAGE_MAP)
@@ -126,7 +115,7 @@ class PMFRecommendation(AbstractRecommender):
                 self.package_id_name_map[str(package_id)], []) for package_id in avail
         }
         # if more than half the packages are missing
-        if len(missing) >= len(avail):
+        if len(avail) == 0 or len(missing) >= len(avail):
             return missing, [], package_topic_dict
         new_user_stack = avail
         # Check whether we have already seen this stack.

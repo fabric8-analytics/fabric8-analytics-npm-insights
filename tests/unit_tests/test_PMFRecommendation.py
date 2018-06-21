@@ -62,3 +62,7 @@ class TestPMFRecommendation(TestCase):
 
         missing, _, package_tag_map = self.pmf_rec.predict(['missing'])
         self.assertDictEqual(package_tag_map, {})
+
+        # Test for precomputed stack.
+        _, recommendation, _ = self.pmf_rec.predict(['async', 'colors', 'request', 'underscore', 'pkginfo'])
+        self.assertTrue(recommendation)

@@ -1,1 +1,7 @@
-{"0": "react-addons-text-content", "1": "pon-logger", "2": "import-jsx", "3": "liquid-node", "4": "mqemitter-redis", "5": "colors-promise", "6": "phantom-pool"}
+{"0": "react-addons-text-content", "1": "pon-logger", "2": "import-jsx", "3": "liquid-node", "4": "mqemitter-redis", "5": "colors-promise", "6": "phantom-pool",
+  "6885":"async",
+    "11106":"colors",
+    "10215":"request",
+    "20807":"underscore",
+    "17452":"pkginfo"
+}

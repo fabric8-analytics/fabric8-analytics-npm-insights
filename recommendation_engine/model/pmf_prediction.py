@@ -50,8 +50,5 @@ class PMFScoring:
                   based on the latent item vectors.
         """
         # VV^T for v_j that has at least one user liked
-        if len(user_item_vector) > 0:
-            x = self.params.a * np.sum(self.m_V[user_item_vector, :], axis=0)
-            return scipy.linalg.solve(self.params.a, x).reshape(1, num_latent)
-        else:
-            return np.array([])
+        x = self.params.a * np.sum(self.m_V[user_item_vector, :], axis=0)
+        return scipy.linalg.solve(self.params.a, x).reshape(1, num_latent)
