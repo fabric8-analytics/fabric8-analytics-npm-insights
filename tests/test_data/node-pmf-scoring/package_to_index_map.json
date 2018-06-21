@@ -5,5 +5,10 @@
     "import-jsx": 2,
     "liquid-node": 3,
     "mqemitter-redis": 4,
-    "colors-promise": 5
+    "colors-promise": 5,
+    "async": 6885,
+    "colors": 11106,
+    "request": 10215,
+    "underscore": 20807,
+    "pkginfo": 17452
 }

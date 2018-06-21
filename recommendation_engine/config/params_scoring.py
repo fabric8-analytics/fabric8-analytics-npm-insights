@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 
-class ScoringParams():
+class ScoringParams:
     """This class contains the model hyperparamters."""
 
     a = 1

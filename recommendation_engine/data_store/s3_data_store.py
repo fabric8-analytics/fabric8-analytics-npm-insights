@@ -73,75 +73,10 @@ class S3DataStore():
         utf_data = obj.decode("utf-8")
         return utf_data
 
-    def list_files(self, prefix=None, max_count=None):
-        """List all the files in the S3 bucket."""
-        list_filenames = []
-        if prefix is None:
-            objects = self.bucket.objects.all()
-        else:
-            objects = self.bucket.objects.filter(Prefix=prefix)
-        if max_count is None:
-            list_filenames = [x.key for x in objects]
-        else:
-            counter = 0
-            for obj in objects:
-                list_filenames.append(obj.key)
-                counter += 1
-                if counter == max_count:
-                    break
-        return list_filenames
-
-    def read_all_json_files(self):
-        """Read all the files from the S3 bucket."""
-        list_filenames = self.list_files(prefix=None)
-        list_contents = []
-        for file_name in list_filenames:
-            contents = self.read_json_file(filename=file_name)
-            list_contents.append((file_name, contents))
-        return list_contents
-
-    def write_json_file(self, filename, contents):
-        """Write JSON file into S3 bucket."""
-        self.s3_resource.Object(self.bucket_name, filename).put(
-            Body=json.dumps(contents))
-        return None
-
     def upload_file(self, src, target):
         """Upload file into data store."""
         self.bucket.upload_file(src, target)
         return None
-
-    def download_file(self, src, target):
-        """Download file from data store."""
-        self.bucket.download_file(src, target)
-        return None
-
-    def iterate_bucket_items(self, ecosystem='npm'):
-        """
-        Iterate over all objects in a given s3 bucket.
-
-        See:
-        https://boto3.readthedocs.io/en/latest/reference/services/s3.html#S3.Client.list_objects_v2
-        for return data format
-        :param bucket: name of s3 bucket
-        :return: dict of metadata for an object
-        """
-        client = self.session.client('s3')
-        page = client.list_objects_v2(Bucket=self.bucket_name, Prefix=ecosystem)
-        yield [obj['Key'] for obj in page['Contents']]
-        while page['IsTruncated'] is True:
-            page = client.list_objects_v2(Bucket=self.bucket_name, Prefix=ecosystem,
-                                          ContinuationToken=page['NextContinuationToken'])
-            yield [obj['Key'] for obj in page['Contents']]
-
-    def list_folders(self, prefix=None):
-        """List all "folders" inside src_bucket."""
-        client = self.session.client('s3')
-        result = client.list_objects(Bucket=self.bucket_name, Prefix=prefix + '/', Delimiter='/')
-        folders = result.get('CommonPrefixes')
-        if not folders:
-            return []
-        return [folder['Prefix'] for folder in folders]
 
     def upload_folder_to_s3(self, folder_path, prefix=''):
         """Upload(Sync) a folder to S3.
@@ -165,7 +100,7 @@ class S3DataStore():
                   multi-matrix.
         """
         local_filename = os.path.join('/tmp', s3_path.split('/')[-1])
-        self.download_file(s3_path, local_filename)
+        self.bucket.download_file(s3_path, local_filename)
         model_dict = loadmat(local_filename)
         if not model_dict:
             _logger.error("Unable to load the model for scoring")
