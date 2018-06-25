@@ -7,6 +7,7 @@ LABEL MAINTAINER="Avishkar Gupta <avgupta@redhat.com>"
 # --------------------------------------------------------------------------------------------------
 ADD ./tests/ /tests
 ADD ./tests/scripts/entrypoint-test.sh /entrypoint-test.sh
+ADD .coveragerc /.coveragerc
 RUN chmod 0777 /entrypoint-test.sh
 
 ENV PYTHONPATH=/
