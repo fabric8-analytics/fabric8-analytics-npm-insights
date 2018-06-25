@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# test coverage threshold
+COVERAGE_THRESHOLD=50
+
 locale charmap
 
 export RADONFILESENCODING=UTF-8
@@ -18,4 +21,4 @@ echo "*****************************************"
 echo "*** Unit tests ***"
 echo "*****************************************"
 
-pytest --cov=/recommendation_engine/ --cov-report term-missing -vv /tests/unit_tests/
+pytest --cov=/recommendation_engine/ --cov-report term-missing --cov-fail-under=$COVERAGE_THRESHOLD -vv /tests/unit_tests/
