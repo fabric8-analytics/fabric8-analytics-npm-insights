@@ -1,4 +1,4 @@
-FROM push.registry.devshift.net/fabric8-analytics/f8a-npm-insights:latest
+FROM npm-insights:testing
 
 LABEL MAINTAINER="Avishkar Gupta <avgupta@redhat.com>"
 

@@ -14,6 +14,7 @@ all: fast-docker-build
 
 docker-build:
 	docker build --no-cache -t $(REGISTRY)/$(REPOSITORY):$(DEFAULT_TAG) -f $(DOCKERFILE) .
+	docker tag $(REGISTRY)/$(REPOSITORY):$(DEFAULT_TAG) npm-insights:testing
 
 docker-build-test: docker-build
 	docker build --no-cache -t chester-tests -f Dockerfile.tests .
