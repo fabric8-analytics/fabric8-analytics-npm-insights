@@ -1,11 +1,11 @@
+  REGISTRY := quay.io
 ifeq ($(TARGET),rhel)
   DOCKERFILE := Dockerfile.rhel
-  REGISTRY := push.registry.devshift.net/osio-prod
+  REPOSITORY?=openshiftio/rhel-fabric8-analytics-f8a-npm-insights
 else
   DOCKERFILE := Dockerfile
-  REGISTRY := push.registry.devshift.net
+  REPOSITORY?=openshiftio/fabric8-analytics-f8a-npm-insights
 endif
-REPOSITORY?=fabric8-analytics/f8a-npm-insights
 DEFAULT_TAG=latest
 
 .PHONY: all docker-build fast-docker-build get-image-name get-image-repository
@@ -14,6 +14,7 @@ all: fast-docker-build
 
 docker-build:
 	docker build --no-cache -t $(REGISTRY)/$(REPOSITORY):$(DEFAULT_TAG) -f $(DOCKERFILE) .
+	docker tag $(REGISTRY)/$(REPOSITORY):$(DEFAULT_TAG) npm-insights:testing
 
 docker-build-test: docker-build
 	docker build --no-cache -t chester-tests -f Dockerfile.tests .
