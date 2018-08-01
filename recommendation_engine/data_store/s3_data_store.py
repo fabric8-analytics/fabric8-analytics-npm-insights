@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import json
 import logging
 import os
-import pickle
 
 import boto3
 import botocore
