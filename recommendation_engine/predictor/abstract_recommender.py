@@ -28,6 +28,6 @@ class AbstractRecommender:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def predict(self, user_stack, companion_threshold):
+    def predict(self, _user_stack, _companion_threshold):
         """Generate companion recommendation for this user's stack."""
         raise NotImplementedError()

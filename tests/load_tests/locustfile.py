@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import json
-from locust import HttpLocust, TaskSet, events, task, web
+from locust import HttpLocust, TaskSet, task
 from collections import Counter
 
 stats = {"host-distribution": Counter()}
