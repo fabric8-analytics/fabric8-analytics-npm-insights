@@ -147,3 +147,9 @@ parameters:
   required: false
   name: FLASK_LOGGING_LEVEL
   value: "WARNING"
+
+- description: Number of deployment replicas
+  displayName: Number of deployment replicas
+  required: true
+  name: REPLICAS
+  value: "1"
