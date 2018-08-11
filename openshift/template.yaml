@@ -14,7 +14,7 @@ objects:
       service: f8a-npm-insights
     name: f8a-npm-insights
   spec:
-    replicas: 1
+    replicas: "${{REPLICAS}}"
     selector:
       service: f8a-npm-insights
     template:
@@ -123,6 +123,12 @@ parameters:
   required: true
   name: DOCKER_IMAGE
   value: "openshiftio/rhel-fabric8-analytics-f8a-npm-insights"
+
+- description: Number of deployment replicas
+  displayName: Number of deployment replicas
+  required: true
+  name: REPLICAS
+  value: "1"
 
 - description: Image tag
   displayName: Image tag
