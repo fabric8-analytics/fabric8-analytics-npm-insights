@@ -115,7 +115,7 @@ class PMFRecommendation(AbstractRecommender):
                 self.package_id_name_map[str(package_id)], []) for package_id in avail
         }
         # if more than half the packages are missing
-        if len(avail) == 0 or len(missing) >= len(avail):
+        if len(avail) == 0 or len(missing) > len(avail):
             return missing, [], package_topic_dict
         new_user_stack = avail
         # Check whether we have already seen this stack.

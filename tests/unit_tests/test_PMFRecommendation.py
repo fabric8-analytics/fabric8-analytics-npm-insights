@@ -58,8 +58,10 @@ class TestPMFRecommendation(TestCase):
         self.assertEqual(len(recommendation), 2)
 
         # Tests for missing package.
-        missing, _, _ = self.pmf_rec.predict(['pon-logger', 'missing'])
+        missing, recommendation, _ = self.pmf_rec.predict(['pon-logger', 'missing'])
         self.assertTrue(missing)
+        # Test if still getting recommendation as no. of missing = no. of known
+        self.assertGreater(len(recommendation), 0)
 
         missing, _, package_tag_map = self.pmf_rec.predict(['missing'])
         self.assertDictEqual(package_tag_map, {})
