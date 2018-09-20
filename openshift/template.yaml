@@ -49,6 +49,8 @@ objects:
                 name: aws
           - name: FLASK_LOGGING_LEVEL
             value: ${FLASK_LOGGING_LEVEL}
+          - name: S3_BUCKET_NAME
+            value: ${S3_BUCKET_NAME}
           name: f8a-npm-insights
           image: "${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${IMAGE_TAG}"
           ports:
