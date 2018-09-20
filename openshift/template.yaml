@@ -147,3 +147,9 @@ parameters:
   required: false
   name: FLASK_LOGGING_LEVEL
   value: "WARNING"
+
+- description: "Name of the S3 bucket to use for scoring/training"
+  displayName: S3 bucket name
+  required: true
+  name: S3_BUCKET_NAME
+  value: cvae-insights
