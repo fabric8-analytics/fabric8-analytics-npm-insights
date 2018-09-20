@@ -76,4 +76,4 @@ def recommendation():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=3000)  # pragma: no cover
+    app.run(debug=True, port=6006)  # pragma: no cover
