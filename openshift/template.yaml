@@ -152,4 +152,4 @@ parameters:
   displayName: S3 bucket name
   required: true
   name: S3_BUCKET_NAME
-  value: cvae-insights
+  value: "cvae-insights"
