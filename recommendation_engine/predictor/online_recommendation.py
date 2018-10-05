@@ -145,10 +145,12 @@ class PMFRecommendation(AbstractRecommender):
         mean = np.mean(logits)
         recommendations = []
         for idx, package in enumerate(packages_filtered):
-            recommendations.append({
+            recommendation = {
                 "package_name": self.package_id_name_map[str(package)],
                 "cooccurrence_probability": self._sigmoid(logits[idx] - mean) * 100,
                 "topic_list": self._package_tag_map.get(
                         self.package_id_name_map[str(package)], [])
-            })
+            }
+            if recommendation.get('cooccurrence_probability') >= ScoringParams.min_confidence_prob:
+                recommendations.append(recommendation)
         return missing, recommendations, package_topic_dict
