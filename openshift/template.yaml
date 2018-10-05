@@ -126,7 +126,7 @@ parameters:
   displayName: Docker image
   required: true
   name: DOCKER_IMAGE
-  value: "openshiftio/fabric8-analytics-f8a-npm-insights"
+  value: "openshiftio/rhel-fabric8-analytics-f8a-npm-insights"
 
 - description: Number of deployment replicas
   displayName: Number of deployment replicas
@@ -138,7 +138,7 @@ parameters:
   displayName: Image tag
   required: true
   name: IMAGE_TAG
-  value: "SNAPSHOT-PR-52"
+  value: "latest"
 
 - description: Chester Scoring Region - npm
   displayName: Chester Scoring Region
