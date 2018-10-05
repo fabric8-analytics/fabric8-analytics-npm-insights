@@ -51,6 +51,8 @@ objects:
             value: ${FLASK_LOGGING_LEVEL}
           - name: S3_BUCKET_NAME
             value: ${S3_BUCKET_NAME}
+          - name: MIN_REC_CONFIDENCE
+            value: ${MIN_REC_CONFIDENCE}
           name: f8a-npm-insights
           image: "${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${IMAGE_TAG}"
           ports:
@@ -124,7 +126,7 @@ parameters:
   displayName: Docker image
   required: true
   name: DOCKER_IMAGE
-  value: "openshiftio/rhel-fabric8-analytics-f8a-npm-insights"
+  value: "openshiftio/fabric8-analytics-f8a-npm-insights"
 
 - description: Number of deployment replicas
   displayName: Number of deployment replicas
@@ -136,7 +138,7 @@ parameters:
   displayName: Image tag
   required: true
   name: IMAGE_TAG
-  value: "latest"
+  value: "SNAPSHOT-PR-52"
 
 - description: Chester Scoring Region - npm
   displayName: Chester Scoring Region
@@ -155,3 +157,9 @@ parameters:
   required: true
   name: S3_BUCKET_NAME
   value: "cvae-insights"
+
+- description: "Minimum recommendation confidence probability"
+  displayName: Minimum recommendation confidence
+  required: true
+  name: MIN_REC_CONFIDENCE
+  value: "0.30"
