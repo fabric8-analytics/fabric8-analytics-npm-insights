@@ -21,6 +21,7 @@ Method: POST
 Content-type: application/json
 Body:
 {
+	"comp_package_count_threshold": 5,
 	"stack": ["express", "mongoose"]
 }
 ```
