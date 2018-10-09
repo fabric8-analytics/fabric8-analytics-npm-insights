@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: registry.devshift.net/fabric8-analytics/f8a-npm-insights:latest
+    image: quay.io/openshiftio/fabric8-analytics-f8a-npm-insights:latest
     network_mode: bridge
     entrypoint:
       - /bin/entrypoint.sh
@@ -18,7 +18,9 @@ services:
       DEPLOYMENT_PREFIX: "dev"
       SERVICE_PORT: "6006"
       SERVICE_TIMEOUT: "900"
-      AWS_BUCKET_NAME: "${AWS_BUCKET_NAME}"
+      S3_BUCKET_NAME: "${S3_BUCKET_NAME}"
+      # Assume that minio will be used.
+      USE_CLOUD_SERVICES: "True"
       PYTHONUNBUFFERED: 0
       MIN_REC_CONFIDENCE: 0.30
     ports:
