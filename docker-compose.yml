@@ -22,6 +22,6 @@ services:
       # Assume that minio will be used.
       USE_CLOUD_SERVICES: "True"
       PYTHONUNBUFFERED: 0
-      MIN_REC_CONFIDENCE: 0.30
+      MIN_REC_CONFIDENCE: 30
     ports:
       - "6006:6006"

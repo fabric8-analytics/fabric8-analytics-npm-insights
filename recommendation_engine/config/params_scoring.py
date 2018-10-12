@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
+import numpy as np
 
 
 class ScoringParams:
@@ -27,4 +28,4 @@ class ScoringParams:
     recommendation_threshold = 10
     num_latent_factors = 50
     # Minimum confidence required to show recommendation
-    min_confidence_prob = float(os.environ.get('MIN_REC_CONFIDENCE', "0.30"))
+    min_confidence_prob = np.float64(os.environ.get('MIN_REC_CONFIDENCE', "30"))

@@ -162,4 +162,4 @@ parameters:
   displayName: Minimum recommendation confidence
   required: true
   name: MIN_REC_CONFIDENCE
-  value: "0.30"
+  value: "30"
