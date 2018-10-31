@@ -102,3 +102,6 @@ ENV/
 
 # Intellij Idea
 .idea/
+
+html/
+latex/
