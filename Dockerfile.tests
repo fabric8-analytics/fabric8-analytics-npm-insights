@@ -8,11 +8,12 @@ LABEL MAINTAINER="Avishkar Gupta <avgupta@redhat.com>"
 ADD ./tests/ /tests
 ADD ./tests/scripts/entrypoint-test.sh /entrypoint-test.sh
 ADD .coveragerc /.coveragerc
+ADD ./.git /.git
 RUN chmod 0777 /entrypoint-test.sh
 
 ENV PYTHONPATH=/
 
-RUN pip3 install pytest pytest-cov radon
+RUN pip3 install pytest pytest-cov radon codecov
 
 # --------------------------------------------------------------------------------------------------
 # RUN THE UNIT TESTS
