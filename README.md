@@ -35,7 +35,7 @@ Content-type: application/json
     "recommendations": [
         {
             "companion_probability": 0.9231991381908954,
-            "package": "alaska",
+            "package_name": "alaska",
             "tags": [
                 "alaska",
                 "koa",
@@ -47,7 +47,7 @@ Content-type: application/json
         },
         {
             "companion_probability": 0.8385970486757496,
-            "package": "koa-grace-mongo",
+            "package_name": "koa-grace-mongo",
             "tags": [
                 "koa",
                 "mongo",
@@ -56,7 +56,7 @@ Content-type: application/json
         },
         {
             "companion_probability": 0.6536468661722873,
-            "package": "ewares",
+            "package_name": "ewares",
             "tags": [
                 "express",
                 "middleware",
@@ -65,14 +65,14 @@ Content-type: application/json
         },
         {
             "companion_probability": 0.46540235321030543,
-            "package": "peento",
+            "package_name": "peento",
             "tags": [
                 "blog"
             ]
         },
         {
             "companion_probability": 0.3881866445153202,
-            "package": "koa",
+            "package_name": "koa",
             "tags": [
                 "web",
                 "app",
@@ -85,7 +85,7 @@ Content-type: application/json
         },
         {
             "companion_probability": 0.37067553026014505,
-            "package": "harvesterjs",
+            "package_name": "harvesterjs",
             "tags": [
                 "json",
                 "api",
@@ -98,7 +98,7 @@ Content-type: application/json
         },
         {
             "companion_probability": 0.343074615791371,
-            "package": "keystone",
+            "package_name": "keystone",
             "tags": [
                 "express",
                 "web",
@@ -115,7 +115,7 @@ Content-type: application/json
         },
         {
             "companion_probability": 0.2857418338795869,
-            "package": "strong-remoting",
+            "package_name": "strong-remoting",
             "tags": [
                 "StrongLoop",
                 "LoopBack",
@@ -125,7 +125,7 @@ Content-type: application/json
         },
         {
             "companion_probability": 0.2750733954908234,
-            "package": "mailgun-js",
+            "package_name": "mailgun-js",
             "tags": [
                 "email",
                 "mailgun"
@@ -133,7 +133,7 @@ Content-type: application/json
         },
         {
             "companion_probability": 0.24752054711697755,
-            "package": "requisition",
+            "package_name": "requisition",
             "tags": [
                 "request",
                 "promise",
