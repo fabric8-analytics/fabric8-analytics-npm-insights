@@ -51,6 +51,8 @@ objects:
             value: ${FLASK_LOGGING_LEVEL}
           - name: S3_BUCKET_NAME
             value: ${S3_BUCKET_NAME}
+          - name: MODEL_VERSION
+            value: ${MODEL_VERSION}
           - name: MIN_REC_CONFIDENCE
             value: ${MIN_REC_CONFIDENCE}
           name: f8a-npm-insights
@@ -157,6 +159,12 @@ parameters:
   required: true
   name: S3_BUCKET_NAME
   value: "cvae-insights"
+
+- description: "Model Version - Date Format YYYY-MM-DD"
+  displayName: Model Version
+  required: true
+  name: MODEL_VERSION
+  value: "2019-01-03"
 
 - description: "Minimum recommendation confidence probability"
   displayName: Minimum recommendation confidence
