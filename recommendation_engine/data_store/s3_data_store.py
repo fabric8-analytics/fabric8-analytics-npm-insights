@@ -3,7 +3,7 @@
 """
 Interactions with Amazon S3.
 
-Copyright © 2018 Red Hat Inc.
+Copyright © 2018, 2019 Red Hat Inc.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -68,6 +68,11 @@ class S3DataStore():
         """Read JSON file from the S3 bucket."""
         return json.loads(self.read_generic_file(filename))
 
+    def write_json_file(self, filename, contents):
+        """Write JSON file into S3 bucket."""
+        self.s3_resource.Object(self.bucket_name, filename).put(Body=json.dumps(contents))
+        return None
+
     def read_generic_file(self, filename):
         """Read a file from the S3 bucket."""
         obj = self.s3_resource.Object(self.bucket_name, filename).get()['Body'].read()
@@ -97,6 +102,7 @@ class S3DataStore():
         """Load a '.mat'file & return a dict representation.
 
         :s3_path: The path of the object in the S3 bucket.
+
         :returns: A dict containing numpy matrices against the keys of the
                   multi-matrix.
         """
