@@ -3,6 +3,8 @@
 # test coverage threshold
 COVERAGE_THRESHOLD=50
 
+radon --version
+
 locale charmap
 
 export RADONFILESENCODING=UTF-8
