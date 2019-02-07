@@ -29,7 +29,13 @@ def load_rating(path, data_store):
     :returns: The rating matrix in a list-of-lists format where the
               list at index i represents the itemeset of the ith user.
     """
-    rating_file_contents = data_store.read_generic_file(path).strip()
+    rating_file_contents = data_store.read_generic_file(path)
+
+    if isinstance(rating_file_contents, (bytes, bytearray)):
+        rating_file_contents = rating_file_contents.decode('utf-8')
+
+    rating_file_contents = rating_file_contents.strip()
+
     rating_matrix = []
     for line in rating_file_contents.split('\n'):
         this_user_ratings = line.strip().split()
