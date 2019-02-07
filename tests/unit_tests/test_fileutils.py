@@ -2,7 +2,7 @@
 import os
 from unittest import TestCase
 
-from recommendation_engine.data_store.local_filesystem import LocalFileSystem
+from rudra.data_store.local_data_store import LocalDataStore
 from recommendation_engine.utils.fileutils import save_temporary_local_file, load_rating
 
 
@@ -18,6 +18,6 @@ class TestFileUtils(TestCase):
 
     def test_load_rating(self):
         """Test the load_rating method."""
-        file_system = LocalFileSystem('tests/test_data/')
+        file_system = LocalDataStore('tests/test_data/')
         r = load_rating('test_load_rating.txt', file_system)
         self.assertListEqual(r, [{54909, 2309, 5409, 2054}, set()])
