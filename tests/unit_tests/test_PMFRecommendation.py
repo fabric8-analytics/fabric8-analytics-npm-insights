@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from unittest import TestCase
-from recommendation_engine.data_store.local_filesystem import LocalFileSystem
+from rudra.data_store.local_data_store import LocalDataStore
 from recommendation_engine.predictor.online_recommendation import PMFRecommendation
 
 
@@ -28,7 +28,7 @@ class TestPMFRecommendation(TestCase):
 
     def setUp(self):
         """Instantiate the resources required for the tests."""
-        self.fs = LocalFileSystem(src_dir='tests/test_data')
+        self.fs = LocalDataStore('tests/test_data')
         self.assertTrue(self.fs.get_name().endswith('tests/test_data'))
         self.pmf_rec = PMFRecommendation(2, data_store=self.fs, num_latent=5)
 
