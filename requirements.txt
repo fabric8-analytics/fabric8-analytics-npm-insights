@@ -14,7 +14,7 @@ gevent==1.2.2
 greenlet==0.4.14          # via gevent
 gunicorn==19.7.1
 itsdangerous==0.24        # via flask
-jinja2==2.10              # via flask
+jinja2==2.10.1              # via flask
 jmespath==0.9.3           # via boto3, botocore
 markupsafe==1.0           # via jinja2
 numpy==1.14.2
