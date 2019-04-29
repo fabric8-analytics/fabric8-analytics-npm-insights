@@ -47,17 +47,20 @@ class Utility:
     def make_list_from_series(self, series_):
         """Create a list from given series."""
         pkg_lst = list()
-        pkg_lst.append(series_['name'])
-        pkg_lst.append(series_['description'])
-        pkg_lst.append(series_['keywords'])
-        pkg_lst.append(series_['dependencies'])
-        return pkg_lst
+        try:
+            pkg_lst.append(series_['name'])
+            pkg_lst.append(series_['description'])
+            pkg_lst.append(series_['keywords'])
+            pkg_lst.append(series_['dependencies'])
+            return pkg_lst
+        except Exception:
+            return pkg_lst
 
     def dict_to_list(self, dict_):
         """Create a list from dictionary."""
         return [value for key, value in dict_.items()]
 
-    def read_json_file(self, data_in_bytes):
+    def read_json_file(self, data_in_bytes):  # pragma: no cover
         """Read a big json file."""
         try:
             coded_data = data_in_bytes.decode('utf-8')
@@ -99,13 +102,14 @@ class Utility:
         """Create a Package Tag map, and Vocabulary."""
         package_tag_map = self.dict_
         vocabulary = self.set_
-        for k, g in keywords_df.groupby("name"):
-            try:
-                package_tag_map[k] = self.clean_set(package_tag_map.get(k, set())
-                                                    .union(set(g["keywords"].tolist()[0])))
-                vocabulary = vocabulary.union(package_tag_map[k])
-            except Exception:
-                pass
+        if not keywords_df.empty:
+            for k, g in keywords_df.groupby("name"):
+                try:
+                    package_tag_map[k] = self.clean_set(package_tag_map.get(k, set())
+                                                        .union(set(g["keywords"].tolist()[0])))
+                    vocabulary = vocabulary.union(package_tag_map[k])
+                except Exception:
+                    pass
 
         return dict(package_tag_map), set(vocabulary)
 
@@ -113,14 +117,16 @@ class Utility:
         """Create a Pakcgae to dependency map and maintain all first level dependencies."""
         package_dep_map = self.dict_
         all_first_lv_deps = self.set_
-        for k, g in dependencies_df.groupby("name"):
-            try:
-                package_dep_map[k] = self.clean_set(
-                    package_dep_map.get(k, set()).union(set(g["dependencies"].tolist()[0])))
-                all_first_lv_deps = all_first_lv_deps.union(set(package_dep_map[k]))
-            except Exception:
-                pass
-        return package_dep_map, all_first_lv_deps
+        if not dependencies_df.empty:
+            for k, g in dependencies_df.groupby("name"):
+                try:
+                    package_dep_map[k] = self.clean_set(
+                        package_dep_map.get(k, set()).union(set(g["dependencies"].tolist()[0])))
+                    all_first_lv_deps = all_first_lv_deps.union(set(package_dep_map[k]))
+                except Exception:
+                    pass
+
+        return dict(package_dep_map), set(all_first_lv_deps)
 
     def create_package_map(self, packages_list):
         """Create Package to index Map."""
@@ -161,7 +167,8 @@ class Utility:
             list_of_manifest_list.append(list(self.clean_set(row['dependencies'])))
         return all_packages, list_of_manifest_list
 
-    def create_content_matrix(self, pkg_tag_map, all_packages, vocabulary, tag_idx_map):
+    def create_content_matrix(self, pkg_tag_map,
+                              all_packages, vocabulary, tag_idx_map):  # pragma: no cover
         """Create Content Matrix."""
         pkg_tag_map = self.dict_
         all_packages = self.set_
@@ -208,4 +215,4 @@ class Utility:
                 user_items = [str(length_)] + this_user_items
                 manifest_user_data.append(user_items)
 
-        return manifest_user_data
+        return list(manifest_user_data)
