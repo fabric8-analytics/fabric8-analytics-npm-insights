@@ -1,0 +1,16 @@
+{
+  "package_list": [
+    [
+      "serve-static",
+      "express",
+      "FreshDocs",
+      "algorithm"
+    ],
+    [
+      "express",
+      "npm",
+      "serve-static"
+    ]
+  ],
+  "ecosystem": "npm"
+}

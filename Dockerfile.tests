@@ -5,6 +5,7 @@ LABEL MAINTAINER="Avishkar Gupta <avgupta@redhat.com>"
 # --------------------------------------------------------------------------------------------------
 # copy testing source code and scripts into root dir /
 # --------------------------------------------------------------------------------------------------
+ADD ./training/ /training
 ADD ./tests/ /tests
 ADD ./tests/scripts/entrypoint-test.sh /entrypoint-test.sh
 ADD .coveragerc /.coveragerc

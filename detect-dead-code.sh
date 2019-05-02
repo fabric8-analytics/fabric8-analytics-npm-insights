@@ -1,6 +1,6 @@
 #!/bin/bash
 
-directories="recommendation_engine deployment tests"
+directories="recommendation_engine deployment tests training"
 
 pass=0
 fail=0
