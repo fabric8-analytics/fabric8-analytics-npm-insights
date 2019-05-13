@@ -1,3 +1,3 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Data pipeline module."""
+"""Fire a new training job."""

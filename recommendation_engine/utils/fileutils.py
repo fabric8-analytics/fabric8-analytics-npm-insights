@@ -20,6 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from recommendation_engine.data_store import data_store_wrapper
 """
 import os
+import logging
+
+import daiquiri
 
 
 def load_rating(path, data_store):
@@ -29,13 +32,7 @@ def load_rating(path, data_store):
     :returns: The rating matrix in a list-of-lists format where the
               list at index i represents the itemeset of the ith user.
     """
-    rating_file_contents = data_store.read_generic_file(path)
-
-    if isinstance(rating_file_contents, (bytes, bytearray)):
-        rating_file_contents = rating_file_contents.decode('utf-8')
-
-    rating_file_contents = rating_file_contents.strip()
-
+    rating_file_contents = data_store.read_generic_file(path).strip()
     rating_matrix = []
     for line in rating_file_contents.split('\n'):
         this_user_ratings = line.strip().split()
@@ -43,7 +40,7 @@ def load_rating(path, data_store):
             this_user_item_list = set()
         else:
             this_user_item_list = set([int(x) for x in this_user_ratings[1:]])
-        rating_matrix.append(this_user_item_list)
+        rating_matrix.append(list(this_user_item_list))
     return rating_matrix
 
 
@@ -56,3 +53,9 @@ def save_temporary_local_file(buf, local_filename):
     """
     with open(os.path.join('/tmp', local_filename), 'wb') as local_fileobj:
         local_fileobj.write(buf)
+
+
+def create_logger(stream_name):
+    """Create a new logger object."""
+    daiquiri.setup(level=logging.INFO)
+    return daiquiri.getLogger(stream_name)

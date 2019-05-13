@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-
+Defines the Sampling layer that makes the sampling layer.
 
 Copyright © 2018 Red Hat Inc.
 
@@ -18,3 +18,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+import tensorflow as tf
+import recommendation_engine.config.params_training as config
+
+
+def sampling(args):
+    z_mean, z_log_sigma = args
+    epsilon = tf.random_normal((config.batch_size, config.num_latent), 0, 1,
+                               dtype=tf.float32)
+    print(z_mean + tf.exp(z_log_sigma) * epsilon)
+    return z_mean + tf.exp(z_log_sigma) * epsilon
