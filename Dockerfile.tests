@@ -10,6 +10,7 @@ ADD ./tests/ /tests
 ADD ./tests/scripts/entrypoint-test.sh /entrypoint-test.sh
 ADD .coveragerc /.coveragerc
 ADD ./.git /.git
+ADD ./tools /tools
 RUN chmod 0777 /entrypoint-test.sh
 
 ENV PYTHONPATH=/
