@@ -21,11 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from rudra import logger
 from training.datastore.s3_connection import GetData
 from training.datastore.utils import Utility
-# from training.datastore.get_preprocess_data import GetPreprocessData
 import pandas as pd
 import requests
 import json
-import math
+
 
 class GetKeywords:
     """This class defines the S3 Connections viz fetching and storing data."""
@@ -110,7 +109,6 @@ class GetKeywords:
                 {{name url description repositoryTopics(first: 10){{nodes{{topic {{name}}}}}}}}}}}}'
                 .format(str(query_params[0]), str(query_params[1]))}
             headers = {'Authorization': 'token %s' % api_token}
-            print("Github token is:#####################3: ", api_token)
             try:
                 response = requests.post(url=api_url, json=json, headers=headers)
                 keywords = list(self.clean_response(response.json()))

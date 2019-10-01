@@ -4,6 +4,7 @@ import os
 ECOSYSTEM = os.environ.get('CHESTER_SCORING_REGION', 'npm')
 MODEL_VERSION = os.environ.get('MODEL_VERSION', '2019-01-03')
 DEPLOYMENT_PREFIX = os.environ.get('DEPLOYMENT_PREFIX', 'dev')
+TEMPORARY_PATH = '/tmp/trained-model'
 PMF_MODEL_PATH = os.path.join(ECOSYSTEM, DEPLOYMENT_PREFIX, MODEL_VERSION,
                               'intermediate-model/cvae-model/pmf-packagedata.mat')
 PACKAGE_TO_ID_MAP = os.path.join(ECOSYSTEM, DEPLOYMENT_PREFIX, MODEL_VERSION,
