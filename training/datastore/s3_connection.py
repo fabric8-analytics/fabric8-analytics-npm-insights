@@ -184,7 +184,7 @@ class GetData:
                 os.makedirs(path)
             return path
         except Exception as e:
-            raise Exception
+            raise e
 
     def save_file_temporary(self, content, filename, datastore):
         """Store data file in temporary storage."""

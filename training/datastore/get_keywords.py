@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from rudra import logger
-from training.datastore.s3_connection import GetData
 from training.datastore.utils import Utility
 import pandas as pd
 import requests

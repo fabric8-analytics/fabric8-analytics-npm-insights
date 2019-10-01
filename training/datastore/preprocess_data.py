@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import pandas as pd
 from training.datastore.utils import Utility
-from training.datastore.s3_connection import GetData
 from training.datastore.get_keywords import GetKeywords
 
 
