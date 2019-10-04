@@ -3,15 +3,14 @@
 """Pretrain and return the autoencoder hidden layers."""
 
 import logging
-
+import os
 import daiquiri
 import tensorflow as tf
-from tensorflow import keras as keras
-from tensorflow.keras.callbacks import TensorBoard
-
+from tensorflow.python.keras.callbacks import TensorBoard
+from tensorflow.python import keras
 import recommendation_engine.config.params_training as train_params
-import recommendation_engine.config.path_constants_train as path_constants
-
+from recommendation_engine.config.path_constants import TEMPORARY_MODEL_PATH
+from recommendation_engine.utils.fileutils import check_path
 daiquiri.setup(level=logging.DEBUG)
 logger = daiquiri.getLogger(__name__)
 
@@ -33,33 +32,30 @@ class PretrainHidden:
         enc_inp = keras.layers.Input(shape=(input_dimension,))
         enc_inp_noisy = keras.layers.GaussianNoise(stddev=0.1)(enc_inp)
         # Default initializer is glorot uniform, and default bias initializer is 0,
-        # If that changes in some version, explicity set a kernel and bias initializer.
+        # If that changes in some version, explicitly set a kernel and bias initializer.
         layer_network = keras.layers.Dense(self.layer_dim, activation=train_params.activation,
                                            name='pretrain_hidden_{}'.format(self.layer_dim))
         encoder = layer_network(enc_inp_noisy)
-        encoder = keras.Model(enc_inp, encoder)
+        encoder = keras.models.Model(enc_inp, encoder)
         layer_network = layer_network(enc_inp_noisy)
-
         layer_network = keras.layers.Dense(input_dimension, activation=train_params.activation,
-                                           name="de")(
-                layer_network)
-        layer_model = keras.Model(enc_inp, layer_network)
-        layer_model.compile(optimizer=tf.train.AdamOptimizer(train_params.learning_rate_pretrain),
-                            loss='binary_crossentropy')
+                                           name="de")(layer_network)
+        layer_model = keras.models.Model(enc_inp, layer_network)
+        layer_model.compile(optimizer=tf.optimizers.Adam(train_params.learning_rate_pretrain),
+                            loss=train_params.loss_hidden)
+        path = os.path.join(TEMPORARY_MODEL_PATH, 'hidden_{}_pretrain/'.format(self.layer_dim))
         saver = keras.callbacks.ModelCheckpoint(
-                '/tmp/hidden_{}_pretrain/train'.format(self.layer_dim),
-                save_weights_only=True,
-                verbose=1)
-        tensorboard_config = TensorBoard(log_dir=str(
-                path_constants.TENSORBOARD_LOGDIR_LOCAL.joinpath(
-                        'pretrain_hidden_{}'.format(self.layer_dim))))
+            check_path(path),
+            save_weights_only=True,
+            verbose=1)
+        tensorboard_config = TensorBoard(log_dir=check_path(path))
+
         layer_model.fit(data, data, batch_size=batch_size, epochs=epochs,
-                        callbacks=[tensorboard_config, saver])
+                        callbacks=[saver, tensorboard_config])
         # append the weight of the layer being pre-trained.
         self.layer_weights = layer_model.get_layer(
                 "pretrain_hidden_{}".format(self.layer_dim)).get_weights()
         self.de_weights = layer_model.get_layer("de").get_weights()
-
         return encoder.predict(data, batch_size=batch_size)
 
     def get_layer_weights(self):

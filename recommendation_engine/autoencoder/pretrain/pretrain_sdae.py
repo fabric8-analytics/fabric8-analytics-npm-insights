@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """Pretrain the VAE using a SDAE."""
-import logging
 
+import logging
 import daiquiri
 from tensorflow.python.keras import backend as K
 from tensorflow.python.keras.callbacks import ModelCheckpoint, TensorBoard
 from tensorflow.python.keras.layers import Dense, GaussianNoise, Input, Lambda
 from tensorflow.python.keras.losses import binary_crossentropy
 from tensorflow.python.keras.models import Model
-
+from recommendation_engine.utils.fileutils import check_path
 import recommendation_engine.config.params_training as params_training
-from recommendation_engine.config import path_constants_train as path_constants
+from recommendation_engine.config.path_constants import TEMPORARY_SDAE_PATH
 
 daiquiri.setup(level=logging.DEBUG)
 logger = daiquiri.getLogger(__name__)
@@ -21,7 +21,7 @@ class PretrainNetwork:
     """Pretrain the autoencoder in stacked denoinsing autoencoder fashion."""
 
     def __init__(self, hidden_dim, pretrain):
-        """Constructor to define data stores etc."""
+        """Construct an object with following properties."""
         self.weights = []
         self.pretrain = pretrain
         self.hidden_dim = hidden_dim
@@ -31,7 +31,8 @@ class PretrainNetwork:
         """Define a sampling for our lambda layer.
 
         Taken from:
-        https://github.com/keras-team/keras/master/examples/variational_autoencoder.py"""
+        https://github.com/keras-team/keras/master/examples/variational_autoencoder.py
+        """
         z_mean, z_log_var = args
         batch = K.shape(z_mean)[0]
         dim = K.int_shape(z_mean)[1]
@@ -59,15 +60,12 @@ class PretrainNetwork:
             hidden = hidden_layer(hidden)
             layer_num += 1
             logger.debug("Hooked up hidden layer with %d neurons" % hidden_dim)
-        if hidden == inputs:
-            logger.warning("No Hidden layers hooked up.")
         z_mean = Dense(latent_dim, activation=None, name='z_mean',
                        weights=self.pretrain[layer_num])(hidden)
         layer_num += 1
         z_log_sigma = Dense(latent_dim, activation=None, name='z_log_sigma',
                             weights=self.pretrain[layer_num])(hidden)
         layer_num += 1
-
         z = Lambda(self.sampling, output_shape=(latent_dim,), name='z')([z_mean, z_log_sigma])
         encoder = Model(inputs, [z_mean, z_log_sigma, z], name='encoder')
 
@@ -79,8 +77,6 @@ class PretrainNetwork:
                            weights=self.pretrain[layer_num])(hidden)
             layer_num += 1
             logger.debug("Hooked up hidden layer with %d neurons" % hidden_dim)
-        if hidden == latent_inputs:
-            logger.warning("No Hidden layers hooked up.")
         outputs = Dense(original_dim, activation='sigmoid')(hidden)
         decoder = Model(latent_inputs, outputs, name='decoder')
 
@@ -97,15 +93,13 @@ class PretrainNetwork:
         sdae.add_loss(vae_loss)
         sdae.compile(optimizer='adam')
         saver = ModelCheckpoint(
-                '/tmp/latent_pretrain_all/train',
-                save_weights_only=True,
-                verbose=1)
-        tensorboard_config = TensorBoard(log_dir=str(
-                path_constants.TENSORBOARD_LOGDIR_LOCAL.joinpath(
-                        'sdae_pretrain')))
-
+            check_path(TEMPORARY_SDAE_PATH),
+            save_weights_only=True,
+            verbose=1)
+        tensorboard_config = TensorBoard(log_dir=check_path(TEMPORARY_SDAE_PATH))
+        logger.info("Checkpoint has been saved for SDAE.")
         # train the autoencoder
+        logger.warning("Pretraining started, Don't interrupt.")
         sdae.fit(data, epochs=epochs, batch_size=batch_size,
                  callbacks=[saver, tensorboard_config])
-
-        sdae.save_weights(params_training.PRETRAIN_WEIGHTS_PATH)
+        logger.info("Model has been pretrained successfully.")
