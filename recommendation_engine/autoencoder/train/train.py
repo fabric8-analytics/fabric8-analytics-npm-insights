@@ -1,40 +1,57 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Train the CVAE model."""
-import logging
 
+import os
 import daiquiri
+import logging
 import numpy as np
-import tensorflow as tf
 from tensorflow.python.keras import backend as K
+import tensorflow as tf
 from tensorflow.python.keras.callbacks import TensorBoard, ModelCheckpoint
-from tensorflow.python.keras.datasets import mnist
 from tensorflow.python.keras.layers import Dense, Input, Lambda
 from tensorflow.python.keras.losses import binary_crossentropy
 from tensorflow.python.keras.models import Model
-
+from recommendation_engine.pmf.train_pmf import PMFTraining
 import recommendation_engine.config.params_training as params_training
-from recommendation_engine.config import path_constants_train as path_constants
-
+from recommendation_engine.autoencoder.pretrain import pretrain
+from recommendation_engine.config.path_constants import TEMPORARY_SDAE_PATH, TEMPORARY_CVAE_PATH, \
+    USER_ITEM_FILEPATH, ITEM_USER_FILEPATH, TEMPORARY_PATH, TEMPORARY_MODEL_PATH
+from recommendation_engine.utils.fileutils import check_path, load_rating
 daiquiri.setup(level=logging.DEBUG)
+from training.datastore.get_preprocess_data import GetPreprocessData
 logger = daiquiri.getLogger(__name__)
 
 
 class TrainNetwork:
     """Train the autoencoder(CVAE)."""
 
-    def __init__(self, hidden_dim=(200, 100), pretrain_weights=True):
-        """Constructor to define data stores etc."""
+    def __init__(self, hidden_dim=(200, 100), pretrain_weights=True,
+                 aws_access_key_id=os.environ.get("AWS_S3_ACCESS_KEY_ID", ""),
+                 aws_secret_access_key=os.environ.get("AWS_S3_SECRET_ACCESS_KEY",
+                                                      ""),
+                 aws_bucket_name=os.environ.get("AWS_S3_BUCKET_NAME", "cvae-insights"),
+                 model_version=os.environ.get("MODEL_VERSION", "2019-01-03"),
+                 num_train_per_user=os.environ.get("TRAIN_PER_USER", 5)
+                 ):
+        """Construct an object with following properties."""
         self.weights = []
         self.pretrain_weights = pretrain_weights
         self.hidden_dim = hidden_dim
+        self.get_preprocess_data = GetPreprocessData(aws_access_key_id,
+                                                     aws_secret_access_key,
+                                                     aws_bucket_name,
+                                                     model_version,
+                                                     num_train_per_user,
+                                                     )
 
     @staticmethod
     def sampling(args):
         """Define a sampling for our lambda layer.
 
         Taken from:
-        https://github.com/keras-team/keras/master/examples/variational_autoencoder.py"""
+        https://github.com/keras-team/keras/master/examples/variational_autoencoder.py
+        """
         z_mean, z_log_var = args
         batch = K.shape(z_mean)[0]
         dim = K.int_shape(z_mean)[1]
@@ -45,10 +62,9 @@ class TrainNetwork:
     @staticmethod
     def load_pretrain_weights(model):
         """Load the weights from the pre-training job."""
-        #  TODO: Load from S3
-        model.load_weights(params_training.PRETRAIN_WEIGHTS_PATH)
+        model.load_weights(TEMPORARY_SDAE_PATH)
         logger.info(
-            "Successfully loaded weights from: {}".format(params_training.PRETRAIN_WEIGHTS_PATH))
+            "Successfully loaded weights from: {}".format(TEMPORARY_SDAE_PATH))
         return model
 
     def train(self, data):
@@ -63,13 +79,12 @@ class TrainNetwork:
         for i, hidden_dim in enumerate(self.hidden_dim, 1):
             hidden = Dense(hidden_dim, activation='sigmoid', name='hidden_e_{}'.format(i))(hidden)
             logger.debug("Hooked up hidden layer with %d neurons" % hidden_dim)
-        if hidden == inputs:
-            logger.warning("No Hidden layers hooked up.")
         z_mean = Dense(params_training.num_latent, activation=None, name='z_mean')(hidden)
         z_log_sigma = Dense(params_training.num_latent, activation=None, name='z_log_sigma')(hidden)
         z = Lambda(self.sampling, output_shape=(params_training.num_latent,), name='z')(
                 [z_mean, z_log_sigma])
         encoder = Model(inputs, [z_mean, z_log_sigma, z], name='encoder')
+        self.encoder_z_mean = encoder.predict(data)[0]
 
         # build decoder model
         latent_inputs = Input(shape=(params_training.num_latent,), name='z_sampling')
@@ -77,8 +92,8 @@ class TrainNetwork:
         for i, hidden_dim in enumerate(self.hidden_dim[::-1], 1):  # Reverse because decoder.
             hidden = Dense(hidden_dim, activation='sigmoid', name='hidden_d_{}'.format(i))(hidden)
             logger.debug("Hooked up hidden layer with %d neurons" % hidden_dim)
-        if hidden == latent_inputs:
-            logger.warning("No Hidden layers hooked up.")
+        # if hidden == latent_inputs:
+        #     logger.warning("No Hidden layers hooked up.")
         outputs = Dense(original_dim, activation='sigmoid')(hidden)
         decoder = Model(latent_inputs, outputs, name='decoder')
 
@@ -100,34 +115,40 @@ class TrainNetwork:
             cvae_model = self.load_pretrain_weights(cvae_model)
 
         saver = ModelCheckpoint(
-                '/tmp/train/train',
+                check_path(TEMPORARY_CVAE_PATH),
                 save_weights_only=True,
-                verbose=1)
-        tensorboard_config = TensorBoard(log_dir=str(
-                path_constants.TENSORBOARD_LOGDIR_LOCAL.joinpath(
-                        'cvae_train')))
-
+                verbose=1
+        )
+        tensorboard_config = TensorBoard(log_dir=check_path(TEMPORARY_CVAE_PATH))
         # train the auto-encoder
         cvae_model.fit(data, epochs=params_training.num_epochs,
                        batch_size=params_training.batch_size,
                        callbacks=[saver, tensorboard_config])
-
-        self.cvae_model = cvae_model
-
-    def compute_latent_embeddings(self, ip_samples):
-        """Compute the latent embeddings for all the packages."""
-        self.cvae_model.predict(ip_samples)
+        return self.encoder_z_mean
 
 
 if __name__ == '__main__':
-    # MNIST dataset
-    (x_train, y_train), (x_test, y_test) = mnist.load_data()
-
-    image_size = x_train.shape[1]
-    original_dim = image_size * image_size
-    x_train = np.reshape(x_train, [-1, original_dim])
-    x_test = np.reshape(x_test, [-1, original_dim])
-    x_train = x_train.astype('float32') / 255
-    x_test = x_test.astype('float32') / 255
+    x_train = np.load(os.path.join(TEMPORARY_PATH, 'content_matrix.npy'))
+    input_dim = x_train.shape[1]
     p = TrainNetwork()
-    p.train(x_train)
+    logger.info("Preprocessing of data started.")
+    p.get_preprocess_data.preprocess_data()
+
+    logger.info("size of training file is: ".format(len(x_train), len(x_train[0])))
+    user_to_item_matrix = load_rating(USER_ITEM_FILEPATH)
+    item_to_user_matrix = load_rating(ITEM_USER_FILEPATH)
+    logger.info("Shape of User and Item matrices:".format(np.shape(user_to_item_matrix),
+                                                          np.shape(item_to_user_matrix)))
+    pretrain.fit(x_train)
+    encoder_weights = p.train(x_train)
+    logger.info("Shape of encoder weights are: ".format(tf.shape(encoder_weights),
+                                                        len(encoder_weights),
+                                                        len(encoder_weights[0])))
+    pmf_obj = PMFTraining(len(user_to_item_matrix), len(item_to_user_matrix), encoder_weights)
+    logger.debug("PMF model has been initialised")
+    pmf_obj(user_to_item_matrix=user_to_item_matrix,
+            item_to_user_matrix=item_to_user_matrix)
+    logger.info("PMF model has been trained.")
+    pmf_obj.save_model()
+    p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_PATH)
+    p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_MODEL_PATH)
