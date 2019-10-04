@@ -33,9 +33,9 @@ class GetData:
     def __init__(self,
                  aws_access_key_id,
                  aws_secret_access_key,
-                 aws_bucket_name='cvae-insights',
-                 model_version='2019-02-27',
-                 num_train_per_user=5):
+                 num_train_per_user,
+                 aws_bucket_name,
+                 model_version):
         """Create an instance of GetData."""
         self.aws_access_key_id = os.environ.get('AWS_S3_ACCESS_KEY_ID', aws_access_key_id)
         self.aws_secret_access_key = os.environ.get('AWS_S3_SECRET_ACCESS_KEY',
@@ -45,7 +45,8 @@ class GetData:
         self.version_name = model_version
         self.s3_object = AmazonS3(bucket_name=self.bucket_name,
                                   aws_access_key_id=self.aws_access_key_id,
-                                  aws_secret_access_key=self.aws_secret_access_key)
+                                  aws_secret_access_key=self.aws_secret_access_key
+                                  )
         self.num_train_per_user = num_train_per_user
         self.s3_client = self.load_s3()
         self.utility = Utility()
@@ -233,11 +234,10 @@ class GetData:
     def save_on_s3(self, folder_path):
         """Store all the contents on S3."""
         try:
-            if os.path.exists(folder_path + '/intermediate-model') and \
-                    os.path.exists(folder_path + '/trained-model'):
-                self.s3_client.s3_upload_folder(folder_path=folder_path + '/intermediate-model',
+            if os.path.exists(folder_path):
+                self.s3_client.s3_upload_folder(folder_path=folder_path,
                                                 prefix=self.version_name + '')
-                self.s3_client.s3_upload_folder(folder_path=folder_path + '/trained-model',
+                self.s3_client.s3_upload_folder(folder_path=folder_path,
                                                 prefix=self.version_name + '')
                 logger.info("Folders are successfully saved on S3.")
             else:
