@@ -1,26 +1,38 @@
 #!/bin/bash
 
-#!/usr/bin/env bash
-directories="recommendation_engine deployment tests training"
+# Script to check all Python scripts for PEP-8 issues
+
+SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+IFS=$'\n'
+
+# list of directories with sources to check
+directories=$(cat ${SCRIPT_DIR}/directories.txt)
+
+# list of separate files to check
+separate_files=$(cat ${SCRIPT_DIR}/files.txt)
+
 pass=0
 fail=0
 
 function prepare_venv() {
-    VIRTUALENV=$(which virtualenv)
+    VIRTUALENV="$(which virtualenv)"
     if [ $? -eq 1 ]; then
         # python34 which is in CentOS does not have virtualenv binary
-        VIRTUALENV=$(which virtualenv-3)
+        VIRTUALENV="$(which virtualenv-3)"
     fi
 
-    ${VIRTUALENV} -p python3 venv && source venv/bin/activate && python3 "$(which pip3)" install pydocstyle
+    ${VIRTUALENV} -p python3 venv && source venv/bin/activate && python3 "$(which pip3)" install pyflakes
 }
 
-# run the pydocstyle for all files that are provided in $1
+pushd "${SCRIPT_DIR}/.."
+
+# run the pyflakes for all files that are provided in $1
 function check_files() {
     for source in $1
     do
         echo "$source"
-        pydocstyle --count "$source"
+        pyflakes "$source"
         if [ $? -eq 0 ]
         then
             echo "    Pass"
@@ -36,15 +48,14 @@ function check_files() {
     done
 }
 
+[ "$NOVENV" == "1" ] || prepare_venv || exit 1
 
 echo "----------------------------------------------------"
-echo "Checking documentation strings in all sources stored"
-echo "in following directories:"
+echo "Checking source files for common errors in following"
+echo "directories:"
 echo "$directories"
 echo "----------------------------------------------------"
 echo
-
-[ "$NOVENV" == "1" ] || prepare_venv || exit 1
 
 # checks for the whole directories
 for directory in $directories
@@ -55,12 +66,14 @@ do
 done
 
 
+popd
+
 if [ $fail -eq 0 ]
 then
     echo "All checks passed for $pass source files"
 else
     let total=$pass+$fail
-    echo "Documentation strings should be added and/or fixed in $fail source files out of $total files"
+    echo "$fail source files out of $total files needs to be checked and fixed"
     exit 1
 fi
 
