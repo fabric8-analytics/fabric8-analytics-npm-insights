@@ -168,17 +168,19 @@ class Utility:
         return all_packages, list_of_manifest_list
 
     def create_content_matrix(self, pkg_tag_map,
-                              all_packages, vocabulary, tag_idx_map):  # pragma: no cover
+                              all_packages, vocabulary):  # pragma: no cover
         """Create Content Matrix."""
-        pkg_tag_map = self.dict_
-        all_packages = self.set_
-        vocabulary = self.set_
-        tag_idx_map = self.dict_
+        tag_idx_map = self.create_vocabulary_map(vocabulary)
         content_matrix = np.zeros([len(all_packages), len(vocabulary)])
         if tag_idx_map:
             for idx, package in enumerate(all_packages):
-                package_tags = [tag_idx_map[tag] for tag in pkg_tag_map[package]]
-                content_matrix[idx, package_tags] = 1
+                try:
+                    package_tags = [tag_idx_map[tag] for tag in pkg_tag_map[package]]
+                    if idx == 0:
+                        logger.info("Setting to 1: {}".format(package_tags))
+                    content_matrix[idx, package_tags] = 1
+                except Exception:
+                    continue
 
         return content_matrix
 
@@ -194,12 +196,14 @@ class Utility:
         """Give the Query Parameters which are organization and package name respectively."""
         org = str()
         package_name = str()
-        url_chunks = (repo_url.rsplit('/', 2))
-        if 'github' not in url_chunks[1]:
-            org = url_chunks[1]
-        package_name = url_chunks[2]
-
-        return list([org, package_name])
+        try:
+            url_chunks = (repo_url.rsplit('/', 2))
+            if 'github' not in url_chunks[1]:
+                org = url_chunks[1]
+            package_name = url_chunks[2]
+            return list([org, package_name])
+        except Exception:
+            return list([org, package_name])
 
     def make_user_data(self, manifest_list, unique_packages):
         """Return the user data, which is required for making test data."""
@@ -214,5 +218,4 @@ class Utility:
                 length_ = len(this_user_items)
                 user_items = [str(length_)] + this_user_items
                 manifest_user_data.append(user_items)
-
         return list(manifest_user_data)

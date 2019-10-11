@@ -20,18 +20,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import pandas as pd
 from training.datastore.utils import Utility
-from training.datastore.s3_connection import GetData
 from training.datastore.get_keywords import GetKeywords
 
 
 class PreprocessData:
     """This class defines the PreprocessData functions."""
 
-    def __init__(self, df_=pd.DataFrame()):
+    def __init__(self, data_obj, df_=pd.DataFrame()):
         """Create an instance for PreprocessData."""
-        self.get_data_obj = GetData()
+        self.get_data_obj = data_obj
         self.utility_obj = Utility()
-        self.get_keywords_obj = GetKeywords()
+        self.get_keywords_obj = GetKeywords(data_obj)
         self.df_ = df_
         self.existing_df = self.get_data_obj.load_existing_data()
         self.pkg_kwd_df = self.fetch_package_keywords()
@@ -116,11 +115,11 @@ class PreprocessData:
             except Exception:
                 pass
 
-        return self.extended_ptm, self.manifest_user_data
+        return self.extended_ptm, self.manifest_user_data, self.unique_packages
 
     def update_pkg_tag_map(self):
         """Update the existing package tag map."""
-        extended_ptm, manifest_user_data = self.create_extended_pkg_tag_map()
+        extended_ptm, manifest_user_data, unique_packages = self.create_extended_pkg_tag_map()
         for package_name in self.package_tag_map.keys():
             more_keywords = set()
             for dependency in self.package_dep_map[package_name]:
@@ -128,4 +127,4 @@ class PreprocessData:
             self.package_tag_map[package_name] = self.package_tag_map.get(
                 package_name).union(more_keywords)
             self.vocabulary = self.vocabulary.union(more_keywords)
-        return self.package_tag_map, self.vocabulary, manifest_user_data
+        return self.package_tag_map, self.vocabulary, manifest_user_data, unique_packages
