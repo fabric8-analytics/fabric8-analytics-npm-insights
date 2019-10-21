@@ -65,9 +65,18 @@ echo "Environment variables are set!"
 set -e -x
 
 # enable debugging & set strict error trap
-sudo yum -y install -v python36 python36-pip
-
-sudo python3.6 -m pip install tensorflow-gpu pandas boto3 numpy scipy daiquiri flask h5py
+sudo yum -y install gcc openssl-devel bzip2-devel libffi-devel
+cd /tmp
+sudo yum -y install -v httpd httpd-devel wget git make
+wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz
+tar xzf Python-3.7.4.tgz
+cd Python-3.7.4
+./configure --enable-optimizations
+sudo make altinstall
+export PATH="/usr/local/bin:$PATH"
+python3.7 -m pip install pip --user
+python3.7 -m pip install pandas boto3 numpy tensorflow-gpu==2.0.0 scipy daiquiri flask h5py --user
+python3.7 -m pip install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra --user
 
 # Now set the PYTHONPATH
-export PYTHONPATH='/home/hadoop/CVAE/'
+export PYTHONPATH='/home/hadoop'
