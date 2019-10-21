@@ -38,7 +38,7 @@ def submit_job():
     s3_bucket = 'cvae-insights'
     s3_key = 'tf_training_job.zip'
     s3_uri = 's3://{bucket}/{key}'.format(bucket=s3_bucket, key=s3_key)
-    s3_bootstrap_key = 'emr_bootstrap_train.sh'
+    # s3_bootstrap_key = 'emr_bootstrap_train.sh'
     s3_bootstrap_uri = 's3://{bucket}/emr_bootstrap_train.sh'.format(bucket=s3_bucket)
 
     # S3 bucket/key, where the spark job logs will be maintained
@@ -49,9 +49,10 @@ def submit_job():
     _logger.debug("Uploading the bootstrap action to AWS S3 URI {} ...".format(s3_bootstrap_uri))
 
     # Note: This overwrites if file already exists
-    s3_client = boto3.client('s3',
-                             aws_access_key_id='',
-                             aws_secret_access_key='')
+    # Manually stored bootstrap file in s3 bucket, so no need of s3 client.
+    # s3_client = boto3.client('s3',
+    #                          aws_access_key_id='',
+    #                          aws_secret_access_key='')
     # s3_client.upload_file(input_bootstrap_file, s3_bucket, s3_bootstrap_key)
 
     _logger.debug("Uploading the src code to AWS S3 URI {} ...".format(s3_uri))
@@ -91,7 +92,7 @@ def submit_job():
                                         "LC_ALL": "en_US.UTF-8",
                                         "LANG": "en_US.UTF-8",
                                         "AWS_S3_ACCESS_KEY_ID": '',
-                                        "AWS_S3_SECRET_ACCESS_KEY": ''
+                                        "AWS_S3_SECRET_ACCESS_KEY": '',
                                         "AWS_S3_BUCKET_NAME": s3_bucket,
                                         "MODEL_VERSION": '',
                                         "GITHUB_TOKEN": ''

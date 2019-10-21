@@ -33,7 +33,7 @@ class GetPreprocessData:
                  aws_access_key_id='',
                  aws_secret_access_key='',
                  aws_bucket_name='cvae-insights',
-                 model_version='2019-01-03',
+                 model_version='',
                  num_train_per_user=5):
         """Create an instance for GetPreprocessData."""
         self.obj_ = GetData(aws_access_key_id=aws_access_key_id,

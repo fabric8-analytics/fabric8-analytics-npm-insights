@@ -113,7 +113,7 @@ class GetKeywords:
                 keywords = list(self.clean_response(response.json()))
                 return keywords
             except Exception:
-                logger.error("Github token is not present.")
+                logger.error("Either Github token is not present or response is not coming.")
                 return keywords
         else:
             return keywords
