@@ -31,7 +31,7 @@ class TrainNetwork:
                  aws_secret_access_key=os.environ.get("AWS_S3_SECRET_ACCESS_KEY",
                                                       ""),
                  aws_bucket_name=os.environ.get("AWS_S3_BUCKET_NAME", "cvae-insights"),
-                 model_version=os.environ.get("MODEL_VERSION", "2019-01-03"),
+                 model_version=os.environ.get("MODEL_VERSION", ""),
                  num_train_per_user=os.environ.get("TRAIN_PER_USER", 5)
                  ):
         """Construct an object with following properties."""
