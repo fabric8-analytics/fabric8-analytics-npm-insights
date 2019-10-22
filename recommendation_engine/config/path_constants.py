@@ -7,6 +7,7 @@ TEMPORARY_MODEL_PATH = '/tmp/intermediate-model/'
 TEMPORARY_LATENT_PATH = os.path.join(TEMPORARY_MODEL_PATH, 'latent_pretrain_all')
 TEMPORARY_SDAE_PATH = os.path.join(TEMPORARY_MODEL_PATH, 'train')
 TEMPORARY_CVAE_PATH = os.path.join(TEMPORARY_MODEL_PATH, 'cvae')
+TEMPORARY_PMF_PATH = os.path.join(TEMPORARY_MODEL_PATH, 'pmf-packagedata.mat')
 USER_ITEM_FILEPATH = os.path.join(TEMPORARY_PATH, "user_train_data.dat")
 ITEM_USER_FILEPATH = os.path.join(TEMPORARY_PATH, "item_train_data.dat")
 PRECOMPUTED_MANIFEST_PATH = os.path.join(TEMPORARY_PATH, "manifest_user_data.dat")
