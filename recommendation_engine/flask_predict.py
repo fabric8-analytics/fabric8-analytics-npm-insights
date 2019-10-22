@@ -26,6 +26,8 @@ from rudra.data_store.aws import AmazonS3
 import recommendation_engine.config.cloud_constants as cloud_constants
 from recommendation_engine.config.cloud_constants import USE_CLOUD_SERVICES
 from recommendation_engine.config.params_scoring import ScoringParams
+from raven.contrib.flask import Sentry
+import logging
 
 app = Flask(__name__)
 
@@ -45,6 +47,9 @@ recommender = PMFRecommendation(ScoringParams.recommendation_threshold,
                                 s3,
                                 ScoringParams.num_latent_factors)
 
+SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
+sentry = Sentry(app, dsn=SENTRY_DSN, logging=True, level=logging.ERROR)
+app.logger.info('App initialized, ready to roll...')
 
 @app.route('/api/v1/liveness', methods=['GET'])
 def liveness():
@@ -61,6 +66,7 @@ def readiness():
 @app.route('/api/v1/companion_recommendation', methods=['POST'])
 def recommendation():
     """Endpoint to serve recommendations."""
+    app.logger.info("Executed companion recommendation")
     global recommender
     response_json = []
     for recommendation_request in request.json:
@@ -75,6 +81,12 @@ def recommendation():
         })
     return flask.jsonify(response_json), 200
 
+
+def log_it(func):
+    def inner1(*args, **kwargs):
+        app.logger.info("Executed {}".format(func.__name__))
+        return func(*args, **kwargs)
+    return inner1
 
 if __name__ == "__main__":
     app.run(debug=True, port=6006)  # pragma: no cover

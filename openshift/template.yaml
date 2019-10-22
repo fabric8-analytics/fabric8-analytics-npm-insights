@@ -55,6 +55,12 @@ objects:
             value: ${MODEL_VERSION}
           - name: MIN_REC_CONFIDENCE
             value: ${MIN_REC_CONFIDENCE}
+          - name: SENTRY_DSN
+            valueFrom:
+              secretKeyRef:
+                name: worker
+                key: sentry_dsn
+
           name: f8a-npm-insights
           image: "${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${IMAGE_TAG}"
           ports:
