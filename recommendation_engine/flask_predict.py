@@ -51,6 +51,7 @@ SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
 sentry = Sentry(app, dsn=SENTRY_DSN, logging=True, level=logging.ERROR)
 app.logger.info('App initialized, ready to roll...')
 
+
 @app.route('/api/v1/liveness', methods=['GET'])
 def liveness():
     """Define the linveness probe."""
@@ -83,10 +84,12 @@ def recommendation():
 
 
 def log_it(func):
+    """Func decorator for logging."""
     def inner1(*args, **kwargs):
         app.logger.info("Executed {}".format(func.__name__))
         return func(*args, **kwargs)
     return inner1
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=6006)  # pragma: no cover
