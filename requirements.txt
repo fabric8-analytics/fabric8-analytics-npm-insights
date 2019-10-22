@@ -23,3 +23,7 @@ s3transfer==0.1.13        # via boto3
 scipy==1.0.0
 six==1.11.0               # via python-dateutil
 werkzeug==0.15.3          # via flask
+tensorboard==2.0.0
+tensorflow==2.0.0
+tensorflow-estimator==2.0.0
+tensorflow-gpu==2.0.0

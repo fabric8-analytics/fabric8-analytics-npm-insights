@@ -23,6 +23,7 @@ from training.datastore.utils import Utility
 from recommendation_engine.config.path_constants import TEMPORARY_PATH
 from rudra import logger
 import numpy as np
+import time
 import os
 import json
 
@@ -156,7 +157,7 @@ class GetData:
         pairs_train = []
         pairs_test = []
         user_id = 0
-        np.random.seed(123)
+        np.random.seed(time.time())
         logger.info("Splitting data into training and testing.")
         for line in data_list:
             arr = line.strip().split()
@@ -235,8 +236,6 @@ class GetData:
         """Store all the contents on S3."""
         try:
             if os.path.exists(folder_path):
-                self.s3_client.s3_upload_folder(folder_path=folder_path,
-                                                prefix=self.version_name + '')
                 self.s3_client.s3_upload_folder(folder_path=folder_path,
                                                 prefix=self.version_name + '')
                 logger.info("Folders are successfully saved on S3.")

@@ -74,7 +74,7 @@ cd Python-3.7.4
 ./configure --enable-optimizations
 sudo make altinstall
 export PATH="/usr/local/bin:$PATH"
-python3.7 -m pip install pip --user
+python3.7 -m pip install --upgrade pip --user
 python3.7 -m pip install pandas boto3 numpy tensorflow-gpu==2.0.0 scipy daiquiri flask h5py --user
 python3.7 -m pip install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra --user
 

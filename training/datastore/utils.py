@@ -179,7 +179,7 @@ class Utility:
                     if idx == 0:
                         logger.info("Setting to 1: {}".format(package_tags))
                     content_matrix[idx, package_tags] = 1
-                except Exception:
+                except KeyError:
                     continue
 
         return content_matrix

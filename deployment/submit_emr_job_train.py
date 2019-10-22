@@ -22,23 +22,25 @@ import logging
 import boto3
 from time import gmtime, strftime
 import daiquiri
-
-# import recommendation_engine.config.cloud_constants as config
+import os
 
 daiquiri.setup(level=logging.DEBUG)
 _logger = daiquiri.getLogger(__name__)
 
 COMPONENT_PREFIX = "chester"
+AWS_S3_ACCESS_KEY_ID = os.environ.get('AWS_S3_ACCESS_KEY_ID', '')
+AWS_S3_SECRET_ACCESS_KEY = os.environ.get('AWS_S3_SECRET_ACCESS_KEY', '')
+MODEL_VERSION = os.environ.get("MODEL_VERSION", "")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 
 
 def submit_job():
     """Submit new job with specified parameters."""
     str_cur_time = strftime("%Y_%m_%d_%H_%M_%S", gmtime())
     # S3 bucket/key, where the input spark job ( src code ) will be uploaded
-    s3_bucket = 'cvae-insights'
-    s3_key = 'tf_training_job.zip'
+    s3_bucket = os.environ.get('AWS_S3_BUCKET_NAME', 'cvae-insights')
+    s3_key = os.environ.get('TRAINING_CODE_KEY', 'tf_training_job.zip')
     s3_uri = 's3://{bucket}/{key}'.format(bucket=s3_bucket, key=s3_key)
-    # s3_bootstrap_key = 'emr_bootstrap_train.sh'
     s3_bootstrap_uri = 's3://{bucket}/emr_bootstrap_train.sh'.format(bucket=s3_bucket)
 
     # S3 bucket/key, where the spark job logs will be maintained
@@ -47,21 +49,11 @@ def submit_job():
     s3_log_uri = 's3://{bucket}/{key}'.format(bucket=s3_log_bucket, key=s3_log_key)
 
     _logger.debug("Uploading the bootstrap action to AWS S3 URI {} ...".format(s3_bootstrap_uri))
-
-    # Note: This overwrites if file already exists
-    # Manually stored bootstrap file in s3 bucket, so no need of s3 client.
-    # s3_client = boto3.client('s3',
-    #                          aws_access_key_id='',
-    #                          aws_secret_access_key='')
-    # s3_client.upload_file(input_bootstrap_file, s3_bucket, s3_bootstrap_key)
-
     _logger.debug("Uploading the src code to AWS S3 URI {} ...".format(s3_uri))
-    # s3_client.upload_file(input_src_code_file, s3_bucket, s3_key)
-
     _logger.debug("Starting spark emr cluster and submitting the jobs ...")
     emr_client = boto3.client('emr',
-                              aws_access_key_id='',
-                              aws_secret_access_key='',
+                              aws_access_key_id=AWS_S3_ACCESS_KEY_ID,
+                              aws_secret_access_key=AWS_S3_SECRET_ACCESS_KEY,
                               region_name='us-east-1')
 
     response = emr_client.run_job_flow(
@@ -91,11 +83,11 @@ def submit_job():
                                         "PYTHONPATH": "/home/hadoop/fabric8-analytics-npm-insights",
                                         "LC_ALL": "en_US.UTF-8",
                                         "LANG": "en_US.UTF-8",
-                                        "AWS_S3_ACCESS_KEY_ID": '',
-                                        "AWS_S3_SECRET_ACCESS_KEY": '',
+                                        "AWS_S3_ACCESS_KEY_ID": AWS_S3_ACCESS_KEY_ID,
+                                        "AWS_S3_SECRET_ACCESS_KEY": AWS_S3_SECRET_ACCESS_KEY,
                                         "AWS_S3_BUCKET_NAME": s3_bucket,
-                                        "MODEL_VERSION": '',
-                                        "GITHUB_TOKEN": ''
+                                        "MODEL_VERSION": MODEL_VERSION,
+                                        "GITHUB_TOKEN": GITHUB_TOKEN
                                     }
                                 }
                             ]
@@ -142,8 +134,7 @@ def submit_job():
                 'ActionOnFailure': 'TERMINATE_CLUSTER',
                 'HadoopJarStep': {
                     'Jar': 'command-runner.jar',
-                    'Args': ['/usr/local/bin/python3.7'.format(
-                        '/home/hadoop/fabric8-analytics-npm-insights'),
+                    'Args': ['/usr/local/bin/python3.7',
                              '/home/hadoop/fabric8-analytics-npm-insights/\
                              recommendation_engine/autoencoder/train/train.py']
                 }
