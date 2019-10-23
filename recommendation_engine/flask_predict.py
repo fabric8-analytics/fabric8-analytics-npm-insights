@@ -83,13 +83,5 @@ def recommendation():
     return flask.jsonify(response_json), 200
 
 
-def log_it(func):
-    """Func decorator for logging."""
-    def inner1(*args, **kwargs):
-        app.logger.info("Executed {}".format(func.__name__))
-        return func(*args, **kwargs)
-    return inner1
-
-
 if __name__ == "__main__":
     app.run(debug=True, port=6006)  # pragma: no cover
