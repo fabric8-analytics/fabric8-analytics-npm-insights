@@ -153,9 +153,9 @@ class PMFTraining:
 
     def save_model(self, data_store=None):
         """Save the model in matlab format to load later for scoring."""
-        local_file_path = os.path.join(path_constants.TEMPORARY_PMF_PATH)
+        local_file_path = path_constants.TEMPORARY_MODEL_PATH
         local_file_path = check_path(local_file_path)
-        savemat(local_file_path,
+        savemat(path_constants.TEMPORARY_PMF_PATH,
                 {"m_U": self.m_users,
                  "m_V": self.m_items,
                  "m_theta": self.m_weights
