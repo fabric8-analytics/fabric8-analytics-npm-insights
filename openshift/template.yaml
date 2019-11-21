@@ -40,20 +40,17 @@ objects:
           - name: AWS_S3_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
-                key: aws_access_key_id
-                name: cvae-npm-insights-s3
+                key: s3-access-key-id
+                name: aws
           - name: AWS_S3_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
-                key: aws_access_key_id
-                name: cvae-npm-insights-s3
+                key: s3-secret-access-key
+                name: aws
           - name: FLASK_LOGGING_LEVEL
             value: ${FLASK_LOGGING_LEVEL}
-          - name: AWS_S3_BUCKET_NAME
-              valueFrom:
-                secretKeyRef:
-                  key: bucket
-                  name: cvae-npm-insights-s3
+          - name: S3_BUCKET_NAME
+            value: ${S3_BUCKET_NAME}
           - name: MODEL_VERSION
             value: ${MODEL_VERSION}
           - name: MIN_REC_CONFIDENCE
@@ -156,6 +153,12 @@ parameters:
   required: false
   name: FLASK_LOGGING_LEVEL
   value: "WARNING"
+
+- description: "Name of the S3 bucket to use for scoring/training"
+  displayName: S3 bucket name
+  required: true
+  name: S3_BUCKET_NAME
+  value: "cvae-insights"
 
 - description: "Model Version - Date Format YYYY-MM-DD"
   displayName: Model Version
