@@ -21,10 +21,9 @@ import logging
 import sys
 import daiquiri
 import numpy as np
-
 from recommendation_engine.config.params_scoring import ScoringParams
 from recommendation_engine.config.path_constants import PMF_MODEL_PATH, PACKAGE_TAG_MAP, \
-    TRAINING_DATA_ITEMS, PRECOMPUTED_STACKS, ID_TO_PACKAGE_MAP, PACKAGE_TO_ID_MAP
+    ITEM_USER_FILEPATH, PRECOMPUTED_MANIFEST_PATH, ID_TO_PACKAGE_MAP, PACKAGE_TO_ID_MAP
 from recommendation_engine.model.pmf_prediction import PMFScoring
 from recommendation_engine.predictor.abstract_recommender import AbstractRecommender
 from recommendation_engine.utils.fileutils import load_rating
@@ -55,12 +54,11 @@ class PMFRecommendation(AbstractRecommender):
         self.latent_item_rep_mat = None
         self.weight_matrix = None
         self.s3_client = data_store
-
         self._load_model_output_matrices(model_path=PMF_MODEL_PATH)
         self._load_package_id_to_name_map()
         self._package_tag_map = self.s3_client.read_json_file(PACKAGE_TAG_MAP)
-        self.item_ratings = load_rating(TRAINING_DATA_ITEMS, data_store)
-        self.user_stacks = load_rating(PRECOMPUTED_STACKS, data_store)
+        self.item_ratings = load_rating(ITEM_USER_FILEPATH)
+        self.user_stacks = load_rating(PRECOMPUTED_MANIFEST_PATH)
         _logger.info("Created an instance of pmf-recommendation, loaded data from S3")
 
     def _load_model_output_matrices(self, model_path):

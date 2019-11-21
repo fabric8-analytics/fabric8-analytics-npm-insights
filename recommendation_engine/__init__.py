@@ -1,1 +1,3 @@
-"""Contains the core recommendations engine chester."""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""Data pipeline module."""

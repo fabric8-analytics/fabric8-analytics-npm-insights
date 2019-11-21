@@ -43,7 +43,7 @@ def load_rating(path, data_store):
             this_user_item_list = set()
         else:
             this_user_item_list = set([int(x) for x in this_user_ratings[1:]])
-        rating_matrix.append(this_user_item_list)
+        rating_matrix.append(list(this_user_item_list))
     return rating_matrix
 
 
@@ -56,3 +56,15 @@ def save_temporary_local_file(buf, local_filename):
     """
     with open(os.path.join('/tmp', local_filename), 'wb') as local_fileobj:
         local_fileobj.write(buf)
+
+
+def check_path(path):
+    """Check the datastore path.
+
+    :path: The datastore path, create if the given path
+    is not exist.
+    :returns: path in str format.
+    """
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path
