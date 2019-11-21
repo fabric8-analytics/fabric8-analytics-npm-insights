@@ -1,4 +1,4 @@
-FROM npm-insights:testing
+FROM quay.io/farrion/python3-ml:latest
 
 LABEL MAINTAINER="Avishkar Gupta <avgupta@redhat.com>"
 
@@ -15,8 +15,11 @@ RUN chmod 0777 /entrypoint-test.sh
 
 ENV PYTHONPATH=/
 
-RUN pip3 install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra#egg=rudra
-RUN pip3 install pytest pytest-cov radon==2.4.0 codecov
+RUN pip3 install --upgrade pip
+RUN pip install tensorflow==2.0.0
+RUN pip install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra#egg=rudra
+RUN pip install pytest pytest-cov radon==2.4.0 codecov
+
 
 # --------------------------------------------------------------------------------------------------
 # RUN THE UNIT TESTS

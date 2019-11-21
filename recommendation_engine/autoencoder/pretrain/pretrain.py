@@ -39,3 +39,4 @@ def fit(data):
     vae_pre_ob = pretrain_vae.PretrainNetwork(params.hidden_dims, weights + de_weights[::-1])
     vae_pre_ob.train(data)
     logger.info("Variational AutoEncoder is also trained.")
+

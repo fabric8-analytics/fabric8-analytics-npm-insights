@@ -24,9 +24,9 @@ import pandas as pd
 from training.datastore.get_keywords import GetKeywords
 import unittest
 
-kws_obj = GetKeywords()
+kws_obj = GetKeywords(data_obj=None)
 
-with open('tests/test_data/npm/dev/2019-01-03/data/test-node-package-details-with-url.json') as f:
+with open('tests/test_data/2019-01-03/data/test-node-package-details-with-url.json') as f:
     test_data_df = pd.DataFrame(json.load(f))
 
 

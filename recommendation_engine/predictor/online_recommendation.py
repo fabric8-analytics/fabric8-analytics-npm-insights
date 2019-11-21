@@ -57,8 +57,8 @@ class PMFRecommendation(AbstractRecommender):
         self._load_model_output_matrices(model_path=PMF_MODEL_PATH)
         self._load_package_id_to_name_map()
         self._package_tag_map = self.s3_client.read_json_file(PACKAGE_TAG_MAP)
-        self.item_ratings = load_rating(ITEM_USER_FILEPATH)
-        self.user_stacks = load_rating(PRECOMPUTED_MANIFEST_PATH)
+        self.item_ratings = load_rating(ITEM_USER_FILEPATH, data_store)
+        self.user_stacks = load_rating(PRECOMPUTED_MANIFEST_PATH, data_store)
         _logger.info("Created an instance of pmf-recommendation, loaded data from S3")
 
     def _load_model_output_matrices(self, model_path):
@@ -68,6 +68,7 @@ class PMFRecommendation(AbstractRecommender):
                      form the model.
         :returns: An instance of the scoring object.
         """
+        print("Model path is: ", model_path)
         self.model_dict = self.s3_client.load_matlab_multi_matrix(model_path)
         self.user_matrix = self.model_dict["m_U"]
         self.latent_item_rep_mat = self.model_dict["m_V"]
@@ -84,6 +85,7 @@ class PMFRecommendation(AbstractRecommender):
         minDiff = sys.maxsize
         closest = None
         for idx, stack in enumerate(self.user_stacks):
+            stack = set(stack)
             diff = len(stack.difference(new_user_stack))
             if stack == new_user_stack:
                 closest = idx
@@ -100,6 +102,7 @@ class PMFRecommendation(AbstractRecommender):
         """Predict companion packages."""
         missing = []
         avail = []
+        print("New user is: ", new_user_stack)
         if not companion_threshold:
             companion_threshold = self._M
         for package in new_user_stack:
@@ -108,17 +111,23 @@ class PMFRecommendation(AbstractRecommender):
                 missing.append(package)
             else:
                 avail.append(pkg_id)
+        print("Missing: ", missing, "Avail: ", avail)
         package_topic_dict = {
             self.package_id_name_map[str(package_id)]: self._package_tag_map.get(
                 self.package_id_name_map[str(package_id)], []) for package_id in avail
         }
+        print("Package topic dict is: ", package_topic_dict)
         # if more than half the packages are missing
         if len(avail) == 0 or len(missing) > len(avail):
             return missing, [], package_topic_dict
         new_user_stack = avail
+        print("After preprocessing new stack is: ", new_user_stack)
         # Check whether we have already seen this stack.
         user = self._find_closest_user_in_training_set(new_user_stack)
+        print("Closest user is: ", user)
         if user is not None:
+            print("User matrix : ", self.user_matrix)
+            print("Item Matrix: ", self.latent_item_rep_mat)
             _logger.info("Have precomputed stack")
             recommendation = np.dot(self.user_matrix[int(user), :].reshape([1, self.num_latent]),
                                     self.latent_item_rep_mat.T)

@@ -35,15 +35,14 @@ class TestPMFRecommendation(TestCase):
     def test__find_closest_user_in_training_set(self):
         """Test if we are getting correct "closest user" from the training set."""
         # Full match
-        closest = self.pmf_rec._find_closest_user_in_training_set([17190, 14774, 15406, 16594,
-                                                                   29063])
-        self.assertIsNotNone(closest)
-        # Partial
-        closest = self.pmf_rec._find_closest_user_in_training_set([17190, 14774, 15406])
+        closest = self.pmf_rec._find_closest_user_in_training_set([21, 107, 89, 14])
         self.assertIsNotNone(closest)
         # Negative
-        closest = self.pmf_rec._find_closest_user_in_training_set([3, 4])
+        closest = self.pmf_rec._find_closest_user_in_training_set([17190, 14774, 15406])
         self.assertIsNone(closest)
+        # Partial
+        closest = self.pmf_rec._find_closest_user_in_training_set([3, 4])
+        self.assertIsNotNone(closest)
 
     def test__sigmoid(self):
         """Test if the sigmoid function is behaving correctly."""
@@ -52,7 +51,8 @@ class TestPMFRecommendation(TestCase):
     def test_predict(self):
         """Test the prediction flow."""
         # Test for a new stack.
-        missing, recommendation, ptm = self.pmf_rec.predict(['pon-logger'])
+        missing, recommendation, ptm = self.pmf_rec.predict(["content-type"])
+        print("Missing: ", missing, "Recommendation: ", recommendation, "PTM: ", ptm)
         self.assertFalse(missing)
         # Should have two recommendations here.
         self.assertEqual(len(recommendation), 2)

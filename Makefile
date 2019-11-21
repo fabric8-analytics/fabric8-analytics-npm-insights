@@ -2,9 +2,10 @@
 ifeq ($(TARGET),rhel)
   DOCKERFILE := Dockerfile.rhel
   REPOSITORY?=openshiftio/rhel-fabric8-analytics-f8a-npm-insights
+  echo "RHEL invoked."
 else
   DOCKERFILE := Dockerfile
-  REPOSITORY?=openshiftio/fabric8-analytics-f8a-npm-insights
+  REPOSITORY?=farrion/python3-ml
 endif
 DEFAULT_TAG=latest
 

@@ -46,7 +46,8 @@ class GetData:
         self.version_name = model_version
         self.s3_object = AmazonS3(bucket_name=self.bucket_name,
                                   aws_access_key_id=self.aws_access_key_id,
-                                  aws_secret_access_key=self.aws_secret_access_key
+                                  aws_secret_access_key=self.aws_secret_access_key,
+                                  local_dev=True
                                   )
         self.num_train_per_user = num_train_per_user
         self.s3_client = self.load_s3()
@@ -157,7 +158,7 @@ class GetData:
         pairs_train = []
         pairs_test = []
         user_id = 0
-        np.random.seed(time.time())
+        np.random.seed(int(time.time()))
         logger.info("Splitting data into training and testing.")
         for line in data_list:
             arr = line.strip().split()

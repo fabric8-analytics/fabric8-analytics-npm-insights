@@ -32,7 +32,8 @@ app = Flask(__name__)
 if USE_CLOUD_SERVICES:
     s3 = AmazonS3(bucket_name=cloud_constants.S3_BUCKET_NAME,  # pragma: no cover
                   aws_access_key_id=cloud_constants.AWS_S3_ACCESS_KEY_ID,
-                  aws_secret_access_key=cloud_constants.AWS_S3_SECRET_KEY_ID)
+                  aws_secret_access_key=cloud_constants.AWS_S3_SECRET_KEY_ID,
+                  local_dev=True)
     s3.connect()
 else:
     from rudra.data_store.local_data_store import LocalDataStore

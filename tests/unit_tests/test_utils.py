@@ -26,7 +26,7 @@ import pandas as pd
 
 utils_obj = Utility()
 
-with open('tests/test_data/npm/dev/2019-01-03/data/test-node-package-details-with-url.json') as f:
+with open('tests/test_data/2019-01-03/data/test-node-package-details-with-url.json') as f:
     test_data_df = pd.DataFrame(json.load(f))
 
 
