@@ -50,10 +50,10 @@ objects:
           - name: FLASK_LOGGING_LEVEL
             value: ${FLASK_LOGGING_LEVEL}
           - name: AWS_S3_BUCKET_NAME
-              valueFrom:
-                secretKeyRef:
-                  key: bucket
-                  name: cvae-npm-insights-s3
+            valueFrom:
+              secretKeyRef:
+                key: bucket
+                name: cvae-npm-insights-s3
           - name: MODEL_VERSION
             value: ${MODEL_VERSION}
           - name: MIN_REC_CONFIDENCE
