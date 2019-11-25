@@ -46,8 +46,7 @@ class GetData:
         self.version_name = model_version
         self.s3_object = AmazonS3(bucket_name=self.bucket_name,
                                   aws_access_key_id=self.aws_access_key_id,
-                                  aws_secret_access_key=self.aws_secret_access_key,
-                                  local_dev=True
+                                  aws_secret_access_key=self.aws_secret_access_key
                                   )
         self.num_train_per_user = num_train_per_user
         self.s3_client = self.load_s3()
@@ -77,8 +76,8 @@ class GetData:
 
     def load_existing_data(self):
         """Load the node registry dump from S3 bucket."""
-        NPM_clean_json_data_path = os.path.join("2019-01-03",
-                                                "data/node-package-details-with-url.json")
+        NPM_clean_json_data_path = os.path.join("training-utils",
+                                                "node-package-details-with-url.json")
         if self.s3_client.object_exists(NPM_clean_json_data_path):
             try:
                 logger.info("Reading dump data from 2019-01-03 version.")

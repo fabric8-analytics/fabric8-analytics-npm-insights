@@ -155,11 +155,9 @@ class PMFTraining:
         """Save the model in matlab format to load later for scoring."""
         local_file_path = TEMPORARY_MODEL_PATH
         local_file_path = check_path(local_file_path)
-        logger.info("User matrix is: {}".format(self.m_users))
-        logger.info("Item matrix is: {}".format(self.m_items))
         savemat(TEMPORARY_PMF_PATH,
-                {"m_U": self.m_users,
-                 "m_V": self.m_items,
+                {"m_U": self.m_users.numpy(),
+                 "m_V": self.m_items.numpy(),
                  "m_theta": self.m_weights
                  }
                 )
