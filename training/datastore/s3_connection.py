@@ -76,8 +76,8 @@ class GetData:
 
     def load_existing_data(self):
         """Load the node registry dump from S3 bucket."""
-        NPM_clean_json_data_path = os.path.join("2019-01-03",
-                                                "data/node-package-details-with-url.json")
+        NPM_clean_json_data_path = os.path.join("training-utils",
+                                                "node-package-details-with-url.json")
         if self.s3_client.object_exists(NPM_clean_json_data_path):
             try:
                 logger.info("Reading dump data from 2019-01-03 version.")
