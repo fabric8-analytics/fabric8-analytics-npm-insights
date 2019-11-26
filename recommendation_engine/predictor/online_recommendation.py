@@ -57,8 +57,8 @@ class PMFRecommendation(AbstractRecommender):
         self._load_model_output_matrices(model_path=PMF_MODEL_PATH)
         self._load_package_id_to_name_map()
         self._package_tag_map = self.s3_client.read_json_file(PACKAGE_TAG_MAP)
-        self.item_ratings = load_rating(ITEM_USER_FILEPATH)
-        self.user_stacks = load_rating(PRECOMPUTED_MANIFEST_PATH)
+        self.item_ratings = load_rating(ITEM_USER_FILEPATH, data_store)
+        self.user_stacks = load_rating(PRECOMPUTED_MANIFEST_PATH, data_store)
         _logger.info("Created an instance of pmf-recommendation, loaded data from S3")
 
     def _load_model_output_matrices(self, model_path):
@@ -84,6 +84,7 @@ class PMFRecommendation(AbstractRecommender):
         minDiff = sys.maxsize
         closest = None
         for idx, stack in enumerate(self.user_stacks):
+            stack = set(stack)
             diff = len(stack.difference(new_user_stack))
             if stack == new_user_stack:
                 closest = idx
