@@ -80,7 +80,7 @@ class GetData:
                                                 "node-package-details-with-url.json")
         if self.s3_client.object_exists(NPM_clean_json_data_path):
             try:
-                logger.info("Reading dump data from 2019-01-03 version.")
+                logger.info("Reading dump data from training-utils folder.")
                 existing_data = self.s3_client.read_generic_file(NPM_clean_json_data_path)
                 existing_df = self.utility.read_json_file(existing_data)
                 logger.info("Size of Raw df with url is: {}".format(len(existing_df)))
@@ -236,8 +236,12 @@ class GetData:
         """Store all the contents on S3."""
         try:
             if os.path.exists(folder_path):
-                self.s3_client.s3_upload_folder(folder_path=folder_path,
-                                                prefix=self.version_name + '')
+                if 'intermediate-model' in folder_path:
+                    self.s3_client.s3_upload_folder(folder_path=folder_path,
+                                                    prefix=self.version_name+'/intermediate-model')
+                else:
+                    self.s3_client.s3_upload_folder(folder_path=folder_path,
+                                                    prefix=self.version_name + '')
                 logger.info("Folders are successfully saved on S3.")
             else:
                 logger.error("Folder path doesn't exist.")
