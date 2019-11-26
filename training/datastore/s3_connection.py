@@ -238,7 +238,8 @@ class GetData:
             if os.path.exists(folder_path):
                 if 'intermediate-model' in folder_path:
                     self.s3_client.s3_upload_folder(folder_path=folder_path,
-                                                    prefix=self.version_name+'/intermediate-model')
+                                                    prefix=self.version_name + '/intermediate-model'
+                                                    )
                 else:
                     self.s3_client.s3_upload_folder(folder_path=folder_path,
                                                     prefix=self.version_name + '')
