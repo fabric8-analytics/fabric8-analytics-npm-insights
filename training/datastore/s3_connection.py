@@ -143,11 +143,11 @@ class GetData:
         self.pairs_test = data_list[1]
         self.num_users = data_list[2]
         self.num_items = data_list[3]
-        user_train_data = self.create_package_train_user_data()
-        item_train_data = self.create_package_train_item_data()
-        user_test_data = self.create_package_test_user_data()
-        item_test_data = self.create_package_test_item_data()
-        return user_train_data, item_train_data, user_test_data, item_test_data
+        packagedata_train_users = self.create_package_train_user_data()
+        packagedata_train_items = self.create_package_train_item_data()
+        packagedata_test_users = self.create_package_test_user_data()
+        packagedata_test_items = self.create_package_test_item_data()
+        return packagedata_train_users, packagedata_train_items, packagedata_test_users, packagedata_test_items
 
     def split_training_testing_data(self):
         """Split data into training and testing."""
@@ -216,7 +216,7 @@ class GetData:
         """Store numpy matrix in temporary storage."""
         path = self.check_path(datastore)
         try:
-            np.save(os.path.join(path, filename), content)
+            np.savez(os.path.join(path, filename), content)
             logger.info("Numpy matrix has been stored successfully.")
 
         except Exception as e:
