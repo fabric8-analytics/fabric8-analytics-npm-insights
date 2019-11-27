@@ -65,13 +65,19 @@ class GetPreprocessData:
                                            TEMPORARY_PATH)
         self.obj_.save_json_file_temporary(package_tag_map, 'package_tag_map.json',
                                            TEMPORARY_PATH)
-        self.obj_.save_file_temporary(user_train_data, "packagedata-train-"+str(self.num_users)+"-users.dat",
+        self.obj_.save_file_temporary(user_train_data,
+                                      "packagedata-train-" + str(self.num_users) + "-users.dat",
                                       TEMPORARY_DATA_PATH)
-        self.obj_.save_file_temporary(user_test_data, "packagedata-test-"+str(self.num_users)+"-users.dat",
+        self.obj_.save_file_temporary(user_test_data,
+                                      "packagedata-test-" + str(self.num_users) + "-users.dat",
                                       TEMPORARY_DATA_PATH)
-        self.obj_.save_file_temporary(item_train_data, "packagedata-train-"+str(self.num_users)+"-items.dat",
+        self.obj_.save_file_temporary(item_train_data,
+                                      "packagedata-train-" + str(self.num_users) + "-items.dat",
                                       TEMPORARY_DATA_PATH)
-        self.obj_.save_file_temporary(item_test_data, "packagedata-test-"+str(self.num_users)+"-items.dat",
+        self.obj_.save_file_temporary(item_test_data,
+                                      "packagedata-test-" + str(self.num_users) + "-items.dat",
                                       TEMPORARY_DATA_PATH)
-        self.obj_.save_numpy_matrix_temporary(content_matrix, 'content_matrix.npz', TEMPORARY_DATA_PATH)
+        self.obj_.save_numpy_matrix_temporary(content_matrix,
+                                              'content_matrix.npz',
+                                              TEMPORARY_DATA_PATH)
         logger.info("All items are saved successfully in temporary location.")
