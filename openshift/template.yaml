@@ -45,7 +45,7 @@ objects:
           - name: AWS_S3_SECRET_ACCESS_KEY
             valueFrom:
               secretKeyRef:
-                key: aws_access_key_id
+                key: aws_secret_access_key
                 name: cvae-npm-insights-s3
           - name: FLASK_LOGGING_LEVEL
             value: ${FLASK_LOGGING_LEVEL}
