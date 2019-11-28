@@ -68,6 +68,7 @@ class PMFRecommendation(AbstractRecommender):
                      form the model.
         :returns: An instance of the scoring object.
         """
+        _logger.warning("Picking model from {}".format(model_path))
         self.model_dict = self.s3_client.load_matlab_multi_matrix(model_path)
         self.user_matrix = self.model_dict["m_U"]
         self.latent_item_rep_mat = self.model_dict["m_V"]
@@ -75,6 +76,7 @@ class PMFRecommendation(AbstractRecommender):
 
     def _load_package_id_to_name_map(self):
         """Load the package-id to name mapping."""
+        _logger.warning("Reading package id map from: {}".format(PACKAGE_TO_ID_MAP))
         self.package_id_name_map = self.s3_client.read_json_file(filename=ID_TO_PACKAGE_MAP)
         self.package_name_id_map = self.s3_client.read_json_file(filename=PACKAGE_TO_ID_MAP)
 
