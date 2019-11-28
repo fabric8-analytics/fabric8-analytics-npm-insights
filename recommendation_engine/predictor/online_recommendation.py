@@ -69,7 +69,7 @@ class PMFRecommendation(AbstractRecommender):
                      form the model.
         :returns: An instance of the scoring object.
         """
-        _logger.warning("Paths are initialised for bucket: {}".format(S3_BUCKET_NAME))
+        _logger.warning("S3 bucket is: {}".format(S3_BUCKET_NAME))
         _logger.warning("Picking model from {}".format(model_path))
         self.model_dict = self.s3_client.load_matlab_multi_matrix(model_path)
         self.user_matrix = self.model_dict["m_U"]
