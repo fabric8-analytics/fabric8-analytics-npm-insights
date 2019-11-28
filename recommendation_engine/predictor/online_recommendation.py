@@ -27,6 +27,7 @@ from recommendation_engine.config.path_constants import PMF_MODEL_PATH, PACKAGE_
 from recommendation_engine.model.pmf_prediction import PMFScoring
 from recommendation_engine.predictor.abstract_recommender import AbstractRecommender
 from recommendation_engine.utils.fileutils import load_rating
+from recommendation_engine.config.cloud_constants import S3_BUCKET_NAME
 
 daiquiri.setup(level=logging.WARNING)
 _logger = daiquiri.getLogger(__name__)
@@ -68,6 +69,7 @@ class PMFRecommendation(AbstractRecommender):
                      form the model.
         :returns: An instance of the scoring object.
         """
+        _logger.warning("S3 bucket is: {}".format(S3_BUCKET_NAME))
         _logger.warning("Picking model from {}".format(model_path))
         self.model_dict = self.s3_client.load_matlab_multi_matrix(model_path)
         self.user_matrix = self.model_dict["m_U"]
