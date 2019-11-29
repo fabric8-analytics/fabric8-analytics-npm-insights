@@ -76,11 +76,11 @@ class GetData:
 
     def load_existing_data(self):
         """Load the node registry dump from S3 bucket."""
-        NPM_clean_json_data_path = os.path.join("2019-01-03",
-                                                "data/node-package-details-with-url.json")
+        NPM_clean_json_data_path = os.path.join("training-utils",
+                                                "node-package-details-with-url.json")
         if self.s3_client.object_exists(NPM_clean_json_data_path):
             try:
-                logger.info("Reading dump data from 2019-01-03 version.")
+                logger.info("Reading dump data from training-utils folder.")
                 existing_data = self.s3_client.read_generic_file(NPM_clean_json_data_path)
                 existing_df = self.utility.read_json_file(existing_data)
                 logger.info("Size of Raw df with url is: {}".format(len(existing_df)))
@@ -143,11 +143,12 @@ class GetData:
         self.pairs_test = data_list[1]
         self.num_users = data_list[2]
         self.num_items = data_list[3]
-        user_train_data = self.create_package_train_user_data()
-        item_train_data = self.create_package_train_item_data()
-        user_test_data = self.create_package_test_user_data()
-        item_test_data = self.create_package_test_item_data()
-        return user_train_data, item_train_data, user_test_data, item_test_data
+        packagedata_train_users = self.create_package_train_user_data()
+        packagedata_train_items = self.create_package_train_item_data()
+        packagedata_test_users = self.create_package_test_user_data()
+        packagedata_test_items = self.create_package_test_item_data()
+        return packagedata_train_users, packagedata_train_items, \
+            packagedata_test_users, packagedata_test_items
 
     def split_training_testing_data(self):
         """Split data into training and testing."""
@@ -157,7 +158,7 @@ class GetData:
         pairs_train = []
         pairs_test = []
         user_id = 0
-        np.random.seed(time.time())
+        np.random.seed(int(time.time()))
         logger.info("Splitting data into training and testing.")
         for line in data_list:
             arr = line.strip().split()
@@ -216,7 +217,7 @@ class GetData:
         """Store numpy matrix in temporary storage."""
         path = self.check_path(datastore)
         try:
-            np.save(os.path.join(path, filename), content)
+            np.savez(os.path.join(path, filename), matrix=content)
             logger.info("Numpy matrix has been stored successfully.")
 
         except Exception as e:
@@ -236,8 +237,13 @@ class GetData:
         """Store all the contents on S3."""
         try:
             if os.path.exists(folder_path):
-                self.s3_client.s3_upload_folder(folder_path=folder_path,
-                                                prefix=self.version_name + '')
+                if 'intermediate-model' in folder_path:
+                    self.s3_client.s3_upload_folder(folder_path=folder_path,
+                                                    prefix=self.version_name + '/intermediate-model'
+                                                    )
+                else:
+                    self.s3_client.s3_upload_folder(folder_path=folder_path,
+                                                    prefix=self.version_name + '')
                 logger.info("Folders are successfully saved on S3.")
             else:
                 logger.error("Folder path doesn't exist.")

@@ -23,4 +23,4 @@ import os
 USE_CLOUD_SERVICES = os.environ.get("USE_CLOUD_SERVICES", True)
 AWS_S3_ACCESS_KEY_ID = os.environ.get('AWS_S3_ACCESS_KEY_ID', '')
 AWS_S3_SECRET_KEY_ID = os.environ.get('AWS_S3_SECRET_ACCESS_KEY', '')
-S3_BUCKET_NAME = os.environ.get('S3_BUCKET_NAME', 'cvae-insights')
+S3_BUCKET_NAME = os.environ.get('AWS_S3_BUCKET_NAME', 'cvae-insights')
