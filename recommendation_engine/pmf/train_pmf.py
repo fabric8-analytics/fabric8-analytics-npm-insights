@@ -9,7 +9,7 @@ import tensorflow as tf
 import numpy as np
 from scipy.io import savemat
 import recommendation_engine.config.params_training as training_params
-import recommendation_engine.config.path_constants as path_constants
+from recommendation_engine.config.path_constants import TEMPORARY_MODEL_PATH, TEMPORARY_PMF_PATH
 from recommendation_engine.utils.fileutils import check_path
 
 daiquiri.setup(level=logging.DEBUG)
@@ -153,13 +153,11 @@ class PMFTraining:
 
     def save_model(self, data_store=None):
         """Save the model in matlab format to load later for scoring."""
-        local_file_path = path_constants.TEMPORARY_MODEL_PATH
+        local_file_path = TEMPORARY_MODEL_PATH
         local_file_path = check_path(local_file_path)
-        savemat(path_constants.TEMPORARY_PMF_PATH,
-                {"m_U": self.m_users,
-                 "m_V": self.m_items,
+        savemat(TEMPORARY_PMF_PATH,
+                {"m_U": self.m_users.numpy(),
+                 "m_V": self.m_items.numpy(),
                  "m_theta": self.m_weights
                  }
                 )
-        if data_store:
-            data_store.upload_file(local_file_path)

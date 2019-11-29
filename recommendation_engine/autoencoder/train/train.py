@@ -16,7 +16,8 @@ from recommendation_engine.pmf.train_pmf import PMFTraining
 import recommendation_engine.config.params_training as params_training
 from recommendation_engine.autoencoder.pretrain import pretrain
 from recommendation_engine.config.path_constants import TEMPORARY_SDAE_PATH, TEMPORARY_CVAE_PATH, \
-    USER_ITEM_FILEPATH, ITEM_USER_FILEPATH, TEMPORARY_PATH, TEMPORARY_MODEL_PATH
+    TEMPORARY_USER_ITEM_FILEPATH, TEMPORARY_ITEM_USER_FILEPATH, TEMPORARY_PATH, \
+    TEMPORARY_MODEL_PATH, TEMPORARY_DATASTORE, TEMPORARY_DATA_PATH
 from recommendation_engine.utils.fileutils import check_path, load_rating
 daiquiri.setup(level=logging.DEBUG)
 from training.datastore.get_preprocess_data import GetPreprocessData
@@ -31,7 +32,7 @@ class TrainNetwork:
                  aws_secret_access_key=os.environ.get("AWS_S3_SECRET_ACCESS_KEY",
                                                       ""),
                  aws_bucket_name=os.environ.get("AWS_S3_BUCKET_NAME", "cvae-insights"),
-                 model_version=os.environ.get("MODEL_VERSION", "2019-01-03"),
+                 model_version=os.environ.get("MODEL_VERSION", ""),
                  num_train_per_user=os.environ.get("TRAIN_PER_USER", 5)
                  ):
         """Construct an object with following properties."""
@@ -42,7 +43,7 @@ class TrainNetwork:
                                                      aws_secret_access_key,
                                                      aws_bucket_name,
                                                      model_version,
-                                                     num_train_per_user,
+                                                     num_train_per_user
                                                      )
 
     @staticmethod
@@ -128,15 +129,15 @@ class TrainNetwork:
 
 
 if __name__ == '__main__':
-    x_train = np.load(os.path.join(TEMPORARY_PATH, 'content_matrix.npy'))
-    input_dim = x_train.shape[1]
     p = TrainNetwork()
     logger.info("Preprocessing of data started.")
     p.get_preprocess_data.preprocess_data()
-
+    x_train = np.load(os.path.join(TEMPORARY_DATA_PATH, 'content_matrix.npz'))
+    x_train = x_train['matrix']
+    input_dim = x_train.shape[1]
     logger.info("size of training file is: ".format(len(x_train), len(x_train[0])))
-    user_to_item_matrix = load_rating(USER_ITEM_FILEPATH)
-    item_to_user_matrix = load_rating(ITEM_USER_FILEPATH)
+    user_to_item_matrix = load_rating(TEMPORARY_USER_ITEM_FILEPATH, TEMPORARY_DATASTORE)
+    item_to_user_matrix = load_rating(TEMPORARY_ITEM_USER_FILEPATH, TEMPORARY_DATASTORE)
     logger.info("Shape of User and Item matrices:".format(np.shape(user_to_item_matrix),
                                                           np.shape(item_to_user_matrix)))
     pretrain.fit(x_train)
@@ -148,7 +149,9 @@ if __name__ == '__main__':
     logger.debug("PMF model has been initialised")
     pmf_obj(user_to_item_matrix=user_to_item_matrix,
             item_to_user_matrix=item_to_user_matrix)
-    logger.info("PMF model has been trained.")
+    logger.debug("PMF model has been trained.")
     pmf_obj.save_model()
+    p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_DATA_PATH)
     p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_PATH)
     p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_MODEL_PATH)
+
