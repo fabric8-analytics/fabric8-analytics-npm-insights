@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from rudra import logger
-from training.datastore.s3_connection import GetData
 from training.datastore.utils import Utility
 import pandas as pd
 import requests
@@ -29,21 +28,22 @@ import json
 class GetKeywords:
     """This class defines the S3 Connections viz fetching and storing data."""
 
-    def __init__(self, df_=pd.DataFrame(), dict_=dict()):
+    def __init__(self, data_obj, df_=pd.DataFrame(), dict_=dict()):
         """Create an instance for GetKeywords."""
         self.df_ = df_
         self.dict_ = dict_
-        self.get_data = GetData()
+        self.get_data = data_obj
         self.utility = Utility()
 
     def from_existing_df(self, df_, package):
         """Find the keywords from existing dump."""
         if not df_.empty:
             data_lst = df_.loc[df_['name'] == str(package),
-                               ['name', 'description', 'keywords', 'dependencies']].iloc[0]
-            return data_lst
+                               ['name', 'description', 'keywords', 'dependencies']]
+            if not data_lst.empty:
+                return data_lst.iloc[0]
         else:
-            logger.error("Node Package details Dataframe is not existed.")
+            logger.info("Node Package details Dataframe is not existed.")
             return self.df_
 
     def from_npm_registry(self, package):
@@ -99,22 +99,24 @@ class GetKeywords:
     def from_github(self, package, url_df, api_url, api_token):
         """Find the keywords from the Github Graph QL."""
         url_ = self.utility.get_url(url_df, package)
-        logger.info("Repo URL is {}".format(url_))
         keywords = list()
-        query_params = self.utility.get_query_params(url_)
-        logger.info("Query Parameters are: {}, {}".format(query_params[0], query_params[1]))
-        json = {
-            'query': '{{organization(login: "{0}"){{name url repository(name: "{1}")\
-            {{name url description repositoryTopics(first: 10){{nodes{{topic {{name}}}}}}}}}}}}'
-            .format(str(query_params[0]), str(query_params[1]))}
-        headers = {'Authorization': 'token %s' % api_token}
-        try:
-            response = requests.post(url=api_url, json=json, headers=headers)
-
-            keywords = list(self.clean_response(response.json()))
+        if type(url_) == str:
+            query_params = self.utility.get_query_params(url_)
+            logger.info("Query Parameters are: {}, {}".format(query_params[0], query_params[1]))
+            json = {
+                'query': '{{organization(login: "{0}"){{name url repository(name: "{1}")\
+                {{name url description repositoryTopics(first: 10){{nodes{{topic {{name}}}}}}}}}}}}'
+                .format(str(query_params[0]), str(query_params[1]))}
+            headers = {'Authorization': 'token %s' % api_token}
+            try:
+                response = requests.post(url=api_url, json=json, headers=headers)
+                keywords = list(self.clean_response(response.json()))
+                return keywords
+            except Exception:
+                logger.error("Either Github token is not present or response is not coming.")
+                return keywords
+        else:
             return keywords
-        except Exception:
-            logger.error("Github tokens are not present.")
 
     def find_keywords(self, df_, list_):
         """Find the keywords for given list of list of raw data."""

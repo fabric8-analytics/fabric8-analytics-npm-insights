@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+pushd "${SCRIPT_DIR}/.." > /dev/null
+
 TEST_IMAGE_NAME='chester-tests'
 
 gc() {
@@ -17,3 +21,5 @@ else
     # CI instance will be torn down anyway, don't need to waste time on gc
     docker run ${TEST_IMAGE_NAME}
 fi
+
+popd > /dev/null

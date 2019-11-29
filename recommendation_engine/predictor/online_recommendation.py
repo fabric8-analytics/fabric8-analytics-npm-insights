@@ -27,6 +27,7 @@ from recommendation_engine.config.path_constants import PMF_MODEL_PATH, PACKAGE_
 from recommendation_engine.model.pmf_prediction import PMFScoring
 from recommendation_engine.predictor.abstract_recommender import AbstractRecommender
 from recommendation_engine.utils.fileutils import load_rating
+from recommendation_engine.config.cloud_constants import S3_BUCKET_NAME
 
 daiquiri.setup(level=logging.WARNING)
 _logger = daiquiri.getLogger(__name__)
@@ -57,8 +58,8 @@ class PMFRecommendation(AbstractRecommender):
         self._load_model_output_matrices(model_path=PMF_MODEL_PATH)
         self._load_package_id_to_name_map()
         self._package_tag_map = self.s3_client.read_json_file(PACKAGE_TAG_MAP)
-        self.item_ratings = load_rating(ITEM_USER_FILEPATH)
-        self.user_stacks = load_rating(PRECOMPUTED_MANIFEST_PATH)
+        self.item_ratings = load_rating(ITEM_USER_FILEPATH, data_store)
+        self.user_stacks = load_rating(PRECOMPUTED_MANIFEST_PATH, data_store)
         _logger.info("Created an instance of pmf-recommendation, loaded data from S3")
 
     def _load_model_output_matrices(self, model_path):
@@ -68,6 +69,8 @@ class PMFRecommendation(AbstractRecommender):
                      form the model.
         :returns: An instance of the scoring object.
         """
+        _logger.warning("S3 bucket is: {}".format(S3_BUCKET_NAME))
+        _logger.warning("Picking model from {}".format(model_path))
         self.model_dict = self.s3_client.load_matlab_multi_matrix(model_path)
         self.user_matrix = self.model_dict["m_U"]
         self.latent_item_rep_mat = self.model_dict["m_V"]
@@ -75,6 +78,7 @@ class PMFRecommendation(AbstractRecommender):
 
     def _load_package_id_to_name_map(self):
         """Load the package-id to name mapping."""
+        _logger.warning("Reading package id map from: {}".format(PACKAGE_TO_ID_MAP))
         self.package_id_name_map = self.s3_client.read_json_file(filename=ID_TO_PACKAGE_MAP)
         self.package_name_id_map = self.s3_client.read_json_file(filename=PACKAGE_TO_ID_MAP)
 
@@ -84,6 +88,7 @@ class PMFRecommendation(AbstractRecommender):
         minDiff = sys.maxsize
         closest = None
         for idx, stack in enumerate(self.user_stacks):
+            stack = set(stack)
             diff = len(stack.difference(new_user_stack))
             if stack == new_user_stack:
                 closest = idx

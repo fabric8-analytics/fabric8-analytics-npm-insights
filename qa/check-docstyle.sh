@@ -1,26 +1,38 @@
 #!/bin/bash
 
-directories="recommendation_engine deployment tests training"
+# Script to check all Python scripts for PEP-8 issues
+
+SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+IFS=$'\n'
+
+# list of directories with sources to check
+directories=$(cat ${SCRIPT_DIR}/directories.txt)
+
+# list of separate files to check
+separate_files=$(cat ${SCRIPT_DIR}/files.txt)
 
 pass=0
 fail=0
 
 function prepare_venv() {
-    VIRTUALENV=$(which virtualenv)
+    VIRTUALENV="$(which virtualenv)"
     if [ $? -eq 1 ]; then
         # python34 which is in CentOS does not have virtualenv binary
-        VIRTUALENV=$(which virtualenv-3)
+        VIRTUALENV="$(which virtualenv-3)"
     fi
 
-    ${VIRTUALENV} -p python3 venv && source venv/bin/activate && python3 "$(which pip3)" install vulture
+    ${VIRTUALENV} -p python3 venv && source venv/bin/activate && python3 "$(which pip3)" install pydocstyle
 }
 
-# run the vulture for all files that are provided in $1
+pushd "${SCRIPT_DIR}/.."
+
+# run the pydocstyle for all files that are provided in $1
 function check_files() {
     for source in $1
     do
         echo "$source"
-        vulture --min-confidence 90 "$source"
+        pydocstyle --count "$source"
         if [ $? -eq 0 ]
         then
             echo "    Pass"
@@ -38,7 +50,7 @@ function check_files() {
 
 
 echo "----------------------------------------------------"
-echo "Checking source files for dead code and unused imports"
+echo "Checking documentation strings in all sources stored"
 echo "in following directories:"
 echo "$directories"
 echo "----------------------------------------------------"
@@ -54,21 +66,15 @@ do
     check_files "$files"
 done
 
-# echo "----------------------------------------------------"
-# echo "Checking following source files for dead code and"
-# echo "unused imports:"
-# echo "$separate_files"
-# echo "----------------------------------------------------"
-# echo
-# 
-# check_files "$separate_files"
+
+popd
 
 if [ $fail -eq 0 ]
 then
     echo "All checks passed for $pass source files"
 else
     let total=$pass+$fail
-    echo "$fail source files out of $total files seems to contain dead code and/or unused imports"
+    echo "Documentation strings should be added and/or fixed in $fail source files out of $total files"
     exit 1
 fi
 

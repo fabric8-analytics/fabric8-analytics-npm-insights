@@ -18,7 +18,7 @@ services:
       DEPLOYMENT_PREFIX: "dev"
       SERVICE_PORT: "6006"
       SERVICE_TIMEOUT: "900"
-      S3_BUCKET_NAME: "${S3_BUCKET_NAME}"
+      AWS_S3_BUCKET_NAME: "${AWS_S3_BUCKET_NAME}"
       # Assume that minio will be used.
       USE_CLOUD_SERVICES: "True"
       PYTHONUNBUFFERED: 0
