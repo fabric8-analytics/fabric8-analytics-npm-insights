@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Train the probabilistic matrix factorization model."""
 
-import os
 import logging
 import daiquiri
 import tensorflow as tf
