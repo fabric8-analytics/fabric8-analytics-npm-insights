@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Train the CVAE model."""
 
-
+import os
 import daiquiri
 import logging
 import numpy as np
