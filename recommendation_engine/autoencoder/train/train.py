@@ -154,4 +154,3 @@ if __name__ == '__main__':
     p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_DATA_PATH)
     p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_PATH)
     p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_MODEL_PATH)
-
