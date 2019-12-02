@@ -22,20 +22,15 @@ from recommendation_engine.data_store import data_store_wrapper
 import os
 
 
-def load_rating(path, data_store):
+def load_rating(path):
     """Load the rating matrix and return it as a list-of-lists.
 
     :path: The local pathname for the rating matrix.
     :returns: The rating matrix in a list-of-lists format where the
               list at index i represents the itemeset of the ith user.
     """
-    rating_file_contents = data_store.read_generic_file(path)
-
-    if isinstance(rating_file_contents, (bytes, bytearray)):
-        rating_file_contents = rating_file_contents.decode('utf-8')
-
-    rating_file_contents = rating_file_contents.strip()
-
+    with open(path, 'r') as f:
+        rating_file_contents = f.read().strip()
     rating_matrix = []
     for line in rating_file_contents.split('\n'):
         this_user_ratings = line.strip().split()
