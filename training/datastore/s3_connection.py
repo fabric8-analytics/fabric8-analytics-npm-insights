@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from rudra.data_store.aws import AmazonS3
 from training.datastore.utils import Utility
-from recommendation_engine.config.path_constants import TEMPORARY_PATH
+from recommendation_engine.config.path_constants import TEMPORARY_DATA_PATH
 from rudra import logger
 import numpy as np
 import time
@@ -92,7 +92,7 @@ class GetData:
 
     def load_user_item_data(self):
         """Load the manifest file."""
-        NPM_manifest_user_data_path = os.path.join(TEMPORARY_PATH, "manifest_user_data.dat")
+        NPM_manifest_user_data_path = os.path.join(TEMPORARY_DATA_PATH, "manifest_user_data.dat")
         try:
             with open(NPM_manifest_user_data_path, 'rb') as f:
                 user_item_data = f.read()
