@@ -1,7 +1,6 @@
 """Test the rest API."""
 import unittest
 import json
-
 import recommendation_engine.config.cloud_constants as cloud_constants
 cloud_constants.USE_CLOUD_SERVICES = False
 import recommendation_engine.flask_predict as rest_api
