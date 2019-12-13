@@ -61,7 +61,7 @@ class PreprocessData:
         manifest_data.get('bigquery_data', [])
         try:
             package_keyword_df = self.get_keywords_obj.find_keywords(
-                self.existing_df, manifest_data)
+                self.existing_df, all_manifest)
             return package_keyword_df
         except Exception:
             raise ValueError("Unable to fetch keywords.")
