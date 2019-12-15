@@ -56,10 +56,12 @@ class PreprocessData:
     def fetch_package_keywords(self):
         """Fetch the keywords for raw data's package list."""
         raw_data = self.get_data_obj.load_raw_data()
-        manifest_data = raw_data.get('package_list', [])
+        manifest_data = raw_data.get('package_dict', {})
+        all_manifest = manifest_data.get('user_input_stack', []) + \
+            manifest_data.get('bigquery_data', [])
         try:
             package_keyword_df = self.get_keywords_obj.find_keywords(
-                self.existing_df, manifest_data)
+                self.existing_df, all_manifest)
             return package_keyword_df
         except Exception:
             raise ValueError("Unable to fetch keywords.")
