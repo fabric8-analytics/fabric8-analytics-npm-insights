@@ -10,12 +10,14 @@ COPY ./training /training
 
 RUN yum install -y epel-release &&\
     yum install -y openssl-devel &&\
-    yum install -y gcc git python36-pip python36-requests httpd httpd-devel python36-devel &&\
+    yum install -y zip gcc-c++ gcc git python36-pip python36-requests httpd httpd-devel python36-devel &&\
     yum clean all
 
 RUN chmod 0777 /bin/entrypoint.sh
 
 RUN pip3 install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra#egg=rudra
 RUN pip3 install -r requirements.txt
+RUN pip3 install daiquiri
+RUN pip3 install tensorflow
 
 ENTRYPOINT ["/bin/entrypoint.sh"]
