@@ -44,8 +44,8 @@ def submit_job(input_bootstrap_file, input_src_code_file):
 
     # S3 bucket/key, where the spark job logs will be maintained
     s3_log_bucket = config.DEPLOYMENT_PREFIX + '-automated-analytics-spark-jobs'
-    s3_log_key = '{}_{}_spark_emr_log_'.format(config.DEPLOYMENT_PREFIX, COMPONENT_PREFIX,
-                                               str_cur_time)
+    s3_log_key = '{}_{}_spark_emr_log_{}'.format(config.DEPLOYMENT_PREFIX, COMPONENT_PREFIX,
+                                                 str_cur_time)
     s3_log_uri = 's3://{bucket}/{key}'.format(bucket=s3_log_bucket, key=s3_log_key)
 
     _logger.debug("Uploading the bootstrap action to AWS S3 URI {} ...".format(s3_bootstrap_uri))

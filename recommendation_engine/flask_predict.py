@@ -20,12 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 
 import flask
-from flask import Flask, request
+from flask import Flask
+'''from flask import Flask, request
 from recommendation_engine.predictor.online_recommendation import PMFRecommendation
 from rudra.data_store.aws import AmazonS3
 import recommendation_engine.config.cloud_constants as cloud_constants
 from recommendation_engine.config.cloud_constants import USE_CLOUD_SERVICES
-from recommendation_engine.config.params_scoring import ScoringParams
+from recommendation_engine.config.params_scoring import ScoringParams'''
 from raven.contrib.flask import Sentry
 import logging
 
