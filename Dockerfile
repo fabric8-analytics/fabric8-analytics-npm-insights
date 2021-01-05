@@ -13,7 +13,7 @@ RUN yum install -y epel-release &&\
     yum install -y gcc gcc-c++ git python36-pip python36-requests httpd httpd-devel python36-devel python-dev &&\
     yum clean all
 
-RUN pip3 install pandas boto3 numpy tensorflow-gpu==2.0.0 scipy daiquiri flask h5py --user
+RUN pip3 install pandas boto3 numpy tensorflow-gpu==2.0.0b1 scipy daiquiri flask h5py --user
 #RUN pip3 install daiquiri
 #RUN pip3 install tensorflow
 
