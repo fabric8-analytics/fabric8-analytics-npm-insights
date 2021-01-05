@@ -10,7 +10,7 @@ COPY ./training /training
 
 RUN yum install -y epel-release &&\
     yum install -y openssl-devel &&\
-    yum install -y gcc gcc-c++ git python36-pip python36-requests httpd httpd-devel python36-devel &&\
+    yum install -y gcc gcc-c++ git python36-pip python36-requests httpd httpd-devel python36-devel python-dev &&\
     yum clean all
 
 RUN pip3 install daiquiri
