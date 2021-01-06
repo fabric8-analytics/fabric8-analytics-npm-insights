@@ -19,7 +19,7 @@ RUN yum -y install gcc openssl-devel bzip2-devel libffi-devel &&\
     make altinstall &&\
     export PATH="/usr/local/bin:$PATH" &&\
     python3.7 -m pip install --upgrade pip --user &&\
-    python3.7 -m pip install pandas boto3 numpy tensorflow scipy daiquiri flask h5py --user &&\
+    python3.7 -m pip install tensorflow pandas boto3 numpy scipy daiquiri flask h5py --user &&\
     python3.7 -m pip install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra --user &&\
 
 #RUN yum install -y epel-release &&\
