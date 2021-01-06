@@ -32,6 +32,6 @@ RUN yum -y install gcc openssl-devel bzip2-devel libffi-devel &&\
 RUN chmod 0777 /bin/entrypoint.sh
 
 #RUN pip3 install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra#egg=rudra
-RUN pip3 install -r requirements.txt
+#RUN pip3 install -r requirements.txt
 
 ENTRYPOINT ["/bin/entrypoint.sh"]
