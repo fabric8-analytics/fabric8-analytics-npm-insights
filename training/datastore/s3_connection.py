@@ -52,6 +52,7 @@ class GetData:
         self.s3_client = self.load_s3()
         self.utility = Utility()
 
+
     def load_s3(self):
         """Establish the connection with S3."""
         self.s3_object.connect()
@@ -73,6 +74,9 @@ class GetData:
                 return raw_data_dict_
             except Exception:
                 raise Exception
+        '''with open('/home/dhpatel/Downloads/prod-s3-cvae-npm-insights_2020-07-20/data/manifest.json', 'r') as fp:
+            raw_data_dict_ = json.load(fp)
+        return raw_data_dict_'''
 
     def load_existing_data(self):
         """Load the node registry dump from S3 bucket."""
@@ -89,6 +93,9 @@ class GetData:
                 raise Exception("S3 connection error")
         else:
             raise ValueError("Given Path is not present.")
+        '''logger.info('TBD')
+        return self.utility.read_json_file({})'''
+
 
     def load_user_item_data(self):
         """Load the manifest file."""
