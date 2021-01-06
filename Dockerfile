@@ -23,9 +23,9 @@ RUN yum -y install gcc openssl-devel bzip2-devel libffi-devel &&\
 RUN python3.7 -m pip install numpy==1.16.5 Jinja2==2.10.1 --user &&\
     python3.7 -m pip install tensorflow==2.0.0b1 pandas boto3 scipy daiquiri flask h5py --user
     
-RUN python3.7 -m pip install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra --user
+#RUN python3.7 -m pip install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra --user
 
-RUN python3.7 -m pip install numpy==1.16.5 Jinja2==2.10.1 --user
+#RUN python3.7 -m pip install numpy==1.16.5 Jinja2==2.10.1 --user
 
 #RUN yum install -y epel-release &&\
 #    yum install -y openssl-devel &&\
