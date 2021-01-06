@@ -3,7 +3,7 @@ FROM registry.centos.org/centos/centos:7
 LABEL maintainer="Avishkar Gupta <avgupta@redhat.com>"
 
 COPY ./recommendation_engine /recommendation_engine
-#COPY ./rudra /rudra
+COPY ./rudra /rudra
 COPY ./requirements.txt /requirements.txt
 COPY ./requirements_new.txt /requirements_new.txt
 COPY ./entrypoint.sh /bin/entrypoint.sh
