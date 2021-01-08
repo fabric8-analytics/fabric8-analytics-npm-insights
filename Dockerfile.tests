@@ -6,26 +6,27 @@ LABEL MAINTAINER="Avishkar Gupta <avgupta@redhat.com>"
 # copy testing source code and scripts into root dir /
 # --------------------------------------------------------------------------------------------------
 
-ADD ./recommendation_engine /recommendation_engine
-ADD ./requirements.txt /requirements.txt
-ADD ./training/ /training
-Add ./rudra /rudra
-ADD ./tests/ /tests
-ADD ./tests/scripts/entrypoint-test.sh /entrypoint-test.sh
-ADD .coveragerc /.coveragerc
-ADD ./.git /.git
-ADD ./tools /tools
-RUN chmod 0777 /entrypoint-test.sh
+#ADD ./recommendation_engine /recommendation_engine
+#ADD ./requirements.txt /requirements.txt
+#ADD ./training/ /training
+#Add ./rudra /rudra
+#ADD ./tests/ /tests
+#ADD ./tests/scripts/entrypoint-test.sh /entrypoint-test.sh
+#ADD .coveragerc /.coveragerc
+#ADD ./.git /.git
+#ADD ./tools /tools
+#RUN chmod 0777 /entrypoint-test.sh
 
 ENV PYTHONPATH=/
 
-RUN pip3 install --upgrade pip
-RUN pip install ruamel.yaml setuptools==41.0.0 tensorflow==2.0.0
+#RUN pip3 install --upgrade pip
+#RUN pip install ruamel.yaml setuptools==41.0.0 tensorflow==2.0.0
 #RUN pip install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra#egg=rudra
-RUN pip install pytest pytest-cov radon==2.4.0 codecov raven blinker
-RUN pip install -r requirements.txt
+#RUN pip install pytest pytest-cov radon==2.4.0 codecov raven blinker
+#RUN pip install -r requirements.txt
 
 # --------------------------------------------------------------------------------------------------
 # RUN THE UNIT TESTS
 # --------------------------------------------------------------------------------------------------
-ENTRYPOINT ["/entrypoint-test.sh"]
+#ENTRYPOINT ["/entrypoint-test.sh"]
+ENTRYPOINT ["pwd"]
