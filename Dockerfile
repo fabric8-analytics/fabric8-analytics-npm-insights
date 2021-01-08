@@ -42,4 +42,5 @@ RUN chmod 0777 /bin/entrypoint.sh
 #RUN pip3 install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra#egg=rudra
 #RUN pip3 install -r requirements.txt
 
-ENTRYPOINT ["/bin/entrypoint.sh"]
+#ENTRYPOINT ["/bin/entrypoint.sh"]
+ENTRYPOINT ["python3.7 -m recommendation_engine.flask_predict.py"]
