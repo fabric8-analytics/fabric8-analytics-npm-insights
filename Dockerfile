@@ -37,6 +37,6 @@ RUN python3.7 -m pip install numpy==1.16.5 Jinja2==2.10.1 --user &&\
 RUN chmod 0777 /bin/entrypoint.sh
 
 #RUN pip3 install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra#egg=rudra
-#RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 ENTRYPOINT ["/bin/entrypoint.sh"]
