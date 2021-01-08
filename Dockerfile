@@ -20,6 +20,9 @@ RUN yum -y install gcc openssl-devel bzip2-devel libffi-devel &&\
     export PATH="/usr/local/bin:$PATH" &&\
     python3.7 -m pip install --upgrade pip --user
     
+RUN python3.7 -m pip install setuptools==41.0.0 --user &&\
+    python3.7 -m pip install -r requirements.txt --user
+
 RUN python3.7 -m pip install numpy==1.16.5 Jinja2==2.10.1 --user &&\
     python3.7 -m pip install setuptools==41.0.0 tensorflow==2.0.0b1 pandas boto3 scipy daiquiri flask h5py --user
     
@@ -38,7 +41,5 @@ RUN chmod 0777 /bin/entrypoint.sh
 
 #RUN pip3 install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra#egg=rudra
 #RUN pip3 install -r requirements.txt
-RUN python3.7 -m pip install setuptools==41.0.0 --user &&\
-    python3.7 -m pip install -r requirements.txt --user
 
 ENTRYPOINT ["/bin/entrypoint.sh"]
