@@ -12,7 +12,7 @@ docutils==0.14            # via botocore
 flask==1.0.2
 gevent==1.2.2
 greenlet==0.4.14          # via gevent
-gunicorn==19.7.1
+gunicorn==20.0.4
 itsdangerous==0.24        # via flask
 jinja2==2.10.1            # via flask
 jmespath==0.9.3           # via boto3, botocore
@@ -29,7 +29,7 @@ blinker==1.4              # via raven
 
 numpy==1.16.5
 #setuptools==41.0.0
-tensorflow==2.0.0b1
+tensorflow==2.0.0
 pandas
 #boto3
 #scipy
