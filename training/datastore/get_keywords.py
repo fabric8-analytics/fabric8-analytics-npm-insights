@@ -50,6 +50,7 @@ class GetKeywords:
         """Find the keywords from NPM registry(through api)."""
         data_dict = self.dict_
         api_url = "https://registry.npmjs.org/" + str(package)
+        logger.info("Fetching registry URL {}".format(api_url))
         try:
             api_data = requests.get(api_url).text
             json_data = json.loads(api_data)
@@ -101,6 +102,7 @@ class GetKeywords:
         url_ = self.utility.get_url(url_df, package)
         keywords = list()
         if type(url_) == str:
+            logger.info('Github API {}'.format(url_))
             query_params = self.utility.get_query_params(url_)
             logger.info("Query Parameters are: {}, {}".format(query_params[0], query_params[1]))
             json = {
@@ -120,6 +122,7 @@ class GetKeywords:
 
     def find_keywords(self, df_, list_):
         """Find the keywords for given list of list of raw data."""
+        logger.info('find_keywords() => Github token {}'.format(self.get_data.github_token))
         package_lst = self.utility.flatten_list(list_)
         out_lst = list()
         for i in package_lst:
