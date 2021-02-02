@@ -30,9 +30,7 @@ radon mi -s -i usr .
 echo "*****************************************"
 echo "*** Unit tests ***"
 echo "*****************************************"
-pwd
-ls -l
+
 pytest --cov=/recommendation_engine/ --cov-report=xml --cov-fail-under=$COVERAGE_THRESHOLD -vv /tests/unit_tests/
-pwd
-ls -l
-codecov --token=6864dfdc-dffd-4321-af79-7552a539c989
+
+mv coverage.xml shared
