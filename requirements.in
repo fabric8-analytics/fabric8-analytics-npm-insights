@@ -9,5 +9,3 @@ raven[flask]
 setuptools==41.0.0
 markupsafe==1.1.0
 h5py
-tensorflow==2.0.0
-# git+https://github.com/fabric8-analytics/fabric8-analytics-rudra#egg=rudra
