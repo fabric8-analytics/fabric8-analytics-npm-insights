@@ -36,8 +36,12 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.6'
-    - name: Run Unit Tests
-      run: bash qa/runtest.sh
+    - name: Run Install deps
+      run: pip install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra#egg=rudra && pip install -r requirements.txt && pip install pytest pytest-cov radon==2.4.0 codecov raven blinker
+    - name: Run Unit
+      run: pytest --cov=/recommendation_engine/ --cov-report=xml --cov-fail-under=$COVERAGE_THRESHOLD -vv /tests/unit_tests/
+    #- name: Run Unit Tests
+    #  run: bash qa/runtest.sh
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
