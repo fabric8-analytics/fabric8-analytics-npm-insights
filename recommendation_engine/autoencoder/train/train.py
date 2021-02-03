@@ -139,12 +139,12 @@ if __name__ == '__main__':
     user_to_item_matrix = load_rating(TEMPORARY_USER_ITEM_FILEPATH, TEMPORARY_DATASTORE)
     item_to_user_matrix = load_rating(TEMPORARY_ITEM_USER_FILEPATH, TEMPORARY_DATASTORE)
     logger.info("Shape of User and Item matrices: {} , {}".format(np.shape(user_to_item_matrix),
-                                                          np.shape(item_to_user_matrix)))
+                                                                  np.shape(item_to_user_matrix)))
     pretrain.fit(x_train)
     encoder_weights = p.train(x_train)
     logger.info("Shape of encoder weights are: {}, {}, {}".format(tf.shape(encoder_weights),
-                                                        len(encoder_weights),
-                                                        len(encoder_weights[0])))
+                                                                  len(encoder_weights),
+                                                                  len(encoder_weights[0])))
     pmf_obj = PMFTraining(len(user_to_item_matrix), len(item_to_user_matrix), encoder_weights)
     logger.debug("PMF model has been initialised")
     pmf_obj(user_to_item_matrix=user_to_item_matrix,
