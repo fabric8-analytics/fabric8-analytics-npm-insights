@@ -9,7 +9,6 @@ pushd "${SCRIPT_DIR}/.." > /dev/null
 TEST_IMAGE_NAME='chester-tests'
 
 gc() {
-    docker stop ${TEST_IMAGE_NAME}
     docker rmi -f $(make get-image-name)
     docker rmi -f "${TEST_IMAGE_NAME}"
 }
