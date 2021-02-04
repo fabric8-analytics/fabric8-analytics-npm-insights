@@ -17,6 +17,8 @@ locale charmap
 
 export RADONFILESENCODING=UTF-8
 
+cd insights
+
 echo "*****************************************"
 echo "*** Cyclomatic complexity measurement ***"
 echo "*****************************************"
@@ -29,7 +31,7 @@ radon mi -s -i usr .
 
 echo "*****************************************"
 echo "*** Unit tests ***"
-echo "*the****************************************"
+echo "*****************************************"
 
-cd shared
+
 pytest --cov=/recommendation_engine/ --cov-report=xml --cov-fail-under=$COVERAGE_THRESHOLD -vv /tests/unit_tests/
