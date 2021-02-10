@@ -14,29 +14,29 @@ botocore==1.10.84
     #   s3transfer
 cached-property==1.5.2
     # via h5py
-click==6.7
+click==7.1.2
     # via flask
-daiquiri==1.5.0
+daiquiri==3.0.0
     # via -r requirements.in
-docutils==0.14
+docutils==0.16
     # via botocore
-flask==1.0.2
+flask==1.1.2
     # via
     #   -r requirements.in
     #   raven
 gevent==1.4.0
     # via -r requirements.in
-greenlet==0.4.14
+greenlet==1.0.0
     # via gevent
 gunicorn==20.0.4
     # via -r requirements.in
 h5py==3.1.0
     # via -r requirements.in
-itsdangerous==0.24
+itsdangerous==1.1.0
     # via flask
-jinja2==2.10
+jinja2==2.11.3
     # via flask
-jmespath==0.9.3
+jmespath==0.10.0
     # via
     #   boto3
     #   botocore
@@ -49,17 +49,19 @@ numpy==1.16.1
     #   -r requirements.in
     #   h5py
     #   scipy
-python-dateutil==2.8.0
+python-dateutil==2.8.1
     # via botocore
+python-json-logger==2.0.1
+    # via daiquiri
 raven[flask]==6.10.0
     # via -r requirements.in
 s3transfer==0.1.13
     # via boto3
 scipy==1.2.1
     # via -r requirements.in
-six==1.12.0
+six==1.15.0
     # via python-dateutil
-werkzeug==0.15.3
+werkzeug==1.0.1
     # via flask
 
 # The following packages are considered to be unsafe in a requirements file:

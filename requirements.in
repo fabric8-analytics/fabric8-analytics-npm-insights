@@ -2,10 +2,9 @@ boto3==1.7.84
 daiquiri
 flask
 gevent==1.4.0
-numpy
+numpy==1.16.1
 scipy==1.2.1
 gunicorn
 raven[flask]
-setuptools==41.0.0
 markupsafe==1.1.0
 h5py
