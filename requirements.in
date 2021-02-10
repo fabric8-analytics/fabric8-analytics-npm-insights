@@ -1,8 +1,10 @@
-boto3==1.6.7
-daiquiri==1.3.0
-flask==1.0.2
-gevent==1.2.2
-numpy==1.14.2
-scipy==1.0.0
-gunicorn==19.7.1
+boto3==1.7.84
+daiquiri
+flask
+gevent==1.4.0
+numpy==1.16.1
+scipy==1.2.1
+gunicorn
 raven[flask]
+markupsafe==1.1.0
+h5py

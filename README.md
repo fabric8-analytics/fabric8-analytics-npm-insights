@@ -1,4 +1,6 @@
-[![Build Status](https://ci.centos.org/buildStatus/icon?job=devtools-fabric8-analytics-npm-insights-f8a-build-master)](https://ci.centos.org/job/devtools-fabric8-analytics-npm-insights-f8a-build-master/)
+![CI](https://github.com/fabric8-analytics/fabric8-analytics-npm-insights/workflows/CI/badge.svg?branch=master)
+[![codecov](https://codecov.io/gh/fabric8-analytics/fabric8-analytics-npm-insights/branch/master/graph/badge.svg?token=qi833miGbI)](https://codecov.io/gh/fabric8-analytics/fabric8-analytics-npm-insights)
+
 
 NPM companion package recommendations
 -------------------------------------

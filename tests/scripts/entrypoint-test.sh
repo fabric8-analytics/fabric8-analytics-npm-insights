@@ -17,6 +17,8 @@ locale charmap
 
 export RADONFILESENCODING=UTF-8
 
+cd insights
+
 echo "*****************************************"
 echo "*** Cyclomatic complexity measurement ***"
 echo "*****************************************"
@@ -31,6 +33,5 @@ echo "*****************************************"
 echo "*** Unit tests ***"
 echo "*****************************************"
 
-pytest --cov=/recommendation_engine/ --cov-report term-missing --cov-fail-under=$COVERAGE_THRESHOLD -vv /tests/unit_tests/
 
-codecov --token=6864dfdc-dffd-4321-af79-7552a539c989
+pytest --cov=/recommendation_engine/ --cov-report=xml --cov-fail-under=$COVERAGE_THRESHOLD -vv /tests/unit_tests/
