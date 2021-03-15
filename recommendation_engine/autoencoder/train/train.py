@@ -21,6 +21,8 @@ from recommendation_engine.config.path_constants import TEMPORARY_SDAE_PATH, TEM
 from recommendation_engine.utils.fileutils import check_path, load_rating
 daiquiri.setup(level=logging.DEBUG)
 from training.datastore.get_preprocess_data import GetPreprocessData
+from training.datastore.s3_helper import S3Helper
+from training.datastore.npm_metadata import NPMMetadata
 logger = daiquiri.getLogger(__name__)
 
 
@@ -129,7 +131,11 @@ class TrainNetwork:
 
 
 if __name__ == '__main__':
-    p = TrainNetwork()
+    s3Helper = S3Helper()
+    npmMetaData = NPMMetadata(s3Helper, '', os.environ.get("AWS_S3_BUCKET_NAME", "cvae-insights"), '')
+    npmMetaData.update()
+
+    '''p = TrainNetwork()
     logger.info("Preprocessing of data started.")
     p.get_preprocess_data.preprocess_data()
     x_train = np.load(os.path.join(TEMPORARY_DATA_PATH, 'content_matrix.npz'))
@@ -153,4 +159,4 @@ if __name__ == '__main__':
     pmf_obj.save_model()
     p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_DATA_PATH)
     p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_PATH)
-    p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_MODEL_PATH)
+    p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_MODEL_PATH)'''
