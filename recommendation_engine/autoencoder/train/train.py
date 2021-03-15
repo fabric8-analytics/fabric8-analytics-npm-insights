@@ -136,7 +136,7 @@ if __name__ == '__main__':
 
     s3Helper = S3Helper()
 
-    existing_data = p.obj_.load_package_data()
+    existing_data = p.get_preprocess_data.obj_.load_package_data()
 
     data = {}
     total = len(existing_data)
