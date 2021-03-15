@@ -131,9 +131,29 @@ class TrainNetwork:
 
 
 if __name__ == '__main__':
+    p = TrainNetwork()
+    logger.info("Preprocessing of data started.")
+
     s3Helper = S3Helper()
-    npmMetaData = NPMMetadata(s3Helper, '', os.environ.get("AWS_S3_BUCKET_NAME", "cvae-insights"), '')
-    npmMetaData.update()
+    '''npmMetaData = NPMMetadata(s3Helper, '', os.environ.get("AWS_S3_BUCKET_NAME", "cvae-insights"), '')
+    npmMetaData.update()'''
+
+    existing_data = p.obj_.load_package_data()
+
+    data = {}
+    total = len(existing_data)
+    index = 0
+    for package in existing_data:
+        package_name = package.get("name", None)
+        index += 1
+        percentage = index * 100 / total
+        logger.info(f'Converting [{index}/{total} ==> {percentage}] {package_name} to dict value')
+        if package_name:
+            data[package_name] = package
+
+    logger.info('Transformation completed, now saving it back')
+    s3Helper.store_json_content(data, os.environ.get("AWS_S3_BUCKET_NAME", "cvae-insights"), 'training-utils/node-package-details.json')
+    logger.info('Final json dictionary saved to training-utils/node-package-details.json')
 
     '''p = TrainNetwork()
     logger.info("Preprocessing of data started.")
