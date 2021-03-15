@@ -67,8 +67,13 @@ class NPMMetadata:
                     io_data = io.StringIO(coded_data)
                     json_data = io_data.readlines()
                     raw_data = list(map(json.loads, json_data))
+                    total = len(raw_data)
+                    index = 0
                     for package in raw_data:
                         package_name = package.get("name", None)
+                        index += 1
+                        percentage = index * 100 / total
+                        logger.info(f'Converting [{index}/{total} ==> {percentage}] {package_name} to dict value')
                         if package_name:
                             data[package_name] = package
             except Exception as e:
