@@ -123,17 +123,10 @@ class GetKeywords:
         package_lst = self.utility.flatten_list(list_)
         out_lst = list()
         for i in package_lst:
-            pkg_kwd_lst = list()
             pkg_kwd_lst = self.utility.make_list_from_series(
                 self.from_existing_df(df_, i))
             if not pkg_kwd_lst or type(pkg_kwd_lst[2]) != list:
-                logger.info("Finding from the NPM repository.")
-                pkg_kwd_dict = self.from_npm_registry(i)
-                pkg_kwd_lst = list(pkg_kwd_dict.values())
-                if len(pkg_kwd_lst[2]) == 0:
-                    logger.info("Trying to fetch from Github")
-                    api_url = 'https://api.github.com/graphql'
-                    api_token = self.get_data.github_token
-                    pkg_kwd_lst[2] = self.from_github(i, df_, api_url, api_token)
+                logger.warn(f'Package {i}, information missing ignoring it')
+                pkg_kwd_lst = [i, '', [], []]
             out_lst.append(pkg_kwd_lst)
         return pd.DataFrame(out_lst, columns=['name', 'description', 'keywords', 'dependencies'])
