@@ -26,6 +26,7 @@ import numpy as np
 import time
 import os
 import json
+import io
 
 
 class GetData:
@@ -83,6 +84,34 @@ class GetData:
                 logger.info("Reading dump data from training-utils folder.")
                 existing_data = self.s3_client.read_generic_file(NPM_clean_json_data_path)
                 existing_df = self.utility.read_json_file(existing_data)
+                logger.info("Size of Raw df with url is: {}".format(len(existing_df)))
+                return existing_df
+            except Exception:
+                raise Exception("S3 connection error")
+        else:
+            raise ValueError("Given Path is not present.")
+
+    def _read_json_file(self, data_in_bytes):  # pragma: no cover
+        """Read a big json file."""
+        try:
+            coded_data = data_in_bytes.decode('utf-8')
+            io_data = io.StringIO(coded_data)
+            json_data = io_data.readlines()
+            data = list(map(json.loads, json_data))
+            return data
+        except Exception:
+            logger.error("Unable to read json file.")
+            return None
+
+    def load_package_data(self):
+        """Load the node registry dump from S3 bucket."""
+        NPM_clean_json_data_path = os.path.join("training-utils",
+                                                "node-package-details-with-url.json")
+        if self.s3_client.object_exists(NPM_clean_json_data_path):
+            try:
+                logger.info("Reading dump data from training-utils folder.")
+                existing_data = self.s3_client.read_generic_file(NPM_clean_json_data_path)
+                existing_df = self._read_json_file(existing_data)
                 logger.info("Size of Raw df with url is: {}".format(len(existing_df)))
                 return existing_df
             except Exception:
