@@ -122,9 +122,14 @@ class GetKeywords:
         """Find the keywords for given list of list of raw data."""
         package_lst = self.utility.flatten_list(list_)
         out_lst = list()
+        total = len(package_lst)
+        index = 0
         for i in package_lst:
+            index += 1
+            logger.info(f'Processing [{index}/{total}] => package {i}')
             pkg_kwd_lst = self.utility.make_list_from_series(
                 self.from_existing_df(df_, i))
+            logger.info(f'Package {i} => {pkg_kwd_lst}')
             if not pkg_kwd_lst or type(pkg_kwd_lst[2]) != list:
                 logger.warn(f'Package {i}, information missing ignoring it')
                 pkg_kwd_lst = [i, '', [], []]
