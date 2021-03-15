@@ -135,8 +135,6 @@ if __name__ == '__main__':
     logger.info("Preprocessing of data started.")
 
     s3Helper = S3Helper()
-    '''npmMetaData = NPMMetadata(s3Helper, '', os.environ.get("AWS_S3_BUCKET_NAME", "cvae-insights"), '')
-    npmMetaData.update()'''
 
     existing_data = p.obj_.load_package_data()
 
