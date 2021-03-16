@@ -41,8 +41,8 @@ class GetPreprocessData:
                             aws_bucket_name=aws_bucket_name,
                             model_version=model_version,
                             num_train_per_user=num_train_per_user)
-        self.keyword_obj_ = None # GetKeywords(self.obj_)
-        self.preprocess_data_obj = None # PreprocessData(data_obj=self.obj_)
+        self.keyword_obj_ = GetKeywords(self.obj_)
+        self.preprocess_data_obj = PreprocessData(data_obj=self.obj_)
         self.utils = Utility()
         self.num_users = num_train_per_user
 
