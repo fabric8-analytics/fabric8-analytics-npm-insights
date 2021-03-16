@@ -126,11 +126,18 @@ class GetKeywords:
         index = 0
         for i in package_lst:
             index += 1
-            logger.info(f'Processing [{index}/{total}] => package {i}')
-            pkg_kwd_lst = data_.get(i, None)
-            logger.info(f'Package {i} => {pkg_kwd_lst}')
-            if not pkg_kwd_lst or type(pkg_kwd_lst[2]) != list or type(pkg_kwd_lst[3]) != list:
+            percentage = int(index * 100 / total)
+            logger.info(f'Processing [{index}/{total} => {percentage}%] => package {i}')
+
+            pkg_kwd_lst = [i, '', [], []]
+            pkg_details = data_.get(i, None)
+            logger.info(f'Package {i} => {pkg_details}')
+            if pkg_details:
+                pkg_kwd_lst = [i, pkg_details.get('description', ''),
+                               pkg_details.get('keywords', []),
+                               pkg_details.get('dependencies', [])]
+            else:
                 logger.warn(f'Package {i}, information missing ignoring it')
-                pkg_kwd_lst = [i, '', [], []]
+
             out_lst.append(pkg_kwd_lst)
         return pd.DataFrame(out_lst, columns=['name', 'description', 'keywords', 'dependencies'])
