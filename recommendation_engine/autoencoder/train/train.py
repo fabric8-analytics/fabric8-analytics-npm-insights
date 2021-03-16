@@ -133,22 +133,26 @@ class TrainNetwork:
 if __name__ == '__main__':
     p = TrainNetwork()
     logger.info("Preprocessing of data started.")
-
-    s3Helper = S3Helper()
-
-    existing_data = p.get_preprocess_data.obj_.load_package_data()
-
-    data = {}
-    total = len(existing_data)
-    index = 0
-    for package in existing_data:
-        package_name = package.get("name", None)
-        index += 1
-        percentage = index * 100 / total
-        logger.info(f'Converting [{index}/{total} ==> {percentage}] {package_name} to dict value')
-        if package_name:
-            data[package_name] = package
-
-    logger.info('Transformation completed, now saving it back')
-    s3Helper.store_json_content(data, os.environ.get("AWS_S3_BUCKET_NAME", "cvae-insights"), 'training-utils/node-package-details.json')
-    logger.info('Final json dictionary saved to training-utils/node-package-details.json')
+    p.get_preprocess_data.preprocess_data()
+    x_train = np.load(os.path.join(TEMPORARY_DATA_PATH, 'content_matrix.npz'))
+    x_train = x_train['matrix']
+    input_dim = x_train.shape[1]
+    logger.info("size of training file is: {}, {}".format(len(x_train), len(x_train[0])))
+    user_to_item_matrix = load_rating(TEMPORARY_USER_ITEM_FILEPATH, TEMPORARY_DATASTORE)
+    item_to_user_matrix = load_rating(TEMPORARY_ITEM_USER_FILEPATH, TEMPORARY_DATASTORE)
+    logger.info("Shape of User and Item matrices: {} , {}".format(np.shape(user_to_item_matrix),
+                                                                  np.shape(item_to_user_matrix)))
+    pretrain.fit(x_train)
+    encoder_weights = p.train(x_train)
+    logger.info("Shape of encoder weights are: {}, {}, {}".format(tf.shape(encoder_weights),
+                                                                  len(encoder_weights),
+                                                                  len(encoder_weights[0])))
+    pmf_obj = PMFTraining(len(user_to_item_matrix), len(item_to_user_matrix), encoder_weights)
+    logger.debug("PMF model has been initialised")
+    pmf_obj(user_to_item_matrix=user_to_item_matrix,
+            item_to_user_matrix=item_to_user_matrix)
+    logger.debug("PMF model has been trained.")
+    pmf_obj.save_model()
+    p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_DATA_PATH)
+    p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_PATH)
+    p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_MODEL_PATH)

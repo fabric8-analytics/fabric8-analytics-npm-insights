@@ -118,7 +118,7 @@ class GetKeywords:
         else:
             return keywords
 
-    def find_keywords(self, df_, list_):
+    def find_keywords(self, data_, list_):
         """Find the keywords for given list of list of raw data."""
         package_lst = self.utility.flatten_list(list_)
         out_lst = list()
@@ -127,10 +127,9 @@ class GetKeywords:
         for i in package_lst:
             index += 1
             logger.info(f'Processing [{index}/{total}] => package {i}')
-            pkg_kwd_lst = self.utility.make_list_from_series(
-                self.from_existing_df(df_, i))
+            pkg_kwd_lst = data_.get(i, None)
             logger.info(f'Package {i} => {pkg_kwd_lst}')
-            if not pkg_kwd_lst or type(pkg_kwd_lst[2]) != list:
+            if not pkg_kwd_lst or type(pkg_kwd_lst[2]) != list or type(pkg_kwd_lst[3]) != list:
                 logger.warn(f'Package {i}, information missing ignoring it')
                 pkg_kwd_lst = [i, '', [], []]
             out_lst.append(pkg_kwd_lst)

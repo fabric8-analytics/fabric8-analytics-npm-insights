@@ -78,14 +78,13 @@ class GetData:
     def load_existing_data(self):
         """Load the node registry dump from S3 bucket."""
         NPM_clean_json_data_path = os.path.join("training-utils",
-                                                "node-package-details-with-url.json")
+                                                "node-package-details.json")
         if self.s3_client.object_exists(NPM_clean_json_data_path):
             try:
                 logger.info("Reading dump data from training-utils folder.")
-                existing_data = self.s3_client.read_generic_file(NPM_clean_json_data_path)
-                existing_df = self.utility.read_json_file(existing_data)
-                logger.info("Size of Raw df with url is: {}".format(len(existing_df)))
-                return existing_df
+                existing_data = self.s3_client.read_json_file(NPM_clean_json_data_path)
+                logger.info("Size of raw json: {}".format(len(existing_data)))
+                return existing_data
             except Exception:
                 raise Exception("S3 connection error")
         else:
