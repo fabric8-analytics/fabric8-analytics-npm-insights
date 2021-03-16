@@ -118,22 +118,27 @@ class GetKeywords:
         else:
             return keywords
 
-    def find_keywords(self, df_, list_):
+    def find_keywords(self, data_, list_):
         """Find the keywords for given list of list of raw data."""
         package_lst = self.utility.flatten_list(list_)
         out_lst = list()
+        total = len(package_lst)
+        index = 0
         for i in package_lst:
-            pkg_kwd_lst = list()
-            pkg_kwd_lst = self.utility.make_list_from_series(
-                self.from_existing_df(df_, i))
-            if not pkg_kwd_lst or type(pkg_kwd_lst[2]) != list:
-                logger.info("Finding from the NPM repository.")
-                pkg_kwd_dict = self.from_npm_registry(i)
-                pkg_kwd_lst = list(pkg_kwd_dict.values())
-                if len(pkg_kwd_lst[2]) == 0:
-                    logger.info("Trying to fetch from Github")
-                    api_url = 'https://api.github.com/graphql'
-                    api_token = self.get_data.github_token
-                    pkg_kwd_lst[2] = self.from_github(i, df_, api_url, api_token)
+            index += 1
+            percentage = int(index * 100 / total)
+            logger.info(f'Processing [{index}/{total} => {percentage}%] => package {i}')
+
+            pkg_kwd_lst = [i, '', [], []]
+            pkg_details = data_.get(i, None)
+            logger.info(f'Package {i} => Desc: {pkg_details["description"]} '
+                        f'Keywords: {pkg_details["keywords"]} Deps: {pkg_details["dependencies"]}')
+            if pkg_details:
+                pkg_kwd_lst = [i, pkg_details.get('description', ''),
+                               pkg_details.get('keywords', []),
+                               pkg_details.get('dependencies', [])]
+            else:
+                logger.warn(f'Package {i}, information missing ignoring it')
+
             out_lst.append(pkg_kwd_lst)
         return pd.DataFrame(out_lst, columns=['name', 'description', 'keywords', 'dependencies'])
