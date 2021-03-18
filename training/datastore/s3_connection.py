@@ -82,7 +82,7 @@ class GetData:
             try:
                 logger.info("Reading dump data from training-utils folder.")
                 existing_data = self.s3_client.read_json_file(NPM_clean_json_data_path)
-                logger.info("Size of raw json: {}".format(len(existing_data)))
+                logger.info("Size of raw json: %d", len(existing_data))
                 return existing_data
             except Exception:
                 raise Exception("S3 connection error")

@@ -122,23 +122,18 @@ class GetKeywords:
         """Find the keywords for given list of list of raw data."""
         package_lst = self.utility.flatten_list(list_)
         out_lst = list()
-        total = len(package_lst)
-        index = 0
         for i in package_lst:
-            index += 1
-            percentage = int(index * 100 / total)
-            logger.info(f'Processing [{index}/{total} => {percentage}%] => package {i}')
-
             pkg_kwd_lst = [i, '', [], []]
             pkg_details = data_.get(i, None)
-            logger.info(f'Package {i} => Desc: {pkg_details["description"]} '
-                        f'Keywords: {pkg_details["keywords"]} Deps: {pkg_details["dependencies"]}')
+            logger.debug("Package %s => Desc: %s Keywords: %s Deps: %s", i,
+                         pkg_details["description"], pkg_details["keywords"],
+                         pkg_details["dependencies"])
             if pkg_details:
                 pkg_kwd_lst = [i, pkg_details.get('description', ''),
                                pkg_details.get('keywords', []),
                                pkg_details.get('dependencies', [])]
             else:
-                logger.warn(f'Package {i}, information missing ignoring it')
+                logger.warn("Package %s, information missing ignoring it", i)
 
             out_lst.append(pkg_kwd_lst)
         return pd.DataFrame(out_lst, columns=['name', 'description', 'keywords', 'dependencies'])
