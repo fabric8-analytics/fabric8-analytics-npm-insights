@@ -23,6 +23,10 @@ from training.datastore.utils import Utility
 import pandas as pd
 import requests
 import json
+from collections import namedtuple
+
+
+PackageDetails = namedtuple('PackageDetails', ['name', 'description', 'keywords', 'dependencies'])
 
 
 class GetKeywords:
@@ -122,18 +126,21 @@ class GetKeywords:
         """Find the keywords for given list of list of raw data."""
         package_lst = self.utility.flatten_list(list_)
         out_lst = list()
-        for i in package_lst:
-            pkg_kwd_lst = [i, '', [], []]
-            pkg_details = data_.get(i, None)
-            logger.debug("Package %s => Desc: %s Keywords: %s Deps: %s", i,
+        for package_name in package_lst:
+            pkg_kwd_lst = None
+            pkg_details = data_.get(package_name, None)
+            logger.debug("Package %s => Desc: %s Keywords: %s Deps: %s", package_name,
                          pkg_details["description"], pkg_details["keywords"],
                          pkg_details["dependencies"])
             if pkg_details:
-                pkg_kwd_lst = [i, pkg_details.get('description', ''),
-                               pkg_details.get('keywords', []),
-                               pkg_details.get('dependencies', [])]
+                pkg_kwd_lst = PackageDetails(name=package_name,
+                                             description=pkg_details.get('description', ''),
+                                             keywords=pkg_details.get('keywords', []),
+                                             dependencies=pkg_details.get('dependencies', []))
             else:
-                logger.warn("Package %s, information missing ignoring it", i)
+                logger.warn("Package %s, information missing ignoring it", package_name)
+                pkg_kwd_lst = PackageDetails(name=package_name, description='',
+                                             keywords='', dependencies='')
 
             out_lst.append(pkg_kwd_lst)
         return pd.DataFrame(out_lst, columns=['name', 'description', 'keywords', 'dependencies'])
