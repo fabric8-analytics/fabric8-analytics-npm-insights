@@ -23,6 +23,10 @@ from training.datastore.utils import Utility
 import pandas as pd
 import requests
 import json
+from collections import namedtuple
+
+
+PackageDetails = namedtuple('PackageDetails', ['name', 'description', 'keywords', 'dependencies'])
 
 
 class GetKeywords:
@@ -118,22 +122,22 @@ class GetKeywords:
         else:
             return keywords
 
-    def find_keywords(self, df_, list_):
+    def find_keywords(self, data_, list_):
         """Find the keywords for given list of list of raw data."""
         package_lst = self.utility.flatten_list(list_)
         out_lst = list()
-        for i in package_lst:
-            pkg_kwd_lst = list()
-            pkg_kwd_lst = self.utility.make_list_from_series(
-                self.from_existing_df(df_, i))
-            if not pkg_kwd_lst or type(pkg_kwd_lst[2]) != list:
-                logger.info("Finding from the NPM repository.")
-                pkg_kwd_dict = self.from_npm_registry(i)
-                pkg_kwd_lst = list(pkg_kwd_dict.values())
-                if len(pkg_kwd_lst[2]) == 0:
-                    logger.info("Trying to fetch from Github")
-                    api_url = 'https://api.github.com/graphql'
-                    api_token = self.get_data.github_token
-                    pkg_kwd_lst[2] = self.from_github(i, df_, api_url, api_token)
-            out_lst.append(pkg_kwd_lst)
+        for package_name in package_lst:
+            package_data = None
+            package_details = data_.get(package_name, None)
+            if package_details:
+                package_data = PackageDetails(name=package_name,
+                                              description=package_details.get('description', ''),
+                                              keywords=package_details.get('keywords', []),
+                                              dependencies=package_details.get('dependencies', []))
+            else:
+                package_data = PackageDetails(name=package_name, description='',
+                                              keywords='', dependencies='')
+
+            logger.debug("Adding package %s", package_data)
+            out_lst.append(package_data)
         return pd.DataFrame(out_lst, columns=['name', 'description', 'keywords', 'dependencies'])

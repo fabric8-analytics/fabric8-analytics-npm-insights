@@ -32,7 +32,7 @@ class PreprocessData:
         self.utility_obj = Utility()
         self.get_keywords_obj = GetKeywords(data_obj)
         self.df_ = df_
-        self.existing_df = self.get_data_obj.load_existing_data()
+        self.existing_data = self.get_data_obj.load_existing_data()
         self.pkg_kwd_df = self.fetch_package_keywords()
 
     def add_dependencies_resolved_column(self, df_, dependencies_list):
@@ -61,7 +61,7 @@ class PreprocessData:
             manifest_data.get('bigquery_data', [])
         try:
             package_keyword_df = self.get_keywords_obj.find_keywords(
-                self.existing_df, all_manifest)
+                self.existing_data, all_manifest)
             return package_keyword_df
         except Exception:
             raise ValueError("Unable to fetch keywords.")
