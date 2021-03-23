@@ -19,8 +19,10 @@ from recommendation_engine.config.path_constants import TEMPORARY_SDAE_PATH, TEM
     TEMPORARY_USER_ITEM_FILEPATH, TEMPORARY_ITEM_USER_FILEPATH, TEMPORARY_PATH, \
     TEMPORARY_MODEL_PATH, TEMPORARY_DATASTORE, TEMPORARY_DATA_PATH
 from recommendation_engine.utils.fileutils import check_path, load_rating
-daiquiri.setup(level=logging.DEBUG)
 from training.datastore.get_preprocess_data import GetPreprocessData
+from recommendation_engine.autoencoder.train.model_promotion import ModelPromotion
+
+daiquiri.setup(level=logging.DEBUG)
 logger = daiquiri.getLogger(__name__)
 
 
@@ -154,3 +156,7 @@ if __name__ == '__main__':
     p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_DATA_PATH)
     p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_PATH)
     p.get_preprocess_data.obj_.save_on_s3(TEMPORARY_MODEL_PATH)
+
+    logger.debug("Check and promote new model.")
+    modelPromotion = ModelPromotion(p.get_preprocess_data.obj_.s3_client)
+    modelPromotion.promote({})
