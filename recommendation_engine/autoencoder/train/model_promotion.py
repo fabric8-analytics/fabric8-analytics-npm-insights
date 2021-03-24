@@ -67,7 +67,7 @@ Criteria for promotion is `{self.promotion_creteria}`
 
     def _is_better_model(self, current_params, new_params):
         """Decides whether model with given params is better than current deployed model."""
-        logger.info('Deployed model %s and new model is %s'. current_params, new_params)
+        logger.info('Deployed model %s and new model is %s', current_params, new_params)
         self.promotion_creteria = 'Always move to latest model'
         return True
 
