@@ -95,7 +95,7 @@ Criteria for promotion is `{self.promotion_creteria}`
 
         return deployed_data, yaml_data, upstream_latest_commit_hash
 
-    def _update_yaml_data(yaml_dict, deployment_type, model_version, hyper_params):
+    def _update_yaml_data(self, yaml_dict, deployment_type, model_version, hyper_params):
         """Update the yaml file for given deployment with model data and description as comments."""
         environments = yaml_dict.get('services', [{}])[0].get('environments', [])
         hyper_params = {k: str(v) for k, v in hyper_params.items()}
