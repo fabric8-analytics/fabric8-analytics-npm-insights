@@ -20,7 +20,7 @@ logger = daiquiri.getLogger(__name__)
 
 
 class ModelPromotion:
-    """Promte the new model after comparing it with existing one."""
+    """Promote the new model after comparing it with existing one."""
 
     def __init__(self, s3_client):
         """Set s3 client and promotion creteria."""

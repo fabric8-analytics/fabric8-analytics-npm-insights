@@ -8,3 +8,5 @@ gunicorn
 raven[flask]
 markupsafe==1.1.0
 h5py
+ruamel.yaml
+pygithub

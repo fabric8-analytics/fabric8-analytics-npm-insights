@@ -14,10 +14,16 @@ botocore==1.10.84
     #   s3transfer
 cached-property==1.5.2
     # via h5py
+certifi==2020.12.5
+    # via requests
+chardet==4.0.0
+    # via requests
 click==7.1.2
     # via flask
 daiquiri==3.0.0
     # via -r requirements.in
+deprecated==1.2.12
+    # via pygithub
 docutils==0.16
     # via botocore
 flask==1.1.2
@@ -32,6 +38,8 @@ gunicorn==20.0.4
     # via -r requirements.in
 h5py==3.1.0
     # via -r requirements.in
+idna==2.10
+    # via requests
 itsdangerous==1.1.0
     # via flask
 jinja2==2.11.3
@@ -49,11 +57,21 @@ numpy==1.16.5
     #   -r requirements.in
     #   h5py
     #   scipy
+pygithub==1.54.1
+    # via -r requirements.in
+pyjwt==1.7.1
+    # via pygithub
 python-dateutil==2.8.1
     # via botocore
 python-json-logger==2.0.1
     # via daiquiri
 raven[flask]==6.10.0
+    # via -r requirements.in
+requests==2.25.1
+    # via pygithub
+ruamel.yaml.clib==0.2.2
+    # via ruamel.yaml
+ruamel.yaml==0.16.13
     # via -r requirements.in
 s3transfer==0.1.13
     # via boto3
@@ -61,8 +79,12 @@ scipy==1.2.1
     # via -r requirements.in
 six==1.15.0
     # via python-dateutil
+urllib3==1.26.4
+    # via requests
 werkzeug==1.0.1
     # via flask
+wrapt==1.12.1
+    # via deprecated
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
