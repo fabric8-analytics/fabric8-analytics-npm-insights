@@ -137,7 +137,7 @@ parameters:
   displayName: Docker image
   required: true
   name: DOCKER_IMAGE
-  value: "openshiftio/rhel-fabric8-analytics-f8a-npm-insights"
+  value: "app-sre/fabric8-analytics-f8a-npm-insights"
 
 - description: Number of deployment replicas
   displayName: Number of deployment replicas
@@ -161,7 +161,7 @@ parameters:
   displayName: Flask logging level
   required: false
   name: FLASK_LOGGING_LEVEL
-  value: "WARNING"
+  value: "INFO"
 
 - description: "Model Version - Date Format YYYY-MM-DD"
   displayName: Model Version
