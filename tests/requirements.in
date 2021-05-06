@@ -1,0 +1,6 @@
+pytest
+pytest-cov
+radon
+codecov
+raven
+blinker

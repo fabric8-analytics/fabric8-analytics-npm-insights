@@ -4,65 +4,455 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
+absl-py==0.12.0
+    # via
+    #   tensorboard
+    #   tensorflow
+alabaster==0.7.12
+    # via
+    #   rudra
+    #   sphinx
+asn1crypto==0.24.0
+    # via
+    #   cryptography
+    #   rudra
+astor==0.8.1
+    # via tensorflow
+atomicwrites==1.3.0
+    # via
+    #   pytest
+    #   rudra
+attrs==18.2.0
+    # via
+    #   pytest
+    #   rudra
+aws-xray-sdk==0.95
+    # via
+    #   moto
+    #   rudra
+babel==2.6.0
+    # via
+    #   rudra
+    #   sphinx
+beautifulsoup4==4.7.1
+    # via rudra
 blinker==1.4
     # via raven
 boto3==1.7.84
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   moto
+    #   rudra
+boto==2.49.0
+    # via
+    #   moto
+    #   rudra
 botocore==1.10.84
     # via
     #   boto3
+    #   moto
+    #   rudra
     #   s3transfer
 cached-property==1.5.2
     # via h5py
+cachetools==3.1.0
+    # via
+    #   google-auth
+    #   rudra
+certifi==2018.11.29
+    # via
+    #   requests
+    #   rudra
+cffi==1.12.1
+    # via
+    #   cryptography
+    #   rudra
+chardet==3.0.4
+    # via
+    #   requests
+    #   rudra
 click==7.1.2
     # via flask
-daiquiri==3.0.0
-    # via -r requirements.in
-docutils==0.16
-    # via botocore
-flask==1.1.2
+cookies==2.2.1
+    # via
+    #   moto
+    #   rudra
+cryptography==2.5
+    # via
+    #   moto
+    #   rudra
+daiquiri==1.5.0
+    # via
+    #   -r requirements.in
+    #   rudra
+demjson==2.2.4
+    # via rudra
+deprecated==1.2.12
+    # via pygithub
+docker-pycreds==0.4.0
+    # via
+    #   docker
+    #   rudra
+docker==3.7.0
+    # via
+    #   moto
+    #   rudra
+docutils==0.14
+    # via
+    #   botocore
+    #   rudra
+    #   sphinx
+ecdsa==0.13.3
+    # via
+    #   python-jose
+    #   rudra
+flask==0.12
     # via
     #   -r requirements.in
     #   raven
+future==0.17.1
+    # via
+    #   python-jose
+    #   rudra
+gast==0.2.2
+    # via tensorflow
 gevent==1.4.0
     # via -r requirements.in
+google-api-core==1.8.0
+    # via
+    #   google-cloud-bigquery
+    #   google-cloud-core
+    #   rudra
+google-auth-oauthlib==0.4.4
+    # via tensorboard
+google-auth==1.6.3
+    # via
+    #   google-api-core
+    #   google-auth-oauthlib
+    #   rudra
+    #   tensorboard
+google-cloud-bigquery==1.10.0
+    # via rudra
+google-cloud-core==0.29.1
+    # via
+    #   google-cloud-bigquery
+    #   rudra
+google-pasta==0.2.0
+    # via tensorflow
+google-resumable-media==0.3.2
+    # via
+    #   google-cloud-bigquery
+    #   rudra
+googleapis-common-protos==1.5.8
+    # via
+    #   google-api-core
+    #   rudra
 greenlet==1.0.0
     # via gevent
+grpcio==1.37.1
+    # via
+    #   tensorboard
+    #   tensorflow
 gunicorn==20.0.4
     # via -r requirements.in
 h5py==3.1.0
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   keras-applications
+idna==2.8
+    # via
+    #   requests
+    #   rudra
+imagesize==1.1.0
+    # via
+    #   rudra
+    #   sphinx
+importlib-metadata==4.0.1
+    # via markdown
 itsdangerous==1.1.0
     # via flask
-jinja2==2.11.3
-    # via flask
-jmespath==0.10.0
+jinja2==2.10
+    # via
+    #   flask
+    #   moto
+    #   rudra
+    #   sphinx
+jmespath==0.9.3
     # via
     #   boto3
     #   botocore
+    #   rudra
+jsondiff==1.1.1
+    # via
+    #   moto
+    #   rudra
+jsonpickle==1.1
+    # via
+    #   aws-xray-sdk
+    #   rudra
+keras-applications==1.0.8
+    # via tensorflow
+keras-preprocessing==1.1.2
+    # via tensorflow
+lxml==4.3.2
+    # via rudra
+markdown==3.3.4
+    # via tensorboard
 markupsafe==1.1.0
     # via
     #   -r requirements.in
     #   jinja2
-numpy==1.16.5
+    #   rudra
+mock==2.0.0
+    # via
+    #   moto
+    #   rudra
+more-itertools==6.0.0
+    # via
+    #   pytest
+    #   rudra
+moto==1.3.6
+    # via rudra
+numpy==1.16.1
     # via
     #   -r requirements.in
     #   h5py
+    #   keras-applications
+    #   keras-preprocessing
+    #   opt-einsum
+    #   pandas
+    #   rudra
     #   scipy
-python-dateutil==2.8.1
-    # via botocore
-python-json-logger==2.0.1
-    # via daiquiri
+    #   tensorboard
+    #   tensorflow
+oauthlib==3.1.0
+    # via requests-oauthlib
+opt-einsum==3.3.0
+    # via tensorflow
+packaging==19.0
+    # via
+    #   rudra
+    #   sphinx
+pandas==1.1.5
+    # via -r requirements.in
+pbr==5.1.2
+    # via
+    #   mock
+    #   rudra
+pluggy==0.8.1
+    # via
+    #   pytest
+    #   rudra
+protobuf==3.7.0
+    # via
+    #   google-api-core
+    #   googleapis-common-protos
+    #   rudra
+    #   tensorboard
+    #   tensorflow
+py==1.7.0
+    # via
+    #   pytest
+    #   rudra
+pyaml==18.11.0
+    # via
+    #   moto
+    #   rudra
+pyasn1-modules==0.2.4
+    # via
+    #   google-auth
+    #   rudra
+pyasn1==0.4.5
+    # via
+    #   pyasn1-modules
+    #   rsa
+    #   rudra
+pycodestyle==2.5.0
+    # via rudra
+pycparser==2.19
+    # via
+    #   cffi
+    #   rudra
+pycryptodome==3.7.3
+    # via
+    #   python-jose
+    #   rudra
+pygithub==1.54.1
+    # via rudra
+pygments==2.3.1
+    # via
+    #   rudra
+    #   sphinx
+pyjwt==1.7.1
+    # via pygithub
+pyparsing==2.3.1
+    # via
+    #   packaging
+    #   rudra
+pytest==4.3.0
+    # via rudra
+python-dateutil==2.8.0
+    # via
+    #   botocore
+    #   moto
+    #   pandas
+    #   rudra
+python-jose==2.0.2
+    # via
+    #   moto
+    #   rudra
+pytz==2018.9
+    # via
+    #   babel
+    #   google-api-core
+    #   moto
+    #   pandas
+    #   rudra
+pyyaml==4.2b4
+    # via
+    #   pyaml
+    #   rudra
 raven[flask]==6.10.0
     # via -r requirements.in
-s3transfer==0.1.13
-    # via boto3
-scipy==1.2.1
+requests-futures==0.9.9
+    # via rudra
+requests-oauthlib==1.3.0
+    # via google-auth-oauthlib
+requests==2.21.0
+    # via
+    #   aws-xray-sdk
+    #   docker
+    #   google-api-core
+    #   moto
+    #   pygithub
+    #   requests-futures
+    #   requests-oauthlib
+    #   responses
+    #   rudra
+    #   sphinx
+    #   tensorboard
+responses==0.10.5
+    # via
+    #   moto
+    #   rudra
+rsa==4.0
+    # via
+    #   google-auth
+    #   rudra
+ruamel.yaml==0.15.88
+    # via rudra
+git+https://github.com/fabric8-analytics/fabric8-analytics-rudra.git@98f5d8f6e402dfed3b9ba9385040eacbb0a12bc3#egg=rudra
     # via -r requirements.in
-six==1.15.0
-    # via python-dateutil
-werkzeug==1.0.1
-    # via flask
+s3transfer==0.1.13
+    # via
+    #   boto3
+    #   rudra
+scipy==1.2.1
+    # via
+    #   -r requirements.in
+    #   rudra
+six==1.12.0
+    # via
+    #   absl-py
+    #   cryptography
+    #   docker
+    #   docker-pycreds
+    #   google-api-core
+    #   google-auth
+    #   google-pasta
+    #   google-resumable-media
+    #   grpcio
+    #   keras-preprocessing
+    #   mock
+    #   moto
+    #   packaging
+    #   protobuf
+    #   pytest
+    #   python-dateutil
+    #   python-jose
+    #   responses
+    #   rudra
+    #   tensorboard
+    #   tensorflow
+    #   websocket-client
+snowballstemmer==1.2.1
+    # via
+    #   rudra
+    #   sphinx
+soupsieve==1.8
+    # via
+    #   beautifulsoup4
+    #   rudra
+sphinx-rtd-theme==0.4.3
+    # via rudra
+sphinx==2.0.0
+    # via
+    #   rudra
+    #   sphinx-rtd-theme
+sphinxcontrib-applehelp==1.0.1
+    # via
+    #   rudra
+    #   sphinx
+sphinxcontrib-devhelp==1.0.1
+    # via
+    #   rudra
+    #   sphinx
+sphinxcontrib-htmlhelp==1.0.1
+    # via
+    #   rudra
+    #   sphinx
+sphinxcontrib-jsmath==1.0.1
+    # via
+    #   rudra
+    #   sphinx
+sphinxcontrib-qthelp==1.0.2
+    # via
+    #   rudra
+    #   sphinx
+sphinxcontrib-serializinghtml==1.1.1
+    # via
+    #   rudra
+    #   sphinx
+tensorboard==2.0.2
+    # via tensorflow
+tensorflow-estimator==2.0.1
+    # via tensorflow
+tensorflow==2.0.0
+    # via -r requirements.in
+termcolor==1.1.0
+    # via tensorflow
+typing-extensions==3.10.0.0
+    # via importlib-metadata
+urllib3==1.24.2
+    # via
+    #   requests
+    #   rudra
+websocket-client==0.54.0
+    # via
+    #   docker
+    #   rudra
+werkzeug==0.15.3
+    # via
+    #   flask
+    #   moto
+    #   rudra
+    #   tensorboard
+wheel==0.36.2
+    # via
+    #   tensorboard
+    #   tensorflow
+wrapt==1.11.1
+    # via
+    #   aws-xray-sdk
+    #   deprecated
+    #   rudra
+    #   tensorflow
+xmltodict==0.12.0
+    # via
+    #   moto
+    #   rudra
+zipp==3.4.1
+    # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
